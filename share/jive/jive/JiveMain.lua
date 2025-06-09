@@ -47,6 +47,7 @@ local debug         = require("jive.utils.debug")
 local log           = require("jive.utils.log").logger("jivelite")
 local logheap       = require("jive.utils.log").logger("jivelite.heap")
 
+local rpi           = require("jive.utils.rpi_bl")
 
 --require("profiler")
 
@@ -196,6 +197,17 @@ function JiveMain:setSoftPowerState(softPowerState, isServerRequest)
 		 return
 	end
 
+	-- set default values
+	local backlightBrightness = appletManager:callService("getBacklightBrightnessWhenOn")
+	if backlightBrightness == nil then
+		backlightBrightness = "255"
+	end
+
+	local reducedBacklightBrightness = appletManager:callService("getBacklightBrightnessWhenOff")
+	if reducedBacklightBrightness == nil then
+		reducedBacklightBrightness = "130"
+	end
+
 	_softPowerState = softPowerState
 	local currentPlayer = appletManager:callService("getCurrentPlayer")
 	if _softPowerState == "off" then
@@ -203,19 +215,20 @@ function JiveMain:setSoftPowerState(softPowerState, isServerRequest)
 		if currentPlayer and (currentPlayer:isConnected() or currentPlayer:isLocal()) then
 			currentPlayer:setPower(false, nil, isServerRequest)
 		end
+		rpi.set_pCP_display_current_brightness(reducedBacklightBrightness)
 		--todo: also pause/power off local player since local player might be playing and not be the current player
 		appletManager:callService("activateScreensaver", isServerRequest)
 	elseif _softPowerState == "on" then
 		log:info("Turn soft power on")
 		--todo: Define what should happen for a non-jive remote player. Currently if a server is down, locally a SS will engage, but when the server
-		--       comes back up the server is considered the master power might soft power SP back on 
+		--       comes back up the server is considered the master power might soft power SP back on
 		if currentPlayer and (currentPlayer:isConnected() or currentPlayer:isLocal()) then
 			if currentPlayer.slimServer then
 				currentPlayer.slimServer:wakeOnLan()
 			end
 			currentPlayer:setPower(true, nil, isServerRequest)
 		end
-
+		rpi.set_pCP_display_current_brightness(backlightBrightness)
 		appletManager:callService("deactivateScreensaver")
 		appletManager:callService("restartScreenSaverTimer")
 

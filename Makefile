@@ -3,17 +3,10 @@
 # set PREFIX for location of luajit include and libs
 PREFIX ?= /usr/local
 
-ifeq ($(shell uname -m), aarch64)
-        LUAJIT_VERSION = 2.1
-        export LUAJIT_VERSION
-        CFLAGS += -DLUAJIT_VERSION=21
-	export CFLAGS
-else
-        LUAJIT_VERSION = 2.0
-        export LUAJIT_VERSION
-        CFLAGS += -DLUAJIT_VERSION=20
-	export CFLAGS
-endif
+LUAJIT_VERSION = 2.1
+export LUAJIT_VERSION
+CFLAGS += -DLUAJIT_VERSION=21
+export CFLAGS
 
 all: srcs libs
 

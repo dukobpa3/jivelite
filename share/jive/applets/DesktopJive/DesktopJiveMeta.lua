@@ -1,10 +1,10 @@
-
 local oo            = require("loop.simple")
 local io            = require("io")
 local math          = require("math")
 local string        = require("string")
 local table         = require("jive.utils.table")
 local os            = require("os")
+local ir            = require("ir_bsp")
 
 local AppletMeta    = require("jive.AppletMeta")
 local Framework     = require("jive.ui.Framework")
@@ -92,8 +92,8 @@ function registerApplet(meta)
 	})
 
 	System:setCapabilities({
-	--	["touch"] = 1,
-	--	["ir"] = 1,
+		["touch"] = 1,
+		["ir"] = 1,
 		["powerKey"] = 1,
 		["muteKey"] = 1,
 		["alarmKey"] = 1,
@@ -107,7 +107,7 @@ function registerApplet(meta)
 	appletManager:addDefaultSetting("ScreenSavers", "whenStopped", "false:false")
 
 	-- this is the startup skin - expect user to select an alternative
-	jiveMain:setDefaultSkin("HDSkin-VGA")
+	jiveMain:setDefaultSkin("JogglerSkin")
 
 	Framework:addActionListener("soft_reset", self, _softResetAction, true)
 

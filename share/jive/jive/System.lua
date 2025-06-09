@@ -1,4 +1,3 @@
-
 --[[
 =head1 NAME
 
@@ -38,6 +37,7 @@ local tonumber, tostring, type, pairs = tonumber, tostring, type, pairs
 
 local oo           = require("loop.simple")
 local log           = require("jive.utils.log").logger("jivelite")
+local rpi          = require("jive.utils.rpi_bl") 
 
 
 -- our class
@@ -97,7 +97,11 @@ function hasDigitalOut(self)
 end
 
 function hasTouch(self)
-	return _capabilities["touch"] ~= nil
+	if rpi.isTouch() ~= nil then
+		return true
+	else
+		return _capabilities["touch"] ~= nil
+	end
 end
 
 function hasIr(self)

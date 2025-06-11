@@ -7,8 +7,6 @@ LUAJIT_VERSION = 2.1
 export LUAJIT_VERSION
 CFLAGS += -I$(PREFIX)/include -DLUAJIT_VERSION=21
 export CFLAGS
-LD_FLAGS += -L$(PREFIX)/lib -shared
-export LD_FLAGS
 
 all: srcs libs
 

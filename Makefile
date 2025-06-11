@@ -5,7 +5,7 @@ PREFIX ?= /usr/local
 
 LUAJIT_VERSION = 2.1
 export LUAJIT_VERSION
-CFLAGS += -DLUAJIT_VERSION=21
+CFLAGS += -I$(PREFIX)/include -DLUAJIT_VERSION=21
 export CFLAGS
 
 all: srcs libs

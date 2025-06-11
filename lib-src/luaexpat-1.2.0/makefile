@@ -12,7 +12,7 @@ OBJS= src/lxplib.o $(COMPAT_O)
 lib: src/$(LIBNAME)
 
 src/$(LIBNAME) : $(OBJS)
-	export MACOSX_DEPLOYMENT_TARGET="10.3"; $(CC) -o src/$(LIBNAME) $(LIB_OPTION) $(OBJS) -lexpat
+	$(CC) -o src/$(LIBNAME) $(LIB_OPTION) $(OBJS) $(EXPAT_LIB)
 
 $(COMPAT_DIR)/compat-5.1.o: $(COMPAT_DIR)/compat-5.1.c
 	$(CC) -c $(CFLAGS) -o $@ $(COMPAT_DIR)/compat-5.1.c

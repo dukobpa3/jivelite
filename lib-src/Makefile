@@ -64,5 +64,5 @@ clean:
 	cd luasocket-2.0.2; make PLATFORM=${TARGET} clean
 	cd luazipfilter; make clean
 	cd lirc-bsp; make -f Makefile.jivelite clean
-	rm ../lib/lua/5.1/cjson.so ../lib/lua/5.1/lxp.so ../lib/lua/5.1/lfs.so ../lib/lua/5.1/socket.so ../lib/lua/5.1/mime.so ../lib/lua/5.1/zipfilter.so ../lib/lua/5.1/md5.so ../lib/lua/5.1/sha1.so ../lib/lua/5.1/ir_bsp.so
+	rm -f ../lib/lua/5.1/cjson.so ../lib/lua/5.1/lxp.so ../lib/lua/5.1/lfs.so ../lib/lua/5.1/socket.so ../lib/lua/5.1/mime.so ../lib/lua/5.1/zipfilter.so ../lib/lua/5.1/md5.so ../lib/lua/5.1/sha1.so ../lib/lua/5.1/ir_bsp.so
 

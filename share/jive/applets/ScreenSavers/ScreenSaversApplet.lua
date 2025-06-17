@@ -1,4 +1,3 @@
-
 --[[
 =head1 NAME
 
@@ -20,6 +19,8 @@ ScreenSaversApplet overrides the following methods:
 
 -- stuff we use
 local ipairs, pairs, tostring, tonumber, bit = ipairs, pairs, tostring, tonumber, bit
+
+local io			   = require("io")
 
 local os               = require("os")
 local oo               = require("loop.simple")
@@ -237,10 +238,10 @@ function _activate(self, the_screensaver, force, isServerRequest)
 	local screensaver = self.screensavers[self.currentSS]
 
 	-- In some situations the timer restart below tries to activate a SS when one is already running.
-	-- We don't want to do this for BlankScreen when BlankScreen is already active
-	-- This causes the backlight to turn on again after 10 seconds. #14986
-	if self:isScreensaverActive() and self.current == 'BlankScreen' then
-		log:warn("BlankScreen SS is currently active and we're trying to reactivate it. Nothing to activate then, so return")
+	-- We don't want to do this for BlankScreen/DisplayOff when BlankScreen/DisplayOff is already active
+	-- This causes the backlight to turn on again after 10 seconds. #14986 (10 seconds is default value, this is tied to the screensaver delay option)
+	if self:isScreensaverActive() and (self.current == 'BlankScreen' or self.current == "DisplayOff") then
+		log:warn("BlankScreen/DisplayOff SS is currently active and we're trying to reactivate it. Nothing to activate then, so return")
 		return
 	else
 		log:debug('DEBUG: self:isScreensaverActive()', self:isScreensaverActive(), ' self.current: ', self.current)
@@ -527,6 +528,7 @@ If I<ssName> is not nil, use the ssName to store a name for the screensaver in s
 =cut
 --]]
 function screensaverWindow(self, window, scrollAllowed, ssAllowedActions, mouseAllowed, ssName)
+	local ssDisallowedActions
 
 	if not ssName then
 		ssName = 'unnamedScreenSaver'
@@ -562,22 +564,27 @@ function screensaverWindow(self, window, scrollAllowed, ssAllowedActions, mouseA
 
 	if not self:isSoftPowerOn() then
 		--allow input to pass through, so that the following listeners will be honored
-	        self:_setSSAllowedActions(true, {}, true)
 
-		window:ignoreAllInputExcept(    { "power", "power_on", "power_off" },
-		                                function(actionEvent)
-		                                        self:_powerActionHandler(actionEvent)
-		                                end)
-		window:addListener(bit.bor(EVENT_MOUSE_PRESS, EVENT_MOUSE_HOLD, EVENT_MOUSE_DRAG),
-		                        function (event)
-			                        self:_showPowerOnWindow()
-			                        return EVENT_CONSUME
-		                        end)
-		window:addListener(     EVENT_SCROLL,
-					function ()
-						self:_showPowerOnWindow()
-					end)
-
+		if _read("/usr/local/etc/pcp/pcpversion.cfg") ~= nil then
+			if appletManager:callService("getEnablePowerOnButtonWhenOff") then
+				self:_setSSAllowedActions(true, {}, true)
+				window:ignoreAllInputExcept(    { "power", "power_on", "power_off" },
+												function(actionEvent)
+														self:_powerActionHandler(actionEvent)
+												end)
+				window:addListener(bit.bor(EVENT_MOUSE_PRESS, EVENT_MOUSE_HOLD, EVENT_MOUSE_DRAG),
+										function (event)
+											self:_showPowerOnWindow()
+											return EVENT_CONSUME
+										end)
+				window:addListener(         EVENT_SCROLL,
+							function ()
+								self:_showPowerOnWindow()
+							end)
+			else
+				self:_setSSAllowedActions(nil, nil, nil)
+			end
+		end
 	end
 
 	log:debug("Overriding the default window action 'bump' handling to allow action to fall through to framework listeners")
@@ -825,15 +832,15 @@ function openSettings(self, menuItem)
 		})
 
 	-- only present a WHEN OFF option when there is a local player present
-	if Player:getLocalPlayer() then
+	-- or when running on piCorePlayer with an official display attached
+	if Player:getLocalPlayer() or _read("/usr/local/etc/pcp/pcpversion.cfg") ~= nil then
 		menu:addItem(
 			{
 				text = self:string("SCREENSAVER_WHEN_OFF"),
-				weight = 2,
-				sound = "WINDOWSHOW",
-				callback = function(event, menu_item)
-						   self:screensaverSetting(menu_item, "whenOff")
-					   end
+				style = "item_settings",
+				callback = function()
+					self:_ssSettingsMenu('whenOff', window)
+				end
 			}
 		)
 	end
@@ -864,6 +871,17 @@ function openSettings(self, menuItem)
 
 	self:tieAndShowWindow(window)
 	return window
+end
+
+
+function _read(file)
+	local fh, err = io.open(file, "r")
+	if err then
+		return nil
+	end
+	local fc = fh:read("*all")
+	fh:close()
+	return fc
 end
 
 

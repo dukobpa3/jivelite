@@ -5,7 +5,7 @@ TARGET   ?= linux
 
 LD_FLAGS ?= "-shared"
 
-LIBS = cjson luaexpat luafilesystem luamd5 luasocket luazipfilter
+LIBS = cjson luaexpat luafilesystem luamd5 luasocket luazipfilter irbsp
 
 all: $(LIBS)
 
@@ -15,6 +15,7 @@ luafilesystem: ../lib/lua/5.1/lfs.so
 luamd5: ../lib/lua/5.1/md5.so
 luasocket: ../lib/lua/5.1/socket.so
 luazipfilter: ../lib/lua/5.1/zipfilter.so
+irbsp: ../lib/lua/5.1/ir_bsp.so
 
 ../lib/lua/5.1/cjson.so:
 	cd lua-cjson-2.1.0; make CJSON_LDFLAGS=${LD_FLAGS}
@@ -49,6 +50,11 @@ luazipfilter: ../lib/lua/5.1/zipfilter.so
 	mkdir -p ../lib/lua/5.1
 	cp luazipfilter/zipfilter.so ../lib/lua/5.1/zipfilter.so
 
+../lib/lua/5.1/ir_bsp.so:
+	cd lirc-bsp; make -f Makefile.jivelite
+	mkdir -p ../lib/lua/5.1
+	cp lirc-bsp/ir_bsp.so ../lib/lua/5.1/ir_bsp.so
+
 clean:
 	cd lua-cjson-2.1.0; make clean
 	cd luaexpat-1.2.0; make clean
@@ -57,5 +63,6 @@ clean:
 	cd luamd5; make MYNAME=md5 clean
 	cd luasocket-2.0.2; make PLATFORM=${TARGET} clean
 	cd luazipfilter; make clean
-	rm ../lib/lua/5.1/cjson.so ../lib/lua/5.1/lxp.so ../lib/lua/5.1/lfs.so ../lib/lua/5.1/socket.so ../lib/lua/5.1/mime.so ../lib/lua/5.1/zipfilter.so ../lib/lua/5.1/md5.so ../lib/lua/5.1/sha1.so
+	cd lirc-bsp; make -f Makefile.jivelite clean
+	rm -f ../lib/lua/5.1/cjson.so ../lib/lua/5.1/lxp.so ../lib/lua/5.1/lfs.so ../lib/lua/5.1/socket.so ../lib/lua/5.1/mime.so ../lib/lua/5.1/zipfilter.so ../lib/lua/5.1/md5.so ../lib/lua/5.1/sha1.so ../lib/lua/5.1/ir_bsp.so
 

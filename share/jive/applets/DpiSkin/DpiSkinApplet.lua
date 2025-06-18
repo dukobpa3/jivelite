@@ -89,6 +89,16 @@ local fontpath = "fonts/"
 local FONT_NAME = "FreeSans"
 local BOLD_PREFIX = "Bold"
 
+-- Font Size Constants
+local FONT_SIZE_XXL = 120 -- huge
+local FONT_SIZE_XL = 60 -- textinput
+local FONT_SIZE_L = 48 -- keyboard
+local FONT_SIZE_M = 32 -- track, slider heading
+local FONT_SIZE_S = 24 -- header, large text, menus
+local FONT_SIZE_XS = 18 -- base, medium, small
+local FONT_SIZE_XXS = 14 -- xsmall
+
+
 local tbButtons = { 'rew', 'play', 'fwd', 'repeatMode', 'shuffleMode', 'volDown', 'volSlider', 'volUp' }
 
 function init(self)
@@ -686,24 +696,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	local SELECT_SH_COLOR = { }
 
 	local TITLE_HEIGHT = dp(65)
-	local TITLE_FONT_SIZE = 20
-	local TITLEBAR_FONT_SIZE = 28
-	local ALBUMMENU_FONT_SIZE = 20
-	local ALBUMMENU_SMALL_FONT_SIZE = 16
-	local TEXTMENU_FONT_SIZE = 25
-	local POPUP_TEXT_SIZE_1 = 26
-	local POPUP_TEXT_SIZE_2 = 26
-	local TRACK_FONT_SIZE = 18
-	local TEXTAREA_FONT_SIZE = 18
-	local CENTERED_TEXTAREA_FONT_SIZE = 28
-
 	local CM_MENU_HEIGHT = dp(45)
-
-	local TEXTINPUT_FONT_SIZE = 60
-	local TEXTINPUT_SELECTED_FONT_SIZE = 68
-
-	local HELP_FONT_SIZE = 18
-	local UPDATE_SUBTEXT_SIZE = 20
 
 	local ITEM_ICON_ALIGN   = 'center'
 	local ITEM_LEFT_PADDING = dp(12)
@@ -839,7 +832,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			w = WH_FILL,
 			padding = TITLE_PADDING,
 			align = "center",
-			font = _boldfont(TITLEBAR_FONT_SIZE),
+			font = _boldfont(FONT_SIZE_S),
 			fg = TEXT_COLOR,
 		}
 	}
@@ -864,7 +857,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			h = dp(300),
                         padding = { dp(10), dp(160), dp(10), 0 },
                         align = "center",
-                        font = _font(120),
+                        font = _font(FONT_SIZE_XXL),
                         fg = TEXT_COLOR,
                         sh = TEXT_SH_COLOR,
                 },
@@ -875,7 +868,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		padding = { 0, 0, 0, 0 },
 		itemHeight = FIVE_ITEM_HEIGHT,
 		fg = {0xbb, 0xbb, 0xbb },
-		font = _boldfont(120),
+		font = _boldfont(FONT_SIZE_XXL),
 	}
 
 	s.menu_hidden = _uses(s.menu, {
@@ -890,7 +883,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			align = "left",
 			w = WH_FILL,
 			h = WH_FILL,
-			font = _boldfont(TEXTMENU_FONT_SIZE),
+			font = _boldfont(FONT_SIZE_S),
 			fg = TEXT_COLOR,
 			sh = TEXT_SH_COLOR,
 		},
@@ -936,7 +929,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			h = WH_FILL,
 			padding = CHECKBOX_RADIO_PADDING,
 			align = 'right',
-			font = _boldfont(TEXTMENU_FONT_SIZE),
+			font = _boldfont(FONT_SIZE_S),
 			fg = TEXT_COLOR,
 			sh = TEXT_SH_COLOR,
 		},
@@ -958,14 +951,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			w = WH_FILL,
 			h = WH_FILL,
 			padding = { 0, dp(6), 0, dp(6) },
-			font = _font(14),
+			font = _font(FONT_SIZE_XXS),
 			line = {
 				{
-					font = _font(14),
+					font = _font(FONT_SIZE_XXS),
 					height = dp(14),
 				},
 				{
-					font = _boldfont(18),
+					font = _boldfont(FONT_SIZE_XS),
 					height = dp(18),
 				},
 			},
@@ -1070,7 +1063,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		w = w - dp(30),
 		padding = { dp(12), dp(8), dp(12), 0 },
 		border = 0,
-		font = _font(HELP_FONT_SIZE),
+		font = _font(FONT_SIZE_XS),
 		lineHeight = dp(23),
 		fg = TEXT_COLOR,
 		sh = TEXT_SH_COLOR,
@@ -1091,7 +1084,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		w = w,
 		h = WH_FILL,
 		padding = TEXTAREA_PADDING,
-		font = _boldfont(TEXTAREA_FONT_SIZE),
+		font = _boldfont(FONT_SIZE_XS),
 		fg = TEXT_COLOR,
 		sh = TEXT_SH_COLOR,
 		align = "left",
@@ -1100,7 +1093,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.multiline_text = {
 		w = WH_FILL,
 		padding = { dp(10), 0, dp(2), dp(10) },
-		font = _font(18),
+		font = _font(FONT_SIZE_XS),
 		height = dp(21),
 		fg = { 0xe6, 0xe6, 0xe6 },
 		sh = { },
@@ -1133,10 +1126,10 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.textinput = {
 		h = dp(72),
 		padding = { dp(24), 0, dp(24), 0 },
-		font = _boldfont(TEXTINPUT_FONT_SIZE),
-		cursorFont = _boldfont(TEXTINPUT_SELECTED_FONT_SIZE),
-		wheelFont = _boldfont(TEXTINPUT_FONT_SIZE),
-		charHeight = TEXTINPUT_SELECTED_FONT_SIZE,
+		font = _boldfont(FONT_SIZE_XL),
+		cursorFont = _boldfont(FONT_SIZE_XL),
+		wheelFont = _boldfont(FONT_SIZE_XL),
+		charHeight = FONT_SIZE_XL,
 		fg = TEXT_COLOR_BLACK,
 		charOffsetY = dp(32),
 		wh = { 0x55, 0x55, 0x55 },
@@ -1162,7 +1155,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	}
 
 	s.keyboard.key = {
-        	font = _boldfont(48),
+        	font = _boldfont(FONT_SIZE_L),
         	fg = { 0xDC, 0xDC, 0xDC },
         	align = 'center',
 		bgImg = keyMiddle,
@@ -1179,13 +1172,13 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.keyboard.key_bottomRight = _uses(s.keyboard.key, { bgImg = keyBottomRight })
 
 	-- styles for keys that use smaller font 
-	s.keyboard.key_bottom_small      = _uses(s.keyboard.key_bottom, { font = _boldfont(36) } )
+	s.keyboard.key_bottom_small      = _uses(s.keyboard.key_bottom, { font = _boldfont(FONT_SIZE_M) } )
 	s.keyboard.key_bottomRight_small = _uses(s.keyboard.key_bottomRight, { 
-			font = _boldfont(36), 
+			font = _boldfont(FONT_SIZE_M), 
 			fg = { 0xe7, 0xe7, 0xe7 },
 	} )
-	s.keyboard.key_bottomLeft_small  = _uses(s.keyboard.key_bottomLeft, { font = _boldfont(36) } )
-	s.keyboard.key_left_small        = _uses(s.keyboard.key_left, { font = _boldfont(36) } )
+	s.keyboard.key_bottomLeft_small  = _uses(s.keyboard.key_bottomLeft, { font = _boldfont(FONT_SIZE_M) } )
+	s.keyboard.key_left_small        = _uses(s.keyboard.key_left, { font = _boldfont(FONT_SIZE_M) } )
 
 
 	s.keyboard.spacer_topLeft     = _uses(s.keyboard.key_topLeft)
@@ -1383,7 +1376,6 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.input_time_12h = _uses(s.window)
 	s.input_time_12h.hour = _uses(s.menu, {
 		w = dp(100),
-		--h = screenHeight - TITLE_HEIGHT,
 		h = h,
 		itemHeight = dp(80),
 		position = LAYOUT_WEST,
@@ -1394,7 +1386,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			order = { 'text' },
 			text = {
 				align = 'right',
-				font = _boldfont(45),
+				font = _boldfont(FONT_SIZE_L),
 				padding = { dp(2), dp(4), dp(8), 0 },
 				fg = { 0xb3, 0xb3, 0xb3 },
 				sh = { },
@@ -1405,7 +1397,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				order = { 'text' },
 				bgImg = false,
 				text = {
-					font = _boldfont(45),
+					font = _boldfont(FONT_SIZE_L),
 					fg = { 0xe6, 0xe6, 0xe6 },
 					sh = { },
 					align = 'right',
@@ -1418,7 +1410,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				order = { 'text' },
 				bgImg = false,
 				text = {
-					font = _boldfont(45),
+					font = _boldfont(FONT_SIZE_L),
 					fg = { 0xe6, 0xe6, 0xe6 },
 					sh = { },
 					align = 'right',
@@ -1435,14 +1427,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		item = {
 			text = {
 				padding = { 0, dp(2), dp(8), 0 },
-				font = _boldfont(26),
+				font = _boldfont(FONT_SIZE_S),
 			},
 		},
 		selected = {
 			item = {
 				text = {
 					padding = { 0, dp(4), dp(8), 0 },
-					font = _boldfont(26),
+					font = _boldfont(FONT_SIZE_S),
 				},
 			},
 		},
@@ -1450,7 +1442,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			item = {
 				text = {
 					padding = { 0, dp(4), dp(8), 0 },
-					font = _boldfont(26),
+					font = _boldfont(FONT_SIZE_S),
 				},
 			},
 		},
@@ -1511,11 +1503,11 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		text = {
 			line = {
 				{
-					font = _boldfont(TITLEBAR_FONT_SIZE),
+					font = _boldfont(FONT_SIZE_S),
 					height = dp(32),
 				},
 				{
-					font = _font(14),
+					font = _font(FONT_SIZE_XXS),
 					fg   = { 0xB3, 0xB3, 0xB3 },
 				},
 			},
@@ -1566,13 +1558,13 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.waiting_popup = _uses(s.popup, {
 		text = {
 			w = WH_FILL,
-			h = dp(POPUP_TEXT_SIZE_1 + 8),
+			h = dp(FONT_SIZE_S + 8),
 			position = LAYOUT_NORTH,
 			border = { 0, dp(50), 0, 0 },
 			padding = { dp(15), 0, dp(15), 0 },
 			align = "center",
-			font = _font(POPUP_TEXT_SIZE_1),
-			lineHeight = dp(POPUP_TEXT_SIZE_1 + 8),
+			font = _font(FONT_SIZE_S),
+			lineHeight = dp(FONT_SIZE_S + 8),
 			fg = TEXT_COLOR,
 			sh = TEXT_SH_COLOR,
 		},
@@ -1583,7 +1575,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			border = { 0, 0, 0, dp(20) },
 			padding = { dp(15), 0, dp(15), 0 },
 			align = "top",
-			font = _boldfont(POPUP_TEXT_SIZE_2),
+			font = _boldfont(FONT_SIZE_S),
 			fg = TEXT_COLOR,
 			sh = TEXT_SH_COLOR,
 		},
@@ -1602,9 +1594,6 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	-- input window (including keyboard)
 	s.input = _uses(s.window)
 	s.input.title = _uses(s.title, {
-		-- remove 3px from the height and 3px from the bottom padding
-		-- h = 44,
-		-- padding = { 0, 5, 0, 2 },
 		bgImg = inputTitleBox,
 	})
 
@@ -1620,23 +1609,21 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.update_popup = _uses(s.popup, {
 		text = {
 			w = WH_FILL,
-			h = dp(POPUP_TEXT_SIZE_1 + 8),
+			h = dp(FONT_SIZE_S + 8),
 			position = LAYOUT_NORTH,
 			border = { 0, dp(34), 0, dp(2) },
 			padding = { dp(10), 0, dp(10), 0 },
-			align = "center",
-			font = _font(POPUP_TEXT_SIZE_1),
-			lineHeight = dp(POPUP_TEXT_SIZE_1 + 8),
-			fg = TEXT_COLOR,
-			sh = TEXT_SH_COLOR,		
+				align = "center",
+			font = _font(FONT_SIZE_S),
+			lineHeight = dp(FONT_SIZE_S + 8),
+				fg = TEXT_COLOR,
+				sh = TEXT_SH_COLOR,		
 		},
 		subtext = {
 			w = WH_FILL,
-			-- note this is a hack as the height and padding push
-			-- the content out of the widget bounding box.
 			h = dp(30),
 			padding = { 0, 0, 0, dp(28) },
-			font = _boldfont(UPDATE_SUBTEXT_SIZE),
+			font = _boldfont(FONT_SIZE_XS),
 			fg = TEXT_COLOR,
 			sh = TEXT_SH_COLOR,
 			align = "bottom",
@@ -1695,14 +1682,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 					w = WH_FILL,
 					h = WH_FILL,
 					align = 'left',
-					font = _font(ALBUMMENU_SMALL_FONT_SIZE),
+					font = _font(FONT_SIZE_XS),
 					line = {
 						{
-							font = _boldfont(ALBUMMENU_FONT_SIZE),
+							font = _boldfont(FONT_SIZE_XS),
 							height = dp(22),
 						},
 						{
-							font = _font(ALBUMMENU_SMALL_FONT_SIZE),
+							font = _font(FONT_SIZE_XS),
 						},
 					},
 					fg = TEXT_COLOR,
@@ -1734,7 +1721,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			img = _loadImage(self, "Icons/icon_nplay_3line_off.png"),
 		},
 		text = { padding = 0, },
-		-- Bug 11482c#13, don't know why the bgImg has to be redefined again here, but this fixes the issue
+		-- Bug 11482c#13, don't know why the bgImg has to be redefined again, but this fixes the issue
 		bgImg = fiveItemBox,
 	})
 	s.icon_list.menu.item_add  = _uses(s.icon_list.menu.item, { 
@@ -1842,7 +1829,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.information = _uses(s.window)
 
 	s.information.text = {
-		font = _font(TEXTAREA_FONT_SIZE),
+		font = _font(FONT_SIZE_XS),
 		fg = TEXT_COLOR,
 		sh = TEXT_SH_COLOR,
 		padding = { dp(18), dp(18), dp(10), 0},
@@ -1876,7 +1863,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		align = 'left',
 		w = WH_FILL,
 		h = WH_FILL,
-		font = _font(POPUP_TEXT_SIZE_1),
+		font = _font(FONT_SIZE_S),
 		fg = TEXT_COLOR,
 		sh = TEXT_SH_COLOR,
         }
@@ -1896,8 +1883,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				align = 'top-left',
 				w = WH_FILL,
 				h = WH_FILL,
-				font = _font(HELP_FONT_SIZE),
-				lineHeight = dp(HELP_FONT_SIZE + 5),
+				font = _font(FONT_SIZE_XS),
+				lineHeight = dp(FONT_SIZE_XS + 5),
 			},
 			icon = { 
 				align = 'top-left', 
@@ -1956,8 +1943,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			align = 'top',
 			w = WH_FILL,
 			h = WH_FILL,
-			font = _font(POPUP_TEXT_SIZE_1),
-			lineHeight = dp(POPUP_TEXT_SIZE_1 + 5),
+			font = _font(FONT_SIZE_S),
+			lineHeight = dp(FONT_SIZE_S + 5),
 			fg = TEXT_COLOR,
 			sh = TEXT_SH_COLOR,
 		},
@@ -1967,8 +1954,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			align = 'top',
 			w = WH_FILL,
 			h = WH_FILL,
-			font = _font(POPUP_TEXT_SIZE_2),
-			lineHeight = dp(POPUP_TEXT_SIZE_2 + 5),
+			font = _font(FONT_SIZE_S),
+			lineHeight = dp(FONT_SIZE_S + 5),
 			fg = TEXT_COLOR,
 			sh = TEXT_SH_COLOR,
 		},
@@ -2008,7 +1995,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
             padding = { dp(18), dp(2), dp(14), dp(18) },
             border = { 0, 0, dp(6), dp(15) },
             lineHeight = dp(22),
-            font = _font(18),
+            font = _font(FONT_SIZE_XS),
             fg = { 0xe6, 0xe6, 0xe6 },
             sh = { },
             align = "top-left",
@@ -2040,7 +2027,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = WH_FILL,
 				padding = {0,0,dp(20),0},
 				align = "center",
-				font = _boldfont(TITLE_FONT_SIZE),
+				font = _boldfont(FONT_SIZE_XS),
 				fg = TEXT_COLOR,
 			},
 		},
@@ -2061,14 +2048,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 					w = WH_FILL,
 					h = WH_FILL,
 					align = 'left',
-					font = _font(ALBUMMENU_SMALL_FONT_SIZE),
+					font = _font(FONT_SIZE_XS),
 					line = {
 						{
-							font = _boldfont(ALBUMMENU_FONT_SIZE),
+							font = _boldfont(FONT_SIZE_XS),
 							height = dp(22),
 						},
 						{
-							font = _font(ALBUMMENU_SMALL_FONT_SIZE),
+							font = _font(FONT_SIZE_XS),
 						},
 					},
 					fg = TEXT_COLOR,
@@ -2086,14 +2073,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 						w = WH_FILL,
 						h = WH_FILL,
 						align = 'left',
-						font = _font(ALBUMMENU_SMALL_FONT_SIZE),
+						font = _font(FONT_SIZE_XS),
 						line = {
 							{
-								font = _boldfont(ALBUMMENU_FONT_SIZE),
+								font = _boldfont(FONT_SIZE_XS),
 								height = dp(22),
 							},
 							{
-								font = _font(ALBUMMENU_SMALL_FONT_SIZE),
+								font = _font(FONT_SIZE_XS),
 							},
 						},
 						fg = TEXT_COLOR,
@@ -2102,7 +2089,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 					arrow = _uses(s.item.arrow),
 				},
 			},
-
+			
 		},
 	}
 	
@@ -2173,11 +2160,11 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		fg = TEXT_COLOR,
 		sh = TEXT_SH_COLOR,
 		align = "center",
-		font = _boldfont(62),
+		font = _boldfont(FONT_SIZE_L),
 	}
 
 	s.preview_text = _uses(s.alarm_time, {
-		font = _boldfont(TITLE_FONT_SIZE),
+		font = _boldfont(FONT_SIZE_XS),
 	})
 	
 	-- alarm menu window
@@ -2214,7 +2201,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 					w = WH_FILL,
 					h = WH_FILL,
 					align = 'left',
-					font = _boldfont(TEXTMENU_FONT_SIZE),
+					font = _boldfont(FONT_SIZE_S),
 					fg = TEXT_COLOR,
 					sh = TEXT_SH_COLOR,
 				},
@@ -2228,7 +2215,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 						w = WH_FILL,
 						h = WH_FILL,
 						align = 'left',
-						font = _boldfont(TEXTMENU_FONT_SIZE),
+						font = _boldfont(FONT_SIZE_S),
 						fg = TEXT_COLOR,
 						sh = TEXT_SH_COLOR,
 					},
@@ -2249,7 +2236,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			w = WH_FILL,
 		      border = dp(10),
 		      fg = TEXT_COLOR,
-		      font = _boldfont(32),
+		      font = _boldfont(FONT_SIZE_M),
 			padding = { dp(4), dp(16), dp(4), 0 },
 		      align = "center",
 		      bgImg = false,
@@ -2316,7 +2303,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			border = 0,
 			padding = 0,
 			align = 'center',
-			font = _font(16),
+			font = _font(FONT_SIZE_XS),
 			fg = { 0xdc,0xdc, 0xdc },
 		},
 	}
@@ -2341,7 +2328,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		s[name].icon = _uses(_button.icon, attr)
 		s[name].w = dp(65)
 		s.pressed[name].icon = _uses(_pressed_button.icon, attr)
-		s.pressed[name].w = dp(65)
+		s[name].w = dp(65)
 	end
 
 	-- text button factory
@@ -2796,8 +2783,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	-- BEGIN NowPlaying skin code
 
-	local NP_ARTISTALBUM_FONT_SIZE = 28
-	local NP_TRACK_FONT_SIZE = 36
+	local NP_ARTISTALBUM_FONT_SIZE = FONT_SIZE_S
+	local NP_TRACK_FONT_SIZE = FONT_SIZE_M
 
 	local controlHeight = dp(72)
 	local controlWidth = dp(76)
@@ -2838,11 +2825,11 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		title = _uses(s.title, {
 			zOrder = 1,
 			text = {
-				font = _boldfont(TITLEBAR_FONT_SIZE),
+				font = _boldfont(FONT_SIZE_S),
 				bgImg   = titlebarButtonBox,
 			},
 			rbutton  = {
-				font    = _font(14),
+				font    = _font(FONT_SIZE_XXS),
 				fg      = TEXT_COLOR,
 				bgImg   = titlebarButtonBox,
 				w       = TITLE_BUTTON_WIDTH,
@@ -3028,7 +3015,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = dp(60),
 				align = 'left',
 				padding = { 0, 0, dp(4), dp(20) },
-				font = _boldfont(18),
+				font = _boldfont(FONT_SIZE_XS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
 			},
@@ -3036,7 +3023,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = dp(60),
 				align = 'right',
 				padding = { dp(4), 0, 0, dp(20) },
-				font = _boldfont(18),
+				font = _boldfont(FONT_SIZE_XS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
 			},
@@ -3044,7 +3031,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = dp(60),
 				align = 'left',
 				padding = { 0, 0, dp(4), dp(20) },
-				font = _boldfont(14),
+				font = _boldfont(FONT_SIZE_XXS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
 			},
@@ -3052,7 +3039,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = dp(60),
 				align = 'right',
 				padding = { dp(4), 0, 0, dp(20) },
-				font = _boldfont(14),
+				font = _boldfont(FONT_SIZE_XXS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
 			},
@@ -3076,7 +3063,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			elapsed = {
 				w = WH_FILL,
 				align = "left",
-				font = _boldfont(18),
+				font = _boldfont(FONT_SIZE_XS),
 				fg = { 0xe7, 0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
 			},
@@ -3119,7 +3106,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		},
 	})
 
-	s.nowplaying.pressed = s.nowplaying
+	s.nowplaying.pressed = _uses(s.nowplaying)
 	s.nowplaying.nptitle.pressed = _uses(s.nowplaying.nptitle)
 	s.nowplaying.npalbumgroup.pressed = _uses(s.nowplaying.npalbumgroup)
 	s.nowplaying.npartistgroup.pressed = _uses(s.nowplaying.npartistgroup)
@@ -3184,7 +3171,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			text = {
 				border = { h - dp(72), 0, 0, 0 },
 				padding = { dp(10), dp(12), dp(10), dp(15) },
-				font = _boldfont(24),
+				font = _boldfont(FONT_SIZE_S),
 			},
 			button_back = {
 				bgImg = false
@@ -3194,20 +3181,20 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			x = npX,
 			nptrack = {
 				w = w - npX - dp(10),
-				font = _boldfont(NP_ARTISTALBUM_FONT_SIZE * 0.9), 
+				font = _boldfont(FONT_SIZE_XS * 0.9), 
 			},
 		},
 		npartistgroup = {
 			x = npX,
 			npartist = {
-				font = _font(NP_ARTISTALBUM_FONT_SIZE * 0.9),
+				font = _font(FONT_SIZE_XS * 0.9),
 				w = w - npX - dp(10),
 			} 
 		},
 		npalbumgroup = {
 			x = npX,
 			npalbum = {
-				font = _font(NP_ARTISTALBUM_FONT_SIZE * 0.9),
+				font = _font(FONT_SIZE_XS * 0.9),
 				w = w - npX - dp(10),
 			} 
 		},
@@ -3248,7 +3235,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		npvisu = { hidden = 1 },
 	})
 
-	s.nowplaying_large_art.pressed = s.nowplaying_large_art
+	s.nowplaying_large_art.pressed = _uses(s.nowplaying_large_art)
 
 	-- if we have more than four buttons, then make them smaller
 	if (smallTbButtons) then
@@ -3366,7 +3353,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		npvisu = { hidden = 1 },
 
 	})
-	s.nowplaying_art_only.pressed = s.nowplaying_art_only
+	s.nowplaying_art_only.pressed = _uses(s.nowplaying_art_only)
 
 	s.nowplaying_text_only = _uses(s.nowplaying, {
 		nptitle          = { 
@@ -3403,7 +3390,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = dp(60),
 				align = 'left',
 				padding = { 0, 0, dp(4), dp(20) },
-				font = _boldfont(18),
+				font = _boldfont(FONT_SIZE_XS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
 			},
@@ -3411,7 +3398,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = dp(60),
 				align = 'right',
 				padding = { dp(4), 0, 0, dp(20) },
-				font = _boldfont(18),
+				font = _boldfont(FONT_SIZE_XS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
 			},
@@ -3419,7 +3406,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = dp(60),
 				align = 'left',
 				padding = { 0, 0, dp(4), dp(20) },
-				font = _boldfont(14),
+				font = _boldfont(FONT_SIZE_XXS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
 			},
@@ -3427,7 +3414,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = dp(60),
 				align = 'right',
 				padding = { dp(4), 0, 0, dp(20) },
-				font = _boldfont(14),
+				font = _boldfont(FONT_SIZE_XXS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
 			},
@@ -3451,7 +3438,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.nowplaying_text_only.npprogress.npprogressB_disabled = _uses(s.nowplaying_text_only.npprogress.npprogressB, {
 		img = _songProgressBarDisabled,
 	})
-	s.nowplaying_text_only.pressed = s.nowplaying_text_only
+	s.nowplaying_text_only.pressed = _uses(s.nowplaying_text_only)
 	s.nowplaying_text_only.nptitle.pressed = _uses(s.nowplaying_text_only.nptitle)
 	s.nowplaying_text_only.npalbumgroup.pressed = _uses(s.nowplaying_text_only.npalbumgroup)
 	s.nowplaying_text_only.npartistgroup.pressed = _uses(s.nowplaying_text_only.npartistgroup)
@@ -3506,7 +3493,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 		npprogress = {
 			zOrder = 3,
-			position = LAYOUT_NONE,
+				position = LAYOUT_NONE,
 			x = dp(10),
 			y = TITLE_HEIGHT + dp(20),
 			h = dp(60),
@@ -3531,7 +3518,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				horizontal = 1,
 				bgImg = false,
 				img = _vizProgressBar,
-                pillImg = _vizProgressBarPill,
+				pillImg = _vizProgressBarPill,
 			},
 		},
 
@@ -3545,7 +3532,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	-- Visualizer: Spectrum Visualizer
 	s.nowplaying_spectrum_text = _uses(s.nowplaying_visualizer_common, {
-		npvisu = {
+		npvisu = { 
 			hidden = 0,
 			position = LAYOUT_NONE,
 			x = 0,
@@ -3582,10 +3569,10 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			}
 		},
 	})
-	s.nowplaying_spectrum_text.pressed = s.nowplaying_spectrum_text
+	s.nowplaying_spectrum_text.pressed = _uses(s.nowplaying_spectrum_text)
 
 	s.nowplaying_spectrum_text.title.pressed = _uses(s.nowplaying_spectrum_text.title, {
-		text = {
+			text = {
 			-- Hack: text needs to be there to fill the space, not visible
 			padding = { w, 0, 0, 0 }
 		},
@@ -3615,7 +3602,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			}
 		},
 	})
-	s.nowplaying_vuanalog_text.pressed = s.nowplaying_vuanalog_text
+	s.nowplaying_vuanalog_text.pressed = _uses(s.nowplaying_vuanalog_text)
 
 	s.nowplaying_vuanalog_text.title.pressed = _uses(s.nowplaying_vuanalog_text.title, {
 		text = {
@@ -3736,10 +3723,19 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		TEXT_COLOR = TEXT_COLOR,
 		TEXT_SH_COLOR = TEXT_SH_COLOR,
 		TITLE_HEIGHT = TITLE_HEIGHT,
-		ALBUMMENU_FONT_SIZE = ALBUMMENU_FONT_SIZE,
+		ALBUMMENU_FONT_SIZE = FONT_SIZE_XS,
 		ITEM_ICON_ALIGN = ITEM_ICON_ALIGN,
 		FIVE_ITEM_HEIGHT = FIVE_ITEM_HEIGHT,
 		NP_ARTISTALBUM_FONT_SIZE = NP_ARTISTALBUM_FONT_SIZE,
+		NP_TRACK_FONT_SIZE = NP_TRACK_FONT_SIZE,
+		thisSkin = thisSkin,
+		skinSuffix = skinSuffix,
+		-- functions
+		_uses = _uses,
+		_font = _font,
+		_boldfont = _boldfont,
+		_loadImage = function(img) return _loadImage(self, img) end,
+		_loadImageTile = function(img) return _loadImageTile(self, img) end,
 	}
 
 	return s
@@ -3760,7 +3756,7 @@ function npButtonSelectorShow(self)
 				function(object, isSelected)
 					appletManager:callService("setNowPlayingScreenButtons", v, isSelected)
 					jiveMain:reloadSkin()
-				end,
+			end,
 			settings[v]),
 		} )
 	end

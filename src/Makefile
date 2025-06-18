@@ -1,9 +1,15 @@
-LDFLAGS ?= -lrt
-SOURCES ?= platform_linux.c
+# Local flags for this project
+SRC_CFLAGS := -I. -I$(LUAINC) -I$(PREFIX)/include/SDL -I${PREFIX}/include/freetype2 -Wall -fPIC
+SRC_LDFLAGS := -lrt -lSDL -lSDL_ttf -lSDL_image -lSDL_gfx -lm -lpthread
 
-CFLAGS  += -I. -I$(PREFIX)/include/luajit-$(LUAJIT_VERSION) -I/usr/include/SDL -Wall -fPIC
-LDFLAGS += -lSDL -lSDL_ttf -lSDL_image -lSDL_gfx -lluajit-5.1 -lm -lpthread
-EXE = ../bin/jivelite
+# Combine flags passed from parent with local flags
+CFLAGS := $(PARENT_CFLAGS) $(SRC_CFLAGS)
+LDFLAGS := $(PARENT_LDFLAGS) -L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib $(SRC_LDFLAGS)
+
+SOURCES ?= platform_linux.c
+LUAINC ?= $(PREFIX)/include
+
+EXE = $(PREFIX)/bin/jivelite
 
 DEPS    = jive.h common.h log.h version.h
 
@@ -14,7 +20,7 @@ OBJECTS = $(SOURCES:.c=.o) visualizer/visualizer.o visualizer/spectrum.o visuali
 all: visualizer $(EXE)
 
 visualizer:
-	cd visualizer; make
+	cd visualizer; make PREFIX=$(PREFIX) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
 
 $(EXE): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@

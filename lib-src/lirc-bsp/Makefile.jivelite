@@ -1,0 +1,16 @@
+LUAINC ?= $(PREFIX)/include/luajit-$(LUAJIT_VERSION)
+CFLAGS = -DJIVELITE -s -O2 -fPIC -I../../src -I$(PREFIX)/include/SDL -I$(PREFIX)/include -I$(LUAINC)
+LDFLAGS = -s -L$(PREFIX)/lib -llirc_client -Wl,-rpath,$(PREFIX)/lib
+
+MODULE := ir_bsp.so
+
+all: $(MODULE)
+
+$(MODULE): ir.o ir_bsp.o
+	$(CC) $^ -shared $(LDFLAGS) -o $@
+
+.c.o:
+	$(CC) $(CFLAGS) -c -o $@ $^
+
+clean:
+	rm -f *.o $(MODULE)

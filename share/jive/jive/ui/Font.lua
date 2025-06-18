@@ -41,32 +41,9 @@ Return the ascend height of the font.
 -- C implementation
 
 local oo	= require("loop.base")
-local log	= require("jive.utils.log").logger("jive.ui")
 
 module(..., oo.class)
 
-local fontpath = "fonts/"
-local FONT_NAME = "FreeSans"
-local BOLD_FONT_NAME = "FreeSansBold"
-
-function setupFonts(self, regularFont, boldFont)
-	if regularFont and regularFont ~= "" then
-		FONT_NAME = regularFont
-	end
-	if boldFont and boldFont ~= "" then
-		BOLD_FONT_NAME = boldFont
-	end
-
-	log:info("UI Fonts set to: regular=", FONT_NAME, ", bold=", BOLD_FONT_NAME)
-end
-
-function regularFont(self, fontSize)
-	return self:load(fontpath .. FONT_NAME .. ".ttf", fontSize)
-end
-
-function boldFont(self, fontSize)
-	return self:load(fontpath .. BOLD_FONT_NAME .. ".ttf", fontSize)
-end
 --[[
 
 =head1 LICENSE

@@ -28,7 +28,7 @@ local log			  = require("jive.utils.log").logger("applet.SelectFonts")
 local SimpleMenu      = require("jive.ui.SimpleMenu")
 local Window          = require("jive.ui.Window")
 local Framework       = require("jive.ui.Framework")
-local Font            = require("jive.ui.Font")
+local FontM           = require("jive.ui.FontM")
 local JiveMain        = jiveMain
 
 
@@ -102,7 +102,7 @@ function selectFonts(self, title)
 					settings['name'] = name
 					log:debug("font ", name, " regular:", v['regular'], " bold:", v['bold'])
 					self:storeSettings()
-					Font:setupFonts(v['regular'], v['bold'])
+					FontM:setupFonts(v['regular'], v['bold'])
 					JiveMain:reloadSkin()
 				end,
 				name==current

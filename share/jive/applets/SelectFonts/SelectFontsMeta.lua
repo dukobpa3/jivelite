@@ -19,7 +19,7 @@ See L<jive.AppletMeta> for a description of standard applet meta functions.
 local oo            = require("loop.simple")
 
 local AppletMeta    = require("jive.AppletMeta")
-local Font          = require("jive.ui.Font")
+local FontM         = require("jive.ui.FontM")
 
 local jiveMain      = jiveMain
 local jnt           = jnt
@@ -51,7 +51,7 @@ end
 
 function configureApplet(meta)
 	local settings = meta:getSettings()
-	Font:setupFonts(settings['regular'], settings['bold'])
+	FontM:setupFonts(settings['regular'], settings['bold'])
 end
 
 

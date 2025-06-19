@@ -84,7 +84,7 @@ end
 
 
 -- Define useful variables for this skin
-local imgpath = "applets/JogglerSkin/images/"
+local imgpath = "applets/DpiSkin/images/"
 local fontpath = "fonts/"
 local FONT_NAME = "FreeSans"
 local BOLD_PREFIX = "Bold"

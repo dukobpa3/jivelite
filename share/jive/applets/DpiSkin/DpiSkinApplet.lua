@@ -26,11 +26,12 @@ SqueezeboxSkin overrides the following methods:
 
 
 -- stuff we use
-local ipairs, pairs, setmetatable, type, tostring, tonumber, floor =
-	ipairs, pairs, setmetatable, type, tostring, tonumber, math.floor
+local ipairs, pairs, setmetatable, type, tostring, tonumber =
+	ipairs, pairs, setmetatable, type, tostring, tonumber
 
 local oo                     = require("loop.simple")
 local string                 = require("jive.utils.string")
+local math                   = require("math")
 local os                     = require("os")
 local Applet                 = require("jive.Applet")
 local Audio                  = require("jive.ui.Audio")
@@ -76,6 +77,17 @@ local appletManager          = appletManager
 module(..., Framework.constants)
 oo.class(_M, Applet)
 
+-- skin functions
+local _loadImage =  SkinUtils.loadImage
+local _loadTile =  SkinUtils.loadTile
+local _loadHTile =  SkinUtils.loadHTile
+local _loadVTile =  SkinUtils.loadVTile
+local _loadImageTile =  SkinUtils.loadImageTile
+local _icon =  SkinUtils.icon
+local _font =  SkinUtils.font
+local _boldfont =  SkinUtils.boldfont
+local _uses =  SkinUtils.uses
+
 local function dp(value)
 	return Dpi:dp(value)
 end
@@ -83,18 +95,7 @@ end
 
 -- Define useful variables for this skin
 local imgpath = "applets/DpiSkin/images/"
-local fontpath = "fonts/"
-local FONT_NAME = "FreeSans"
-local BOLD_PREFIX = "Bold"
 
--- Font Size Constants
-local FONT_SIZE_XXL = 120 -- huge
-local FONT_SIZE_XL = 60 -- textinput
-local FONT_SIZE_L = 48 -- keyboard
-local FONT_SIZE_M = 32 -- track, slider heading
-local FONT_SIZE_S = 24 -- header, large text, menus
-local FONT_SIZE_XS = 18 -- base, medium, small
-local FONT_SIZE_XXS = 14 -- xsmall
 
 
 local tbButtons = { 'rew', 'play', 'fwd', 'repeatMode', 'shuffleMode', 'volDown', 'volSlider', 'volUp' }
@@ -126,7 +127,7 @@ function param(self)
 		NOWPLAYING_TRACKINFO_LINES = 3,
 		POPUP_THUMB_SIZE = dp(120),
 		piCorePlayerStyle = 'hm_settings_pcp',
-		nowPlayingScreenStyles = { 
+		nowPlayingScreenStyles = {
 			-- every skin needs to start off with a nowplaying style
 			{
 				style = 'nowplaying', 
@@ -166,16 +167,7 @@ function param(self)
 	}
 end
 
--- skin functions
-local _loadImage =  SkinUtils.loadImage
-local _loadTile =  SkinUtils.loadTile
-local _loadHTile =  SkinUtils.loadHTile
-local _loadVTile =  SkinUtils.loadVTile
-local _loadImageTile =  SkinUtils.loadImageTile
-local _icon =  SkinUtils.icon
-local _font =  SkinUtils.font
-local _boldfont =  SkinUtils.boldfont
-local _uses =  SkinUtils.uses
+
 
 -- skin
 -- The meta arranges for this to be called to skin the interface.
@@ -189,6 +181,45 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	-- skin
 	local thisSkin = 'touch'
 	local skinSuffix = "_" .. thisSkin .. ".png"
+
+	-- Font Size Constants
+	local FONT_SIZE_XXL = 120 -- huge
+	local FONT_SIZE_XL = 60 -- textinput
+	local FONT_SIZE_L = 48 -- keyboard
+	local FONT_SIZE_M = 32 -- track, slider heading
+	local FONT_SIZE_S = 24 -- header, large text, menus
+	local FONT_SIZE_XS = 18 -- base, medium, small
+	local FONT_SIZE_XXS = 14 -- xsmall
+
+	-- Gap Constants
+	local GAP_1 = dp(1)
+	local GAP_2 = dp(2)
+	local GAP_4 = dp(4)
+	local GAP_5 = dp(5)
+	local GAP_6 = dp(6)
+	local GAP_7 = dp(7)
+	local GAP_8 = dp(8)
+	local GAP_9 = dp(9)
+	local GAP_10 = dp(10)
+	local GAP_11 = dp(11)
+	local GAP_12 = dp(12)
+	local GAP_13 = dp(13)
+	local GAP_14 = dp(14)
+	local GAP_15 = dp(15)
+	local GAP_16 = dp(16)
+	local GAP_17 = dp(17)
+	local GAP_18 = dp(18)
+	local GAP_20 = dp(20)
+	local GAP_22 = dp(22)
+	local GAP_24 = dp(24)
+	local GAP_28 = dp(28)
+	local GAP_34 = dp(34)
+	local GAP_40 = dp(40)
+	local GAP_50 = dp(50)
+	local GAP_90 = dp(90)
+	local GAP_100 = dp(100)
+	local GAP_160 = dp(160)
+	local GAP_200 = dp(200)
 
 	-- Images and Tiles
 	local inputTitleBox           = _loadImageTile(imgpath .. "Titlebar/titlebar.png" )
@@ -205,35 +236,35 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	local touchToolbarKeyDivider  = _loadImageTile(imgpath .. "Touch_Toolbar/toolbar_divider.png")
 	local deleteKeyBackground     = _loadImageTile(imgpath .. "Buttons/button_delete_text_entry.png")
 	local deleteKeyPressedBackground = _loadImageTile(imgpath .. "Buttons/button_delete_text_entry_press.png")
-        local helpTextBackground  = _loadImageTile(imgpath .. "Titlebar/tbar_dropdwn_bkrgd.png")
+    local helpTextBackground  = _loadImageTile(imgpath .. "Titlebar/tbar_dropdwn_bkrgd.png")
 
 
 	local blackBackground   = Tile:fillColor(0x000000ff)
 
 	--FIXME, _r asset here doesn't work...it's supposed to have a fadeout effect and it doesn't appear on screen
 	local fiveItemBox             = _loadHTile(self.hTiles, {
-		 imgpath .. "5_line_lists/tch_5line_divider_l.png",
-		 imgpath .. "5_line_lists/tch_5line_divider.png",
-		 imgpath .. "5_line_lists/tch_5line_divider_r.png",
+		imgpath .. "5_line_lists/tch_5line_divider_l.png",
+		imgpath .. "5_line_lists/tch_5line_divider.png",
+		imgpath .. "5_line_lists/tch_5line_divider_r.png",
 	})
 	local fiveItemSelectionBox    = _loadHTile(self.hTiles, {
-		 nil,
-		 imgpath .. "5_line_lists/menu_sel_box_5line.png",
-		 imgpath .. "5_line_lists/menu_sel_box_5line_r.png",
+		nil,
+		imgpath .. "5_line_lists/menu_sel_box_5line.png",
+		imgpath .. "5_line_lists/menu_sel_box_5line_r.png",
 	})
 	local fiveItemPressedBox      = _loadHTile(self.hTiles, {
-		 nil,
-		 imgpath .. "5_line_lists/menu_sel_box_5line_press.png",
-		 imgpath .. "5_line_lists/menu_sel_box_5line_press_r.png",
+		nil,
+		imgpath .. "5_line_lists/menu_sel_box_5line_press.png",
+		imgpath .. "5_line_lists/menu_sel_box_5line_press_r.png",
 	})
 
 	local threeItemSelectionBox            = _loadHTile(self.hTiles, {
-		 imgpath .. "3_line_lists/menu_sel_box_3line_l.png",
-		 imgpath .. "3_line_lists/menu_sel_box_3line.png",
-		 imgpath .. "3_line_lists/menu_sel_box_3line_r.png",
+		imgpath .. "3_line_lists/menu_sel_box_3line_l.png",
+		imgpath .. "3_line_lists/menu_sel_box_3line.png",
+		imgpath .. "3_line_lists/menu_sel_box_3line_r.png",
 	})
 	local threeItemPressedBox = _loadImageTile(imgpath .. "3_line_lists/menu_sel_box_3item_press.png")
-	
+
 	local contextMenuPressedBox    = _loadTile(self.tiles, {
 		imgpath .. "Popup_Menu/button_cm_press.png",
 		imgpath .. "Popup_Menu/button_cm_tl_press.png",
@@ -245,7 +276,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Popup_Menu/button_cm_bl_press.png",
 		imgpath .. "Popup_Menu/button_cm_l_press.png",
 	})
-	
+
 	local keyTopLeft = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd_tl.png",
@@ -474,115 +505,107 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local titleBox                =
-		_loadTile(self.tiles, {
-				 imgpath .. "Titlebar/titlebar.png",
-				 nil,
-				 nil,
-				 nil,
-				 nil,
-				 nil,
-				 imgpath .. "Titlebar/titlebar_shadow.png",
-				 nil,
-				 nil,
-		})
+	local titleBox = _loadTile(self.tiles, {
+		imgpath .. "Titlebar/titlebar.png",
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		imgpath .. "Titlebar/titlebar_shadow.png",
+		nil,
+		nil,
+	})
 
-	local textinputBackground     = 
-		_loadTile(self.tiles, {
-				 imgpath .. "Text_Entry/Keyboard_Touch/titlebar_box.png",
-				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_tl.png",
-				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_t.png",
-				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_tr.png",
-				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_r.png",
-				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_br.png",
-				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_b.png",
-				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_bl.png",
-				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_l.png",
-				})
+	local textinputBackground = _loadTile(self.tiles, {
+		imgpath .. "Text_Entry/Keyboard_Touch/titlebar_box.png",
+		imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_tl.png",
+		imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_t.png",
+		imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_tr.png",
+		imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_r.png",
+		imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_br.png",
+		imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_b.png",
+		imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_bl.png",
+		imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_l.png",
+	})
 
-	local pressedTitlebarButtonBox =
-		_loadTile(self.tiles, {
-					imgpath .. "Buttons/button_titlebar_press.png",
-					imgpath .. "Buttons/button_titlebar_tl_press.png",
-					imgpath .. "Buttons/button_titlebar_t_press.png",
-					imgpath .. "Buttons/button_titlebar_tr_press.png",
-					imgpath .. "Buttons/button_titlebar_r_press.png",
-					imgpath .. "Buttons/button_titlebar_br_press.png",
-					imgpath .. "Buttons/button_titlebar_b_press.png",
-					imgpath .. "Buttons/button_titlebar_bl_press.png",
-					imgpath .. "Buttons/button_titlebar_l_press.png",
-				})
+	local pressedTitlebarButtonBox = _loadTile(self.tiles, {
+		imgpath .. "Buttons/button_titlebar_press.png",
+		imgpath .. "Buttons/button_titlebar_tl_press.png",
+		imgpath .. "Buttons/button_titlebar_t_press.png",
+		imgpath .. "Buttons/button_titlebar_tr_press.png",
+		imgpath .. "Buttons/button_titlebar_r_press.png",
+		imgpath .. "Buttons/button_titlebar_br_press.png",
+		imgpath .. "Buttons/button_titlebar_b_press.png",
+		imgpath .. "Buttons/button_titlebar_bl_press.png",
+		imgpath .. "Buttons/button_titlebar_l_press.png",
+	})
 
-	local titlebarButtonBox =
-		_loadTile(self.tiles, {
-					imgpath .. "Buttons/button_titlebar.png",
-					imgpath .. "Buttons/button_titlebar_tl.png",
-					imgpath .. "Buttons/button_titlebar_t.png",
-					imgpath .. "Buttons/button_titlebar_tr.png",
-					imgpath .. "Buttons/button_titlebar_r.png",
-					imgpath .. "Buttons/button_titlebar_br.png",
-					imgpath .. "Buttons/button_titlebar_b.png",
-					imgpath .. "Buttons/button_titlebar_bl.png",
-					imgpath .. "Buttons/button_titlebar_l.png",
-				})
+	local titlebarButtonBox = _loadTile(self.tiles, {
+		imgpath .. "Buttons/button_titlebar.png",
+		imgpath .. "Buttons/button_titlebar_tl.png",
+		imgpath .. "Buttons/button_titlebar_t.png",
+		imgpath .. "Buttons/button_titlebar_tr.png",
+		imgpath .. "Buttons/button_titlebar_r.png",
+		imgpath .. "Buttons/button_titlebar_br.png",
+		imgpath .. "Buttons/button_titlebar_b.png",
+		imgpath .. "Buttons/button_titlebar_bl.png",
+		imgpath .. "Buttons/button_titlebar_l.png",
+	})
 
-	local popupBox = 
-		_loadTile(self.tiles, {
-				       imgpath .. "Popup_Menu/popup_box.png",
-				       imgpath .. "Popup_Menu/popup_box_tl.png",
-				       imgpath .. "Popup_Menu/popup_box_t.png",
-				       imgpath .. "Popup_Menu/popup_box_tr.png",
-				       imgpath .. "Popup_Menu/popup_box_r.png",
-				       imgpath .. "Popup_Menu/popup_box_br.png",
-				       imgpath .. "Popup_Menu/popup_box_b.png",
-				       imgpath .. "Popup_Menu/popup_box_bl.png",
-				       imgpath .. "Popup_Menu/popup_box_l.png",
-			       })
+	local popupBox = _loadTile(self.tiles, {
+		imgpath .. "Popup_Menu/popup_box.png",
+		imgpath .. "Popup_Menu/popup_box_tl.png",
+		imgpath .. "Popup_Menu/popup_box_t.png",
+		imgpath .. "Popup_Menu/popup_box_tr.png",
+		imgpath .. "Popup_Menu/popup_box_r.png",
+		imgpath .. "Popup_Menu/popup_box_br.png",
+		imgpath .. "Popup_Menu/popup_box_b.png",
+		imgpath .. "Popup_Menu/popup_box_bl.png",
+		imgpath .. "Popup_Menu/popup_box_l.png",
+	})
 
-	local contextMenuBox = 
-		_loadTile(self.tiles, {
-				       imgpath .. "Popup_Menu/cm_popup_box.png",
-				       imgpath .. "Popup_Menu/cm_popup_box_tl.png",
-				       imgpath .. "Popup_Menu/cm_popup_box_t.png",
-				       imgpath .. "Popup_Menu/cm_popup_box_tr.png",
-				       imgpath .. "Popup_Menu/cm_popup_box_r.png",
-				       imgpath .. "Popup_Menu/cm_popup_box_br.png",
-				       imgpath .. "Popup_Menu/cm_popup_box_b.png",
-				       imgpath .. "Popup_Menu/cm_popup_box_bl.png",
-				       imgpath .. "Popup_Menu/cm_popup_box_l.png",
-			       })
+	local contextMenuBox = _loadTile(self.tiles, {
+		imgpath .. "Popup_Menu/cm_popup_box.png",
+		imgpath .. "Popup_Menu/cm_popup_box_tl.png",
+		imgpath .. "Popup_Menu/cm_popup_box_t.png",
+		imgpath .. "Popup_Menu/cm_popup_box_tr.png",
+		imgpath .. "Popup_Menu/cm_popup_box_r.png",
+		imgpath .. "Popup_Menu/cm_popup_box_br.png",
+		imgpath .. "Popup_Menu/cm_popup_box_b.png",
+		imgpath .. "Popup_Menu/cm_popup_box_bl.png",
+		imgpath .. "Popup_Menu/cm_popup_box_l.png",
+	})
 
 
 
-	local scrollBackground = 
-		_loadVTile(self.vTiles, {
-					imgpath .. "Scroll_Bar/scrollbar_bkgrd_t.png",
-					imgpath .. "Scroll_Bar/scrollbar_bkgrd.png",
-					imgpath .. "Scroll_Bar/scrollbar_bkgrd_b.png",
-			       })
+	local scrollBackground = _loadVTile(self.vTiles, {
+		imgpath .. "Scroll_Bar/scrollbar_bkgrd_t.png",
+		imgpath .. "Scroll_Bar/scrollbar_bkgrd.png",
+		imgpath .. "Scroll_Bar/scrollbar_bkgrd_b.png",
+	})
 
-	local scrollBar = 
-		_loadVTile(self.vTiles, {
-					imgpath .. "Scroll_Bar/scrollbar_body_t.png",
-					imgpath .. "Scroll_Bar/scrollbar_body.png",
-					imgpath .. "Scroll_Bar/scrollbar_body_b.png",
-			       })
+	local scrollBar = _loadVTile(self.vTiles, {
+		imgpath .. "Scroll_Bar/scrollbar_body_t.png",
+		imgpath .. "Scroll_Bar/scrollbar_body.png",
+		imgpath .. "Scroll_Bar/scrollbar_body_b.png",
+	})
 
 	local popupBackground = blackBackground
 
 	local textinputCursor = _loadImageTile(imgpath .. "Text_Entry/Keyboard_Touch/tch_cursor.png")
 
 	local THUMB_SIZE = self:param().THUMB_SIZE
-	
-	local TITLE_PADDING  = { 0, dp(15), 0, dp(15) }
-	local CHECK_PADDING  = { dp(2), 0, dp(6), 0 }
-	local CHECKBOX_RADIO_PADDING  = { dp(2), 0, 0, 0 }
 
-	local MENU_ITEM_ICON_PADDING = { 0, 0, dp(8), 0 }
-	local MENU_PLAYLISTITEM_TEXT_PADDING = { dp(16), dp(1), dp(9), dp(1) }
+	local TITLE_PADDING  = { 0, GAP_15, 0, GAP_15 }
+	local CHECK_PADDING  = { GAP_2, 0, GAP_6, 0 }
+	local CHECKBOX_RADIO_PADDING  = { GAP_2, 0, 0, 0 }
 
-	local MENU_CURRENTALBUM_TEXT_PADDING = { dp(6), dp(20), 0, dp(10) }
-	local TEXTAREA_PADDING = { dp(13), dp(8), dp(8), 0 }
+	local MENU_ITEM_ICON_PADDING = { 0, 0, GAP_8, 0 }
+	local MENU_PLAYLISTITEM_TEXT_PADDING = { GAP_16, GAP_1, GAP_9, GAP_1 }
+
+	local MENU_CURRENTALBUM_TEXT_PADDING = { GAP_6, GAP_20, 0, GAP_10 }
+	local TEXTAREA_PADDING = { GAP_13, GAP_8, GAP_8, 0 }
 
 	local TEXT_COLOR = { 0xE7, 0xE7, 0xE7 }
 	local TEXT_COLOR_BLACK = { 0x00, 0x00, 0x00 }
@@ -596,7 +619,6 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	local CM_MENU_HEIGHT = dp(45)
 
 	local ITEM_ICON_ALIGN   = 'center'
-	local ITEM_LEFT_PADDING = dp(12)
 	local THREE_ITEM_HEIGHT = dp(72)
 	local FIVE_ITEM_HEIGHT = dp(45)
 	local TITLE_BUTTON_WIDTH = dp(76)
@@ -615,13 +637,13 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		align = "center",
 		frameRate = 8,
 		frameWidth = dp(120),
-		padding = { 0, 0, 0, dp(10) }
+		padding = { 0, 0, 0, GAP_10 }
 	}
 	-- convenience method for removing a button from the window
-	local noButton = { 
-		img = false, 
-		bgImg = false, 
-		w = 0 
+	local noButton = {
+		img = false,
+		bgImg = false,
+		w = 0
 	}
 
 	local playArrow = { 
@@ -653,21 +675,21 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	local _songProgressBar = _loadHTile(self.hTiles, {
-			nil,
-			nil,
-			imgpath .. "Song_Progress_Bar/SP_Bar_Touch/tch_progressbar_slider.png"
+		nil,
+		nil,
+		imgpath .. "Song_Progress_Bar/SP_Bar_Touch/tch_progressbar_slider.png"
 	})
 
 	local _songProgressBarDisabled = _loadHTile(self.hTiles, {
-			nil,
-			nil,
-			imgpath .. "Song_Progress_Bar/SP_Bar_Remote/rem_progressbar_slider.png"
+		nil,
+		nil,
+		imgpath .. "Song_Progress_Bar/SP_Bar_Remote/rem_progressbar_slider.png"
 	})
 
 	local _vizProgressBar = _loadHTile(self.hTiles, {
-			imgpath .. "UNOFFICIAL/viz_progress_fill_l.png",
-			imgpath .. "UNOFFICIAL/viz_progress_fill.png",
-			imgpath .. "UNOFFICIAL/viz_progress_fill_r.png",
+		imgpath .. "UNOFFICIAL/viz_progress_fill_l.png",
+		imgpath .. "UNOFFICIAL/viz_progress_fill.png",
+		imgpath .. "UNOFFICIAL/viz_progress_fill_r.png",
 	})
 	local _vizProgressBarPill = _loadImageTile(imgpath .. "UNOFFICIAL/viz_progress_slider.png")
 
@@ -678,18 +700,18 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	local _volumeSliderBar = _loadHTile(self.hTiles, {
-               imgpath .. "UNOFFICIAL/tch_volumebar_fill_l.png",
-               imgpath .. "UNOFFICIAL/tch_volumebar_fill.png",
-               imgpath .. "UNOFFICIAL/tch_volumebar_fill_r.png",
+		imgpath .. "UNOFFICIAL/tch_volumebar_fill_l.png",
+		imgpath .. "UNOFFICIAL/tch_volumebar_fill.png",
+		imgpath .. "UNOFFICIAL/tch_volumebar_fill_r.png",
 	})
-	
+
 	local _volumeSliderPill = _loadImageTile(imgpath .. "Touch_Toolbar/tch_volume_slider.png")
 
 	local _popupSliderBar = _loadHTile(self.hTiles, {
 		imgpath .. "Touch_Toolbar/tch_volumebar_fill_l.png",
 		imgpath .. "Touch_Toolbar/tch_volumebar_fill.png",
 		imgpath .. "Touch_Toolbar/tch_volumebar_fill_r.png",
-        })
+	})
 
 --------- DEFAULT WIDGET STYLES ---------
 	--
@@ -715,14 +737,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		border = 0,
 		position = LAYOUT_NORTH,
 		bgImg = titleBox,
-		padding = { 0, dp(5), 0, dp(5) },
+		padding = { 0, GAP_5, 0, GAP_5 },
 		order = { "lbutton", "text", "rbutton" },
 		lbutton = {
-			border = { dp(8), 0, dp(8), 0 },
+			border = { GAP_8, 0, GAP_8, 0 },
 			h = WH_FILL,
 		},
 		rbutton = {
-			border = { dp(8), 0, dp(8), 0 },
+			border = { GAP_8, 0, GAP_8, 0 },
 			h = WH_FILL,
 		},
 		text = {
@@ -736,7 +758,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.title.textButton = _uses(s.title.text, {
 		bgImg = titlebarButtonBox,
-		padding = { dp(4), dp(15), dp(4), dp(15) },
+		padding = { GAP_4, GAP_15, GAP_4, GAP_15 },
 	})
 
 	s.title.pressed = {}
@@ -752,12 +774,12 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		text = {
 			w = WH_FILL,
 			h = dp(300),
-                        padding = { dp(10), dp(160), dp(10), 0 },
-                        align = "center",
-                        font = _font(FONT_SIZE_XXL),
-                        fg = TEXT_COLOR,
-                        sh = TEXT_SH_COLOR,
-                },
+			padding = { GAP_10, GAP_160, GAP_10, 0 },
+			align = "center",
+			font = _font(FONT_SIZE_XXL),
+			fg = TEXT_COLOR,
+			sh = TEXT_SH_COLOR,
+		},
 	}
 
 	s.menu = {
@@ -774,9 +796,9 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	
 	s.item = {
 		order = { "icon", "text", "arrow" },
-		padding = { ITEM_LEFT_PADDING, 0, dp(8), 0 },
+		padding = { GAP_12, 0, GAP_8, 0 },
 		text = {
-			padding = { 0, 0, dp(2), 0 },
+			padding = { 0, 0, GAP_2, 0 },
 			align = "left",
 			w = WH_FILL,
 			h = WH_FILL,
@@ -789,8 +811,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			align = 'center',
 		},
 		arrow = {
-	      		align = ITEM_ICON_ALIGN,
-	      		img = _loadImage(imgpath .. "Icons/selection_right_5line.png"),
+			align = ITEM_ICON_ALIGN,
+			img = _loadImage(imgpath .. "Icons/selection_right_5line.png"),
 			padding = { 0, 0, 0, 0 },
 		},
 		bgImg = fiveItemBox,
@@ -804,21 +826,21 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	-- Checkbox
-        s.checkbox = {}
+	s.checkbox = {}
 	s.checkbox.align = 'center'
 	s.checkbox.padding = CHECKBOX_RADIO_PADDING
 	s.checkbox.h = WH_FILL
-        s.checkbox.img_on = _loadImage(imgpath .. "Icons/checkbox_on.png")
-        s.checkbox.img_off = _loadImage(imgpath .. "Icons/checkbox_off.png")
+	s.checkbox.img_on = _loadImage(imgpath .. "Icons/checkbox_on.png")
+	s.checkbox.img_off = _loadImage(imgpath .. "Icons/checkbox_off.png")
 
 
-        -- Radio button
-        s.radio = {}
+	-- Radio button
+	s.radio = {}
 	s.radio.align = 'center'
 	s.radio.padding = CHECKBOX_RADIO_PADDING
 	s.radio.h = WH_FILL
-        s.radio.img_on = _loadImage(imgpath .. "Icons/radiobutton_on.png")
-        s.radio.img_off = _loadImage(imgpath .. "Icons/radiobutton_off.png")
+	s.radio.img_on = _loadImage(imgpath .. "Icons/radiobutton_on.png")
+	s.radio.img_off = _loadImage(imgpath .. "Icons/radiobutton_off.png")
 
 	s.item_choice = _uses(s.item, {
 		order  = { 'icon', 'text', 'check' },
@@ -837,17 +859,17 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			align = ITEM_ICON_ALIGN,
 			padding = CHECK_PADDING,
 			img = _loadImage(imgpath .. "Icons/icon_check_5line.png")
-	      	}
+		}
 	})
 
 	s.item_info = _uses(s.item, {
 		order = { 'text' },
-		padding = { ITEM_LEFT_PADDING, 0, 0, 0 },
+		padding = { GAP_12, 0, 0, 0 },
 		text = {
 			align = "top-left",
 			w = WH_FILL,
 			h = WH_FILL,
-			padding = { 0, dp(6), 0, dp(6) },
+			padding = { 0, GAP_6, 0, GAP_6 },
 			font = _font(FONT_SIZE_XXS),
 			line = {
 				{
@@ -958,7 +980,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.help_text = {
 		w = w - dp(30),
-		padding = { dp(12), dp(8), dp(12), 0 },
+		padding = { GAP_12, GAP_8, GAP_12, 0 },
 		border = 0,
 		font = _font(FONT_SIZE_XS),
 		lineHeight = dp(23),
@@ -989,7 +1011,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.multiline_text = {
 		w = WH_FILL,
-		padding = { dp(10), 0, dp(2), dp(10) },
+		padding = { GAP_10, 0, GAP_2, GAP_10 },
 		font = _font(FONT_SIZE_XS),
 		height = dp(21),
 		fg = { 0xe6, 0xe6, 0xe6 },
@@ -997,21 +1019,21 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		align = "left",
 	}
 	s.multiline_popup_text = _uses(s.multiline_text, {
-		padding = { dp(14), dp(18), dp(14), dp(18) },
-		border = { 0, 0, dp(10), 0 },
+		padding = { GAP_14, GAP_18, GAP_14, GAP_18 },
+		border = { 0, 0, GAP_10, 0 },
 	})
 
 	s.slider = {
-		border = dp(10),
-                position = LAYOUT_SOUTH,
-                horizontal = 1,
-                bgImg = _progressBackground,
-                img = _progressBar,
+		border = dp(GAP_10),
+		position = LAYOUT_SOUTH,
+		horizontal = 1,
+		bgImg = _progressBackground,
+		img = _progressBar,
 	}
 
 	s.slider_group = {
 		w = WH_FILL,
-		border = { 0, dp(5), 0, dp(10) },
+		border = { 0, GAP_5, 0, GAP_10 },
 		order = { "min", "slider", "max" },
 	}
 
@@ -1022,7 +1044,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	-- text input
 	s.textinput = {
 		h = dp(72),
-		padding = { dp(24), 0, dp(24), 0 },
+		padding = { GAP_24, 0, GAP_24, 0 },
 		font = _boldfont(FONT_SIZE_XL),
 		cursorFont = _boldfont(FONT_SIZE_XL),
 		wheelFont = _boldfont(FONT_SIZE_XL),
@@ -1037,8 +1059,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.keyboard = {
 		w = WH_FILL,
 		h = WH_FILL,
-		border = { dp(8), dp(6), dp(8), 0 },
-		padding = { dp(2), 0, dp(2), 0 },
+		border = { GAP_8, GAP_6, GAP_8, 0 },
+		padding = { GAP_2, 0, GAP_2, 0 },
 	}
 
 	s.keyboard_textinput = {
@@ -1047,14 +1069,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		order = { "textinput", "backspace" },
 		border = 0,
 		textinput = {
-			padding = { dp(16), 0, 0, dp(4) },
+			padding = { GAP_16, 0, 0, GAP_4 },
 		},
 	}
 
 	s.keyboard.key = {
-        	font = _boldfont(FONT_SIZE_L),
-        	fg = { 0xDC, 0xDC, 0xDC },
-        	align = 'center',
+		font = _boldfont(FONT_SIZE_L),
+		fg = { 0xDC, 0xDC, 0xDC },
+		align = 'center',
 		bgImg = keyMiddle,
 	}
 
@@ -1070,9 +1092,9 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	-- styles for keys that use smaller font 
 	s.keyboard.key_bottom_small      = _uses(s.keyboard.key_bottom, { font = _boldfont(FONT_SIZE_M) } )
-	s.keyboard.key_bottomRight_small = _uses(s.keyboard.key_bottomRight, { 
-			font = _boldfont(FONT_SIZE_M), 
-			fg = { 0xe7, 0xe7, 0xe7 },
+	s.keyboard.key_bottomRight_small = _uses(s.keyboard.key_bottomRight, {
+		font = _boldfont(FONT_SIZE_M),
+		fg = { 0xe7, 0xe7, 0xe7 },
 	} )
 	s.keyboard.key_bottomLeft_small  = _uses(s.keyboard.key_bottomLeft, { font = _boldfont(FONT_SIZE_M) } )
 	s.keyboard.key_left_small        = _uses(s.keyboard.key_left, { font = _boldfont(FONT_SIZE_M) } )
@@ -1090,11 +1112,11 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.keyboard.shiftOff = _uses(s.keyboard.key_left, {
 		img = _loadImage(imgpath .. "Icons/icon_shift_off.png"),
-		padding = { dp(1), 0, 0, 0 },
+		padding = { GAP_1, 0, 0, 0 },
 	})
 	s.keyboard.shiftOn = _uses(s.keyboard.key_left, {
 		img = _loadImage(imgpath .. "Icons/icon_shift_on.png"),
-		padding = { dp(1), 0, 0, 0 },
+		padding = { GAP_1, 0, 0, 0 },
 	})
 
 	s.keyboard.arrow_left_middle = _uses(s.keyboard.key_middle, {
@@ -1117,7 +1139,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			fg = { 0x00, 0xbe, 0xbe },
 			sh = { },
 			h = WH_FILL,
-			padding = { 0, 0, 0, dp(1) },
+			padding = { 0, 0, 0, GAP_1 },
 		}),
 		icon = { hidden = 1 },
 	}
@@ -1129,10 +1151,10 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	s.keyboard.doneSpinny =  {
-                icon = _uses(s.keyboard.key_bottomRight, {
+		icon = _uses(s.keyboard.key_bottomRight, {
 			bgImg = keyBottomRight,
 			hidden = 0,
-            img = _loadImage(imgpath .. "Alerts/wifi_connecting_sm.png"),
+			img = _loadImage(imgpath .. "Alerts/wifi_connecting_sm.png"),
 			frameRate = 8,
 			frameWidth = dp(26),
 			w = WH_FILL, 
@@ -1140,7 +1162,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			align = 'center',
 		}),
 		text = { hidden = 1, w = 0 },
-        }
+	}
 
 
 	s.keyboard.space = _uses(s.keyboard.key_bottom_small, {
@@ -1266,7 +1288,6 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		-- img = _loadImage(imgpath .. self, "UNOFFICIAL/menu_box_fixed_2c.png"),
 		w = dp(242),
 		x = dp(278),
-	
 	})
 
 	-- time input window
@@ -1284,7 +1305,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			text = {
 				align = 'right',
 				font = _boldfont(FONT_SIZE_L),
-				padding = { dp(2), dp(4), dp(8), 0 },
+				padding = { GAP_2, GAP_4, GAP_8, 0 },
 				fg = { 0xb3, 0xb3, 0xb3 },
 				sh = { },
 			},
@@ -1298,7 +1319,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 					fg = { 0xe6, 0xe6, 0xe6 },
 					sh = { },
 					align = 'right',
-					padding = { dp(2), dp(4), dp(8), 0 },
+					padding = { GAP_2, GAP_4, GAP_8, 0 },
 				},
 			},
 		},
@@ -1311,7 +1332,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 					fg = { 0xe6, 0xe6, 0xe6 },
 					sh = { },
 					align = 'right',
-					padding = { dp(2), dp(4), dp(8), 0 },
+					padding = { GAP_2, GAP_4, GAP_8, 0 },
 				},
 			},
 		},
@@ -1323,14 +1344,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		border = { _timeFirstColumnX12h + dp(125) + dp(120), TITLE_HEIGHT, 0, 0 },
 		item = {
 			text = {
-				padding = { 0, dp(2), dp(8), 0 },
+				padding = { 0, GAP_2, GAP_8, 0 },
 				font = _boldfont(FONT_SIZE_S),
 			},
 		},
 		selected = {
 			item = {
 				text = {
-					padding = { 0, dp(4), dp(8), 0 },
+					padding = { 0, GAP_4, GAP_8, 0 },
 					font = _boldfont(FONT_SIZE_S),
 				},
 			},
@@ -1338,7 +1359,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		pressed = {
 			item = {
 				text = {
-					padding = { 0, dp(4), dp(8), 0 },
+					padding = { 0, GAP_4, GAP_8, 0 },
 					font = _boldfont(FONT_SIZE_S),
 				},
 			},
@@ -1373,7 +1394,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.text_list = _uses(s.window)
 
 	-- text_only removes icons
-        s.text_only = _uses(s.text_list, {
+	s.text_only = _uses(s.text_list, {
 		menu = {
 			item = {
 				order = { 'text', 'arrow', },
@@ -1408,17 +1429,17 @@ function skin(self, s, reload, useDefaultSize, w, h)
 					fg   = { 0xB3, 0xB3, 0xB3 },
 				},
 			},
-                },
+		},
 	})
 
 	s.text_list.title.textButton = _uses(s.text_list.title.text, {
 		bgImg = titlebarButtonBox,
-		padding = { dp(4), dp(15), dp(4), dp(15) },
+		padding = { GAP_4, GAP_15, GAP_4, GAP_15 },
 	})
 	s.text_list.title.pressed = {}
 	s.text_list.title.pressed.textButton = _uses(s.text_list.title.text, {
 		bgImg = pressedTitlebarButtonBox,
-		padding = { dp(4), dp(15), dp(4), dp(15) },
+		padding = { GAP_4, GAP_15, GAP_4, GAP_15 },
 	})
 
 	-- choose player window is exactly the same as text_list on all windows except WQVGAlarge
@@ -1429,7 +1450,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.multiline_text_list.menu = _uses(s.menu, {
 		itemHeight = THREE_ITEM_HEIGHT,
 		item = {
-			padding = { dp(10), dp(8), 0, dp(8) },
+			padding = { GAP_10, GAP_8, 0, GAP_8 },
 			bgImg = false,
 			icon = {
 				align = 'top',
@@ -1457,8 +1478,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			w = WH_FILL,
 			h = dp(FONT_SIZE_S + 8),
 			position = LAYOUT_NORTH,
-			border = { 0, dp(50), 0, 0 },
-			padding = { dp(15), 0, dp(15), 0 },
+			border = { 0, GAP_50, 0, 0 },
+			padding = { GAP_15, 0, GAP_15, 0 },
 			align = "center",
 			font = _font(FONT_SIZE_S),
 			lineHeight = dp(FONT_SIZE_S + 8),
@@ -1469,8 +1490,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			w = WH_FILL,
 			h = dp(47),
 			position = LAYOUT_SOUTH,
-			border = { 0, 0, 0, dp(20) },
-			padding = { dp(15), 0, dp(15), 0 },
+			border = { 0, 0, 0, GAP_20 },
+			padding = { GAP_15, 0, GAP_15, 0 },
 			align = "top",
 			font = _boldfont(FONT_SIZE_S),
 			fg = TEXT_COLOR,
@@ -1508,18 +1529,18 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			w = WH_FILL,
 			h = dp(FONT_SIZE_S + 8),
 			position = LAYOUT_NORTH,
-			border = { 0, dp(34), 0, dp(2) },
-			padding = { dp(10), 0, dp(10), 0 },
-				align = "center",
+			border = { 0, GAP_34, 0, GAP_2 },
+			padding = { GAP_10, 0, GAP_10, 0 },
+			align = "center",
 			font = _font(FONT_SIZE_S),
 			lineHeight = dp(FONT_SIZE_S + 8),
-				fg = TEXT_COLOR,
-				sh = TEXT_SH_COLOR,		
+			fg = TEXT_COLOR,
+			sh = TEXT_SH_COLOR,
 		},
 		subtext = {
 			w = WH_FILL,
 			h = dp(30),
-			padding = { 0, 0, 0, dp(28) },
+			padding = { 0, 0, 0, GAP_28 },
 			font = _boldfont(FONT_SIZE_XS),
 			fg = TEXT_COLOR,
 			sh = TEXT_SH_COLOR,
@@ -1528,7 +1549,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		},
 
 		progress = {
-			border = { dp(15), dp(7), dp(15), dp(17) },
+			border = { GAP_15, GAP_7, GAP_15, GAP_17 },
 			position = LAYOUT_SOUTH,
 			horizontal = 1,
 			bgImg = _progressBackground,
@@ -1574,7 +1595,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		menu = {
 			item = {
 				order = { "icon", "text", "arrow" },
-				padding = { ITEM_LEFT_PADDING, 0, 0, 0 },
+				padding = { GAP_12, 0, 0, 0 },
 				text = {
 					w = WH_FILL,
 					h = WH_FILL,
@@ -1632,54 +1653,54 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	s.icon_list.menu.selected = {
-                item               = _uses(s.icon_list.menu.item, {
+		item = _uses(s.icon_list.menu.item, {
 			bgImg = fiveItemSelectionBox
 		}),
-                albumcurrent       = _uses(s.icon_list.menu.albumcurrent, {
+		albumcurrent = _uses(s.icon_list.menu.albumcurrent, {
 			arrow = { 
 				img = _loadImage(imgpath .. "Icons/icon_nplay_3line_sel.png"),
 			},
 			bgImg = fiveItemSelectionBox,
 		}),
-                item_checked        = _uses(s.icon_list.menu.item_checked, {
+		item_checked = _uses(s.icon_list.menu.item_checked, {
 			bgImg = fiveItemSelectionBox
 		}),
-		item_play           = _uses(s.icon_list.menu.item_play, {
+		item_play = _uses(s.icon_list.menu.item_play, {
 			bgImg = fiveItemSelectionBox
 		}),
-		item_add            = _uses(s.icon_list.menu.item_add, {
+		item_add = _uses(s.icon_list.menu.item_add, {
 			bgImg = fiveItemSelectionBox
 		}),
-		item_no_arrow        = _uses(s.icon_list.menu.item_no_arrow, {
+		item_no_arrow = _uses(s.icon_list.menu.item_no_arrow, {
 			bgImg = fiveItemSelectionBox
 		}),
 		item_checked_no_arrow = _uses(s.icon_list.menu.item_checked_no_arrow, {
 			bgImg = fiveItemSelectionBox
 		}),
-        }
-        s.icon_list.menu.pressed = {
-                item = _uses(s.icon_list.menu.item, { 
+	}
+	s.icon_list.menu.pressed = {
+		item = _uses(s.icon_list.menu.item, { 
 			bgImg = fiveItemPressedBox 
 		}),
-                albumcurrent       = _uses(s.icon_list.menu.albumcurrent, {
+		albumcurrent = _uses(s.icon_list.menu.albumcurrent, {
 			bgImg = fiveItemSelectionBox
 		}),
-                item_checked = _uses(s.icon_list.menu.item_checked, { 
+		item_checked = _uses(s.icon_list.menu.item_checked, { 
 			bgImg = fiveItemPressedBox 
 		}),
-                item_play = _uses(s.icon_list.menu.item_play, { 
+		item_play = _uses(s.icon_list.menu.item_play, { 
 			bgImg = fiveItemPressedBox 
 		}),
-                item_add = _uses(s.icon_list.menu.item_add, { 
+		item_add = _uses(s.icon_list.menu.item_add, { 
 			bgImg = fiveItemPressedBox 
 		}),
-                item_no_arrow = _uses(s.icon_list.menu.item_no_arrow, { 
+		item_no_arrow = _uses(s.icon_list.menu.item_no_arrow, { 
 			bgImg = fiveItemPressedBox 
 		}),
-                item_checked_no_arrow = _uses(s.icon_list.menu.item_checked_no_arrow, { 
+		item_checked_no_arrow = _uses(s.icon_list.menu.item_checked_no_arrow, { 
 			bgImg = fiveItemPressedBox 
 		}),
-        }
+	}
 	s.icon_list.menu.locked = {
 		item = _uses(s.icon_list.menu.pressed.item, {
 			arrow = smallSpinny
@@ -1693,7 +1714,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		item_add = _uses(s.icon_list.menu.pressed.item_add, {
 			arrow = smallSpinny
 		}),
-                albumcurrent       = _uses(s.icon_list.menu.pressed.albumcurrent, {
+		albumcurrent = _uses(s.icon_list.menu.pressed.albumcurrent, {
 			arrow = smallSpinny
 		}),
 	}
@@ -1729,7 +1750,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		font = _font(FONT_SIZE_XS),
 		fg = TEXT_COLOR,
 		sh = TEXT_SH_COLOR,
-		padding = { dp(18), dp(18), dp(10), 0},
+		padding = { GAP_18, GAP_18, GAP_10, 0},
 		lineHeight = dp(23),
 	}
 
@@ -1747,7 +1768,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		icon  = {
 			w = THUMB_SIZE,
 			h = WH_FILL,
-			padding = { dp(10), dp(1), dp(8), dp(1) },
+			padding = { GAP_10, GAP_1, GAP_8, GAP_1 },
 		},
 	})
 
@@ -1756,14 +1777,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	-- toast_popup popup (is now text only)
 	s.toast_popup_textarea = {
-		padding = { dp(20), dp(20), dp(20), dp(20) } ,
+		padding = { GAP_20, GAP_20, GAP_20, GAP_20 } ,
 		align = 'left',
 		w = WH_FILL,
 		h = WH_FILL,
 		font = _font(FONT_SIZE_S),
 		fg = TEXT_COLOR,
 		sh = TEXT_SH_COLOR,
-        }
+	}
 
 	-- toast_popup popup with art and text
 	s.toast_popup = {
@@ -1773,10 +1794,10 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		h = h/2,
 		bgImg = popupBox,
 		group = {
-			padding = dp(10),
+			padding = GAP_10,
 			order = { 'icon', 'text' },
 			text = { 
-				padding = { dp(10), dp(12), dp(12), dp(12) } ,
+				padding = { GAP_10, GAP_12, GAP_12, GAP_12 } ,
 				align = 'top-left',
 				w = WH_FILL,
 				h = WH_FILL,
@@ -1785,7 +1806,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			},
 			icon = { 
 				align = 'top-left', 
-				border = { dp(12), dp(12), 0, 0 },
+				border = { GAP_12, GAP_12, 0, 0 },
 				img = _loadImage(imgpath .. "UNOFFICIAL/menu_album_noartwork_64.png"),
 				h = WH_FILL,
 				w = dp(64),
@@ -1800,7 +1821,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = WH_FILL,
 				h = WH_FILL,
 				align = 'top-left',
-				padding = { dp(10), dp(12), dp(12), dp(12) },
+				padding = { GAP_10, GAP_12, GAP_12, GAP_12 },
 				fg = TEXT_COLOR,
 				sh = TEXT_SH_COLOR,
 			},
@@ -1816,7 +1837,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		position = LAYOUT_NONE,
 		group = {
 			order = { 'icon' },
-			border = { dp(22), dp(22), 0, 0 },
+			border = { GAP_22, GAP_22, 0, 0 },
 			padding = 0,
 			icon = {
 				w = WH_FILL,
@@ -1836,7 +1857,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		bgImg = popupBox,
 		text = {
 			position = LAYOUT_NORTH,
-			padding = { dp(8), dp(24), dp(8), 0 },
+			padding = { GAP_8, GAP_24, GAP_8, 0 },
 			align = 'top',
 			w = WH_FILL,
 			h = WH_FILL,
@@ -1847,14 +1868,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		},
 		subtext = {
 			position = LAYOUT_NORTH,
-			padding = { dp(8), dp(203), dp(8), 0 },
+			padding = { GAP_8, GAP_200, GAP_8, 0 },
 			align = 'top',
 			w = WH_FILL,
 			h = WH_FILL,
 			font = _font(FONT_SIZE_S),
 			lineHeight = dp(FONT_SIZE_S + 5),
-			fg = TEXT_COLOR,
-			sh = TEXT_SH_COLOR,
+				fg = TEXT_COLOR,
+				sh = TEXT_SH_COLOR,
 		},
 	}
 
@@ -1876,7 +1897,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		img = _loadImage(imgpath .. "Icons/icon_badge_add.png")
 	})
 
-	local CM_MENU_ITEM_COUNT = floor(((h - dp(32) - dp(52) - dp(20)) / CM_MENU_HEIGHT))
+	local CM_MENU_ITEM_COUNT = math.floor(((h - dp(32) - dp(52) - dp(20)) / CM_MENU_HEIGHT))
 
 	s.context_menu = {
 		x = dp(8),
@@ -1889,8 +1910,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		multiline_text = {
             w = WH_FILL,
             h = dp(172),
-            padding = { dp(18), dp(2), dp(14), dp(18) },
-            border = { 0, 0, dp(6), dp(15) },
+            padding = { GAP_18, GAP_2, GAP_14, GAP_18 },
+            border = { 0, 0, GAP_6, GAP_15 },
             lineHeight = dp(22),
             font = _font(FONT_SIZE_XS),
             fg = { 0xe6, 0xe6, 0xe6 },
@@ -1898,14 +1919,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
             align = "top-left",
             scrollbar = {
                 h = dp(164),
-                border = {0, dp(2), dp(2), dp(10)},
+                border = {0, GAP_2, GAP_2, GAP_10 },
             },
         },
 
 		title = {
 			layer = LAYER_TITLE,
 			h = dp(52),
-			padding = {dp(10), dp(10), dp(10), dp(5)},
+			padding = {GAP_10, GAP_10, GAP_10, GAP_5 },
 			bgImg = false,
 			button_cancel  = {
 				layer = LAYER_TITLE,
@@ -1913,7 +1934,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				align = 'right',
 			},
 			pressed = {
-				button_cancel  = {
+					button_cancel  = {
 					bgImg = pressedTitlebarButtonBox,
 					layer = LAYER_TITLE,
 					w       = dp(43),
@@ -1922,7 +1943,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			text = {
 				layer = LAYER_TITLE,
 				w = WH_FILL,
-				padding = {0,0,dp(20),0},
+				padding = {0,0,GAP_20,0},
 				align = "center",
 				font = _boldfont(FONT_SIZE_XS),
 				fg = TEXT_COLOR,
@@ -1931,17 +1952,17 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 		menu = {
 			h = CM_MENU_HEIGHT * CM_MENU_ITEM_COUNT,
-			border = { dp(7), 0, dp(7), 0 },
-			padding = { 0, 0, 0, dp(100) },
+			border = { GAP_7, 0, GAP_7, 0 },
+			padding = { 0, 0, 0, GAP_100 },
 			scrollbar = { 
 				h = CM_MENU_HEIGHT * CM_MENU_ITEM_COUNT,
 			},
 			item = {
 				h = CM_MENU_HEIGHT,
 				order = { "text", "arrow" },
-				padding = { ITEM_LEFT_PADDING, 0, dp(12), 0 },
+				padding = { GAP_12, 0, GAP_12, 0 },
 				text = {
-					padding = { 0, dp(4), 0, 0 },
+					padding = { 0, GAP_4, 0, 0 },
 					w = WH_FILL,
 					h = WH_FILL,
 					align = 'left',
@@ -1964,9 +1985,9 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				item = {
 					order = { "text", "arrow" },
 					bgImg = fiveItemSelectionBox,
-					padding = { ITEM_LEFT_PADDING, 0, dp(12), 0 },
+					padding = { GAP_12, 0, GAP_12, 0 },
 					text = {
-						padding = { 0, dp(4), 0, 0 },
+						padding = { 0, GAP_4, 0, 0 },
 						w = WH_FILL,
 						h = WH_FILL,
 						align = 'left',
@@ -2075,7 +2096,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		bgImg = contextMenuBox,
 		layer = LAYER_TITLE,
 
-     		title = {
+		title = {
 			hidden = 1,
 		},
 
@@ -2089,7 +2110,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			position = LAYOUT_NORTH,
 			scrollbar = { 
 				h = CM_MENU_HEIGHT * 5 - dp(8),
-				border = {0,dp(4),0,0},
+				border = {0,GAP_4,0,0},
 			},
 			item = {
 				h = CM_MENU_HEIGHT,
@@ -2131,17 +2152,17 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		bgImg = popupBox,
 		heading = {
 			w = WH_FILL,
-		      border = dp(10),
-		      fg = TEXT_COLOR,
-		      font = _boldfont(FONT_SIZE_M),
-			padding = { dp(4), dp(16), dp(4), 0 },
-		      align = "center",
-		      bgImg = false,
+			border = GAP_10,
+			fg = TEXT_COLOR,
+			font = _boldfont(FONT_SIZE_M),
+			padding = { GAP_4, GAP_16, GAP_4, 0 },
+			align = "center",
+			bgImg = false,
 		},
 		slider_group = {
 			w = WH_FILL,
 			align = 'center',
-			padding = { dp(10), 0, dp(10), 0 },
+			padding = { GAP_10, 0, GAP_10, 0 },
 			order = { 'slider' },
 		},
 	}
@@ -2169,13 +2190,13 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.volume_slider = {
 		w = WH_FILL,
-		border = { 0, 0, 0, dp(10) },
-                bgImg = _volumeSliderBackground,
-                img = _popupSliderBar,
+		border = { 0, 0, 0, GAP_10 },
+		bgImg = _volumeSliderBackground,
+		img = _popupSliderBar,
 	}
 
-        s.scanner_slider = _uses(s.volume_slider, {
-                img = _volumeSliderBar,
+	s.scanner_slider = _uses(s.volume_slider, {
+		img = _volumeSliderBar,
 	})
 	
 --------- BUTTONS ---------
@@ -2185,7 +2206,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		bgImg = titlebarButtonBox,
 		w = TITLE_BUTTON_WIDTH,
 		h = WH_FILL,
-		border = { dp(8), 0, dp(8), 0 },
+		border = { GAP_8, 0, GAP_8, 0 },
 		icon = {
 			w = WH_FILL,
 			h = WH_FILL,
@@ -2225,7 +2246,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		s[name].icon = _uses(_button.icon, attr)
 		s[name].w = dp(65)
 		s.pressed[name].icon = _uses(_pressed_button.icon, attr)
-		s[name].w = dp(65)
+		s.pressed[name].w = dp(65)
 	end
 
 	-- text button factory
@@ -2264,30 +2285,30 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	_titleButtonText("button_more_help", self:string("MORE_HELP"))
 	_titleButtonText("button_finish_operation", self:string("ENTER"))
 
-	s.button_back.padding     = { dp(2), 0, 0, dp(2) }
-	s.button_playlist.padding = { dp(2), 0, 0, dp(2) }
+	s.button_back.padding     = { GAP_2, 0, 0, GAP_2 }
+	s.button_playlist.padding = { GAP_2, 0, 0, GAP_2 }
 
 	s.button_volume_min = {
 		img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_down.png"),
-		border = { dp(5), 0, dp(5), 0 },
+		border = { GAP_5, 0, GAP_5, 0 },
 	}
 
 	s.button_volume_max = {
 		img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_up.png"),
-		border = { dp(5), 0, dp(5), 0 },
+		border = { GAP_5, 0, GAP_5, 0 },
 	}
 
 	s.button_keyboard_back = {
 		align = 'left',
 		w = dp(96),
 		h = dp(66),
-		padding = { dp(14), 0, 0, 0 },
-		border = { 0, dp(2), dp(9), dp(5)}, 
+		padding = { GAP_14, 0, 0, 0 },
+		border = { 0, GAP_2, GAP_9, GAP_5 }, 
 		img = _loadImage(imgpath .. "Icons/icon_delete_tch_text_entry.png"),
 		bgImg = deleteKeyBackground,
 	}
 	s.pressed.button_keyboard_back = _uses(s.button_keyboard_back, {
-                bgImg = deleteKeyPressedBackground,
+		bgImg = deleteKeyPressedBackground,
 	})
 
 
@@ -2322,12 +2343,12 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		w = WH_FILL,
 		align = "center",
 		position = LAYOUT_CENTER,
-		padding = { 0, 0, 0, dp(10) }
+		padding = { 0, 0, 0, GAP_10 }
 	}
 
 	local _popupicon = {
 		padding = 0,
-		border = { dp(22), dp(18), 0, 0 },
+		border = { GAP_22, GAP_18, 0, 0 },
 		h = WH_FILL,
 		w = dp(166),
 	}
@@ -2346,12 +2367,12 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		img = _loadImage(imgpath .. "Alerts/wifi_connecting.png"),
 		frameRate = 8,
 		frameWidth = dp(120),
-                padding = { 0, dp(90), 0, dp(10) },
+		padding = { 0, GAP_90, 0, GAP_10 },
 	})
 
 	s.icon_connected = _uses(_icon, {
 		img = _loadImage(imgpath .. "Alerts/connecting_success_icon.png"),
-                padding = { 0, dp(2), 0, dp(10) },
+		padding = { 0, GAP_2, 0, GAP_10 },
 	})
 
 	s.icon_photo_loading = _uses(_icon, {
@@ -2393,7 +2414,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		w = WH_FILL,
 		h = dp(90),
 		align = 'center',
-		padding = { 0, dp(5), 0, dp(5) },
+		padding = { 0, GAP_5, 0, GAP_5 },
 	}
 
 	s.icon_popup_mute = _uses(s.icon_popup_volume, {
@@ -2401,34 +2422,34 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	s.icon_popup_shuffle0 = _uses(_popupicon, {
-                img = _loadImage(imgpath .. "Icons/icon_popup_box_shuffle_off.png"),
-        })
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_shuffle_off.png"),
+	})
 
-        s.icon_popup_shuffle1 = _uses(_popupicon, {
-                img = _loadImage(imgpath .. "Icons/icon_popup_box_shuffle.png"),
-        })
+	s.icon_popup_shuffle1 = _uses(_popupicon, {
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_shuffle.png"),
+	})
 
-        s.icon_popup_shuffle2 = _uses(_popupicon, {
-                img = _loadImage(imgpath .. "Icons/icon_popup_box_shuffle_album.png"),
-        })
+	s.icon_popup_shuffle2 = _uses(_popupicon, {
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_shuffle_album.png"),
+	})
 
 	s.icon_popup_repeat0 = _uses(_popupicon, {
-                img = _loadImage(imgpath .. "Icons/icon_popup_box_repeat_off.png"),
-        })
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_repeat_off.png"),
+	})
 
-        s.icon_popup_repeat1 = _uses(_popupicon, {
-                img = _loadImage(imgpath .. "Icons/icon_popup_box_repeat_song.png"),
-        })
+	s.icon_popup_repeat1 = _uses(_popupicon, {
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_repeat_song.png"),
+	})
 
-        s.icon_popup_repeat2 = _uses(_popupicon, {
-                img = _loadImage(imgpath .. "Icons/icon_popup_box_repeat.png"),
-        })
+	s.icon_popup_repeat2 = _uses(_popupicon, {
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_repeat.png"),
+	})
 
 	s.icon_popup_sleep_15 = {
 		img = _loadImage(imgpath .. "Icons/icon_popup_box_sleep_15.png"),
 		h = WH_FILL,
 		w = WH_FILL,
-		padding = { dp(24), dp(24), 0, 0 },
+		padding = { GAP_24, GAP_24, 0, 0 },
 	}
 	s.icon_popup_sleep_30 = _uses(s.icon_popup_sleep_15, {
 		img = _loadImage(imgpath .. "Icons/icon_popup_box_sleep_30.png"),
@@ -2444,7 +2465,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 	s.icon_popup_sleep_cancel = _uses(s.icon_popup_sleep_15, {
 		img = _loadImage(imgpath .. "Icons/icon_popup_box_sleep_off.png"),
-		padding = { dp(24), dp(34), 0, 0 },
+		padding = { GAP_24, GAP_34, 0, 0 },
 	})
 
 	s.icon_power = _uses(_icon, {
@@ -2460,10 +2481,10 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		img = _loadImage(imgpath .. "Icons/icon_alarm.png"),
 	}
 
-        s.icon_art = _uses(_icon, {
-                padding = 0,
-                img = false,
-        })
+	s.icon_art = _uses(_icon, {
+		padding = 0,
+		img = false,
+	})
 
 	s.player_transporter = _uses(_buttonicon, {
 		img = _loadImage(imgpath .. "IconsResized/icon_transporter" .. skinSuffix),
@@ -2543,9 +2564,9 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		img = _loadImage(imgpath .. "IconsResized/icon_mymusic" .. skinSuffix),
 	})
 	s.hm__myMusic = _uses(s.hm_myMusic)
-   	s.hm_otherLibrary = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_ml_other_library" .. skinSuffix),
-        })
+	s.hm_otherLibrary = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_other_library" .. skinSuffix),
+	})
 	s.hm_myMusicSelector = _uses(s.hm_myMusic)
 
 	s.hm_favorites = _uses(_buttonicon, {
@@ -2612,36 +2633,36 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		img = _loadImage(imgpath .. "IconsResized/icon_blank" .. skinSuffix),
 	})
 
-        s.hm_settingsRepeat = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_settings_repeat" .. skinSuffix),
-        })
-        s.hm_settingsShuffle = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_settings_shuffle" .. skinSuffix),
-        })
-        s.hm_settingsSleep = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_settings_sleep" .. skinSuffix),
-        })
-        s.hm_settingsScreen = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_settings_screen" .. skinSuffix),
-        })
-        s.hm_appletCustomizeHome = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_settings_home" .. skinSuffix),
-        })
-        s.hm_settingsAudio = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_settings_audio" .. skinSuffix),
-        })
-        s.hm_linein = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_linein" .. skinSuffix),
-        })
+	s.hm_settingsRepeat = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_repeat" .. skinSuffix),
+	})
+	s.hm_settingsShuffle = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_shuffle" .. skinSuffix),
+	})
+	s.hm_settingsSleep = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_sleep" .. skinSuffix),
+	})
+	s.hm_settingsScreen = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_screen" .. skinSuffix),
+	})
+	s.hm_appletCustomizeHome = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_home" .. skinSuffix),
+	})
+	s.hm_settingsAudio = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_audio" .. skinSuffix),
+	})
+	s.hm_linein = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_linein" .. skinSuffix),
+	})
 
-        -- ??
-        s.hm_loading = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_loading" .. skinSuffix),
-        })
-        -- ??
-        s.hm_settingsPlugin = _uses(_buttonicon, {
-                img = _loadImage(imgpath .. "IconsResized/icon_settings_plugin" .. skinSuffix),
-        })
+	-- ??
+	s.hm_loading = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_loading" .. skinSuffix),
+	})
+	-- ??
+	s.hm_settingsPlugin = _uses(_buttonicon, {
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_plugin" .. skinSuffix),
+	})
 
 	-- indicator icons, on right of menus
 	local _indicator = {
@@ -2706,7 +2727,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	local _tracklayout = {
-		border = { dp(4), 0, dp(4), 0 },
+		border = { GAP_4, 0, GAP_4, 0 },
 		position = LAYOUT_NONE,
 		w = WH_FILL,
 		align = "left",
@@ -2730,7 +2751,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				fg      = TEXT_COLOR,
 				bgImg   = titlebarButtonBox,
 				w       = TITLE_BUTTON_WIDTH,
-				padding = { dp(8), 0, dp(8), 0},
+				padding = { GAP_8, 0, GAP_8, 0},
 				align   = 'center',
 			}
 		}),
@@ -2761,7 +2782,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			y          = TITLE_HEIGHT + dp(32) + dp(32) + dp(70),
 			h          = dp(32),
 			npartist = {
-				padding    = { 0, dp(6), 0, 0 },
+				padding    = { 0, GAP_6, 0, 0 },
 				w          = w - _tracklayout.x - dp(10),
 				align      = _tracklayout.align,
 				lineHeight = _tracklayout.lineHeight,
@@ -2779,7 +2800,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			h          = dp(32),
 			npalbum = {
 				w          = w - _tracklayout.x - dp(10),
-				padding    = { 0, dp(6), 0, 0 },
+				padding    = { 0, GAP_6, 0, 0 },
 				align      = _tracklayout.align,
 				lineHeight = _tracklayout.lineHeight,
 				fg         = _tracklayout.fg,
@@ -2906,12 +2927,12 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			position = LAYOUT_NONE,
 			x = _tracklayout.x + 2,
 			y = h - dp(160),
-			padding = { 0, dp(11), 0, 0 },
+			padding = { 0, GAP_11, 0, 0 },
 			order = { "elapsed", "slider", "remain" },
 			elapsed = {
 				w = dp(60),
 				align = 'left',
-				padding = { 0, 0, dp(4), dp(20) },
+				padding = { 0, 0, GAP_4, GAP_20 },
 				font = _boldfont(FONT_SIZE_XS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
@@ -2919,7 +2940,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			remain = {
 				w = dp(60),
 				align = 'right',
-				padding = { dp(4), 0, 0, dp(20) },
+				padding = { GAP_4, 0, 0, GAP_20 },
 				font = _boldfont(FONT_SIZE_XS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
@@ -2927,7 +2948,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			elapsedSmall = {
 				w = dp(60),
 				align = 'left',
-				padding = { 0, 0, dp(4), dp(20) },
+				padding = { 0, 0, GAP_4, GAP_20 },
 				font = _boldfont(FONT_SIZE_XXS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
@@ -2935,7 +2956,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			remainSmall = {
 				w = dp(60),
 				align = 'right',
-				padding = { dp(4), 0, 0, dp(20) },
+				padding = { GAP_4, 0, 0, GAP_20 },
 				font = _boldfont(FONT_SIZE_XXS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
@@ -2976,13 +2997,13 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.npvolumeB = {
 		w = volumeBarWidth,
-		border = { dp(5), dp(20), dp(5), 0 },
-		padding = { dp(6), 0, dp(6), 0 },
-                position = LAYOUT_SOUTH,
-                horizontal = 1,
-                bgImg = _volumeSliderBackground,
-                img = _volumeSliderBar,
-                pillImg = _volumeSliderPill,
+		border = { GAP_5, GAP_20, GAP_5, 0 },
+		padding = { GAP_6, 0, GAP_6, 0 },
+		position = LAYOUT_SOUTH,
+		horizontal = 1,
+		bgImg = _volumeSliderBackground,
+		img = _volumeSliderBar,
+		pillImg = _volumeSliderPill,
 	}
 	s.npvolumeB_disabled = _uses(s.npvolumeB, {
 		pillImg = false,
@@ -3067,7 +3088,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			bgImg = false,
 			text = {
 				border = { h - dp(72), 0, 0, 0 },
-				padding = { dp(10), dp(12), dp(10), dp(15) },
+				padding = { GAP_10, GAP_12, GAP_10, GAP_15 },
 				font = _boldfont(FONT_SIZE_S),
 			},
 			button_back = {
@@ -3170,7 +3191,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	else
 		s.nowplaying_large_art.npcontrols.div1 = _uses(_transportControlBorder, {
 			w = dp(6),
-			padding = { dp(2), 0, dp(2), 0 }
+			padding = { GAP_2, 0, GAP_2, 0 }
 		})
 
 		s.nowplaying_large_art.npcontrols.div2 = _uses(s.nowplaying_large_art.npcontrols.div1)
@@ -3223,7 +3244,6 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 	
 	s.nowplaying_art_only = _uses(s.nowplaying, {
-
 		bgImg            = blackBackground,
 		title            = { hidden = 1 },
 		nptitle          = { hidden = 1 },
@@ -3253,26 +3273,26 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.nowplaying_art_only.pressed = _uses(s.nowplaying_art_only)
 
 	s.nowplaying_text_only = _uses(s.nowplaying, {
-		nptitle          = { 
-                        x          = dp(40),
-                        y          = TITLE_HEIGHT + dp(50),
-                        nptrack =  {
-                                w          = w - dp(140),
-                        },
+		nptitle = {
+			x = dp(40),
+			y = TITLE_HEIGHT + dp(50),
+			nptrack =  {
+				w   = w - dp(140),
+			},
 		},
-		npartistgroup    = { 
-                        x          = dp(40),
-                        y          = TITLE_HEIGHT + dp(50) + dp(65),
-                        npartist =  {
-                                w          = w - dp(65),
-                        },
+		npartistgroup = {
+			x = dp(40),
+			y = TITLE_HEIGHT + dp(50) + dp(65),
+			npartist =  {
+				w = w - dp(65),
+			},
 		},
-		npalbumgroup     = { 
-                        x          = dp(40),
-                        y          = TITLE_HEIGHT + dp(50) + dp(60) + dp(55),
-                        npalbum =  {
-                                w          = w - dp(65),
-                        },
+		npalbumgroup = {
+			x = dp(40),
+			y = TITLE_HEIGHT + dp(50) + dp(60) + dp(55),
+			npalbum =  {
+				w = w - dp(65),
+			},
 		},
 		npartwork = { hidden = 1 },
 
@@ -3282,11 +3302,11 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			position = LAYOUT_NONE,
 			x = dp(50),
 			y = h - dp(160),
-			padding = { 0, dp(10), 0, 0 },
+			padding = { 0, GAP_10, 0, 0 },
 			elapsed = {
 				w = dp(60),
 				align = 'left',
-				padding = { 0, 0, dp(4), dp(20) },
+				padding = { 0, 0, GAP_4, GAP_20 },
 				font = _boldfont(FONT_SIZE_XS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
@@ -3294,7 +3314,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			remain = {
 				w = dp(60),
 				align = 'right',
-				padding = { dp(4), 0, 0, dp(20) },
+				padding = { GAP_4, 0, 0, GAP_20 },
 				font = _boldfont(FONT_SIZE_XS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
@@ -3302,7 +3322,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			elapsedSmall = {
 				w = dp(60),
 				align = 'left',
-				padding = { 0, 0, dp(4), dp(20) },
+				padding = { 0, 0, GAP_4, GAP_20 },
 				font = _boldfont(FONT_SIZE_XXS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
@@ -3310,7 +3330,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			remainSmall = {
 				w = dp(60),
 				align = 'right',
-				padding = { dp(4), 0, 0, dp(20) },
+				padding = { GAP_4, 0, 0, GAP_20 },
 				font = _boldfont(FONT_SIZE_XXS),
 				fg = { 0xe7,0xe7, 0xe7 },
 				sh = { 0x37, 0x37, 0x37 },
@@ -3366,7 +3386,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			y = 0,
 			h = TITLE_HEIGHT,
 			border = { 0, 0 ,0, 0 },
-			padding = { dp(20), dp(14), dp(5), dp(5) },
+			padding = { GAP_20, GAP_14, GAP_5, GAP_5 },
 			nptrack = {
 				align = "center",
 				w = w - dp(196),
@@ -3384,7 +3404,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			bgImg = titleBox,
 			align = "center",
 			fg = { 0xb3, 0xb3, 0xb3 },
-			padding = { dp(100), 0, dp(100), dp(5) },
+			padding = { GAP_100, 0, GAP_100, GAP_5 },
 			font = _font(NP_ARTISTALBUM_FONT_SIZE),
 		},
 
@@ -3411,7 +3431,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				h = dp(29),
 				w = WH_FILL,
 				zOrder = 10,
-				padding = { 0, dp(19), 0, dp(15) },
+				padding = { 0, GAP_20, 0, GAP_15 },
 				horizontal = 1,
 				bgImg = false,
 				img = _vizProgressBar,
@@ -3530,22 +3550,21 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		}),
 	}
 	s.brightness_group.pressed = {
-
 		down   = _uses(s.brightness_group.down, { bgImg = sliderButtonPressed }),
 		up   = _uses(s.brightness_group.up, { bgImg = sliderButtonPressed }),
 	}
 
 	s.brightness_slider = {
 		w = WH_FILL,
-		border = { dp(5), dp(12), dp(5), 0 },
-		padding = { dp(6), 0, dp(6), 0 },
-                position = LAYOUT_SOUTH,
-                horizontal = 1,
-                bgImg = _volumeSliderBackground,
-                img = _volumeSliderBar,
-                pillImg = _volumeSliderPill,
+		border = { GAP_5, GAP_12, GAP_5, 0 },
+		padding = { GAP_6, 0, GAP_6, 0 },
+		position = LAYOUT_SOUTH,
+		horizontal = 1,
+		bgImg = _volumeSliderBackground,
+		img = _volumeSliderBar,
+		pillImg = _volumeSliderPill,
 	}
-	
+
 	s.settings_slider_group = _uses(s.brightness_group, {
 		down = {
 			img = _loadImage(imgpath .. "Icons/icon_toolbar_minus.png"),
@@ -3588,19 +3607,19 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	}
 
 	s.debug_canvas = {
-			zOrder = 9999
+		zOrder = 9999
 	}
 
-        s.demo_text = {
-                font = _boldfont(18),
-                position = LAYOUT_SOUTH,
-                w = w,
+	s.demo_text = {
+		font = _boldfont(FONT_SIZE_XS),
+		position = LAYOUT_SOUTH,
+		w = w,
 		h = dp(50),
-                align = 'center',
-                padding = { dp(6), 0, dp(6), dp(10) },
-                fg = TEXT_COLOR,
-                sh = TEXT_SH_COLOR,
-        }
+		align = 'center',
+		padding = { GAP_6, 0, GAP_6, GAP_10 },
+		fg = TEXT_COLOR,
+		sh = TEXT_SH_COLOR,
+	}
 
 
 	-- inheritable properties for child skins
@@ -3630,7 +3649,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		_uses = _uses,
 		_font = _font,
 		_boldfont = _boldfont,
-		_loadImage = function(img) return _loadImage(imgpath .. img) end,
+		_loadImage = function(img) return _loadImage(img) end,
 		_loadImageTile = function(img) return _loadImageTile(img) end,
 	}
 
@@ -3649,9 +3668,9 @@ function npButtonSelectorShow(self)
 			text = self:string("NOW_PLAYING_BUTTON_" .. string.upper(v)),
 			style = 'item_choice',
 			check = Checkbox("checkbox", 
-				function(object, isSelected)
-					appletManager:callService("setNowPlayingScreenButtons", v, isSelected)
-					jiveMain:reloadSkin()
+			function(object, isSelected)
+				appletManager:callService("setNowPlayingScreenButtons", v, isSelected)
+				jiveMain:reloadSkin()
 			end,
 			settings[v]),
 		} )

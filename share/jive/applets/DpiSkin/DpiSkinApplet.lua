@@ -26,17 +26,15 @@ SqueezeboxSkin overrides the following methods:
 
 
 -- stuff we use
-local ipairs, pairs, setmetatable, type, tostring, tonumber = ipairs, pairs, setmetatable, type, tostring, tonumber
+local ipairs, pairs, setmetatable, type, tostring, tonumber, floor =
+	ipairs, pairs, setmetatable, type, tostring, tonumber, math.floor
 
 local oo                     = require("loop.simple")
 local string                 = require("jive.utils.string")
-local math                   = math
 local os                     = require("os")
-
 local Applet                 = require("jive.Applet")
 local Audio                  = require("jive.ui.Audio")
 local Checkbox               = require("jive.ui.Checkbox")
-local FontM                  = require("jive.ui.FontM")
 local Framework              = require("jive.ui.Framework")
 local Icon                   = require("jive.ui.Icon")
 local Label                  = require("jive.ui.Label")
@@ -53,7 +51,7 @@ local debug                  = require("jive.utils.debug")
 local autotable              = require("jive.utils.autotable")
 local Dpi                    = require("jive.ui.Dpi")
 local log                    = require("jive.utils.log").logger("applet.DpiSkin")
-
+local SkinUtils              = require("jive.utils.skin")
 
 local EVENT_ACTION           = jive.ui.EVENT_ACTION
 local EVENT_CONSUME          = jive.ui.EVENT_CONSUME
@@ -168,117 +166,16 @@ function param(self)
 	}
 end
 
-local function _loadImage(self, file)
-	return Surface:loadImage(imgpath .. file)
-end
-
-
-local function _buildTileKey(tileTable)
-	local key = ""
-	for i = 1, #tileTable do
-		local element = tileTable[i] or "NIL"
-		key = key .. element .. "&"
-	end
-
-	return key
-end
-
-local function _loadTile(self, tileTable)
-	if not tileTable then
-		return nil
-	end
-
-	local key = _buildTileKey(tileTable)
-
-
-	if not self.tiles[key] then
-		self.tiles[key] = Tile:loadTiles(tileTable)
-	end
-
-	return self.tiles[key]
-end
-
-
-local function _loadHTile(self, tileTable)
-	if not tileTable then
-		return nil
-	end
-
-	local key = _buildTileKey(tileTable)
-
-	if not self.hTiles[key] then
-		self.hTiles[key] = Tile:loadHTiles(tileTable)
-	end
-
-	return self.hTiles[key]
-end
-
-
-local function _loadVTile(self, tileTable)
-	if not tileTable then
-		return nil
-	end
-
-	local key = _buildTileKey(tileTable)
-
-	if not self.vTiles[key] then
-		self.vTiles[key] = Tile:loadVTiles(tileTable)
-	end
-
-	return self.vTiles[key]
-end
-
-
-local function _loadImageTile(self, file)
-	if not file then
-		return nil
-	end
-
-	return Tile:loadImage(file)
-end
-
-
--- define a local function to make it easier to create icons.
-local function _icon(x, y, img)
-	local var = {}
-	var.x = x
-	var.y = y
-	var.img = _loadImage(self, img)
-	var.layer = LAYER_FRAME
-	var.position = LAYOUT_SOUTH
-
-	return var
-end
-
--- define a local function that makes it easier to set fonts
-local function _font(fontSize)
-	return FontM:regularFont(fontSize)
-end
-
--- define a local function that makes it easier to set bold fonts
-local function _boldfont(fontSize)
-	return FontM:boldFont(fontSize)
-end
-
--- defines a new style that inherrits from an existing style
-local function _uses(parent, value)
-	if parent == nil then
-		log:warn("nil parent in _uses at:\n", debug.traceback())
-	end
-	local style = {}
-	setmetatable(style, { __index = parent })
-	for k,v in pairs(value or {}) do
-		if type(v) == "table" and type(parent[k]) == "table" then
-			-- recursively inherrit from parent style
-			style[k] = _uses(parent[k], v)
-		else
-			style[k] = v
-		end
-	end
-
-	return style
-end
-
+-- skin functions
+local _loadImage =  SkinUtils.loadImage
+local _loadTile =  SkinUtils.loadTile
+local _loadHTile =  SkinUtils.loadHTile
+local _loadVTile =  SkinUtils.loadVTile
+local _loadImageTile =  SkinUtils.loadImageTile
+local _icon =  SkinUtils.icon
+local _font =  SkinUtils.font
+local _boldfont =  SkinUtils.boldfont
+local _uses =  SkinUtils.uses
 
 -- skin
 -- The meta arranges for this to be called to skin the interface.
@@ -294,50 +191,50 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	local skinSuffix = "_" .. thisSkin .. ".png"
 
 	-- Images and Tiles
-	local inputTitleBox           = _loadImageTile(self,  imgpath .. "Titlebar/titlebar.png" )
-	local backButton              = _loadImageTile(self,  imgpath .. "Icons/icon_back_button_tb.png")
-	local cancelButton            = _loadImageTile(self,  imgpath .. "Icons/icon_close_button_tb.png")
-	local homeButton              = _loadImageTile(self,  imgpath .. "Icons/icon_home_button_tb.png")
-	local helpButton              = _loadImageTile(self,  imgpath .. "Icons/icon_help_button_tb.png")
-	local powerButton             = _loadImageTile(self,  imgpath .. "Icons/icon_power_button_tb.png")
-	local nowPlayingButton        = _loadImageTile(self,  imgpath .. "Icons/icon_nplay_button_tb.png")
-	local playlistButton          = _loadImageTile(self,  imgpath .. "Icons/icon_nplay_list_tb.png")
-	local moreButton              = _loadImageTile(self,  imgpath .. "Icons/icon_more_tb.png")
-	local touchToolbarBackground  = _loadImageTile(self,  imgpath .. "Touch_Toolbar/toolbar_tch_bkgrd.png")
-	local sliderBackground        = _loadImageTile(self,  imgpath .. "Touch_Toolbar/toolbar_lrg.png")
-	local touchToolbarKeyDivider  = _loadImageTile(self,  imgpath .. "Touch_Toolbar/toolbar_divider.png")
-	local deleteKeyBackground     = _loadImageTile(self,  imgpath .. "Buttons/button_delete_text_entry.png")
-	local deleteKeyPressedBackground = _loadImageTile(self,  imgpath .. "Buttons/button_delete_text_entry_press.png")
-        local helpTextBackground  = _loadImageTile(self, imgpath .. "Titlebar/tbar_dropdwn_bkrgd.png")
+	local inputTitleBox           = _loadImageTile(imgpath .. "Titlebar/titlebar.png" )
+	local backButton              = _loadImageTile(imgpath .. "Icons/icon_back_button_tb.png")
+	local cancelButton            = _loadImageTile(imgpath .. "Icons/icon_close_button_tb.png")
+	local homeButton              = _loadImageTile(imgpath .. "Icons/icon_home_button_tb.png")
+	local helpButton              = _loadImageTile(imgpath .. "Icons/icon_help_button_tb.png")
+	local powerButton             = _loadImageTile(imgpath .. "Icons/icon_power_button_tb.png")
+	local nowPlayingButton        = _loadImageTile(imgpath .. "Icons/icon_nplay_button_tb.png")
+	local playlistButton          = _loadImageTile(imgpath .. "Icons/icon_nplay_list_tb.png")
+	local moreButton              = _loadImageTile(imgpath .. "Icons/icon_more_tb.png")
+	local touchToolbarBackground  = _loadImageTile(imgpath .. "Touch_Toolbar/toolbar_tch_bkgrd.png")
+	local sliderBackground        = _loadImageTile(imgpath .. "Touch_Toolbar/toolbar_lrg.png")
+	local touchToolbarKeyDivider  = _loadImageTile(imgpath .. "Touch_Toolbar/toolbar_divider.png")
+	local deleteKeyBackground     = _loadImageTile(imgpath .. "Buttons/button_delete_text_entry.png")
+	local deleteKeyPressedBackground = _loadImageTile(imgpath .. "Buttons/button_delete_text_entry_press.png")
+        local helpTextBackground  = _loadImageTile(imgpath .. "Titlebar/tbar_dropdwn_bkrgd.png")
 
 
 	local blackBackground   = Tile:fillColor(0x000000ff)
 
 	--FIXME, _r asset here doesn't work...it's supposed to have a fadeout effect and it doesn't appear on screen
-	local fiveItemBox             = _loadHTile(self, {
+	local fiveItemBox             = _loadHTile(self.hTiles, {
 		 imgpath .. "5_line_lists/tch_5line_divider_l.png",
 		 imgpath .. "5_line_lists/tch_5line_divider.png",
 		 imgpath .. "5_line_lists/tch_5line_divider_r.png",
 	})
-	local fiveItemSelectionBox    = _loadHTile(self, {
+	local fiveItemSelectionBox    = _loadHTile(self.hTiles, {
 		 nil,
 		 imgpath .. "5_line_lists/menu_sel_box_5line.png",
 		 imgpath .. "5_line_lists/menu_sel_box_5line_r.png",
 	})
-	local fiveItemPressedBox      = _loadHTile(self, {
+	local fiveItemPressedBox      = _loadHTile(self.hTiles, {
 		 nil,
 		 imgpath .. "5_line_lists/menu_sel_box_5line_press.png",
 		 imgpath .. "5_line_lists/menu_sel_box_5line_press_r.png",
 	})
 
-	local threeItemSelectionBox            = _loadHTile(self, {
+	local threeItemSelectionBox            = _loadHTile(self.hTiles, {
 		 imgpath .. "3_line_lists/menu_sel_box_3line_l.png",
 		 imgpath .. "3_line_lists/menu_sel_box_3line.png",
 		 imgpath .. "3_line_lists/menu_sel_box_3line_r.png",
 	})
-	local threeItemPressedBox = _loadImageTile(self, imgpath .. "3_line_lists/menu_sel_box_3item_press.png")
+	local threeItemPressedBox = _loadImageTile(imgpath .. "3_line_lists/menu_sel_box_3item_press.png")
 	
-	local contextMenuPressedBox    = _loadTile(self, {
+	local contextMenuPressedBox    = _loadTile(self.tiles, {
 		imgpath .. "Popup_Menu/button_cm_press.png",
 		imgpath .. "Popup_Menu/button_cm_tl_press.png",
 		imgpath .. "Popup_Menu/button_cm_t_press.png",
@@ -349,7 +246,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Popup_Menu/button_cm_l_press.png",
 	})
 	
-	local keyTopLeft = _loadTile(self, {
+	local keyTopLeft = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd_tl.png",
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd_t.png",
@@ -361,7 +258,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd_l.png",
 	})
 
-	local keyTopLeftPressed = _loadTile(self, {
+	local keyTopLeftPressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keybrd_n_button_press.png",
 		imgpath .. "Buttons/keybrd_nw_button_press_tl.png",
 		imgpath .. "Buttons/keybrd_n_button_press_t.png",
@@ -373,7 +270,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Buttons/keybrd_nw_button_press_l.png",
 	})
 
-	local keyTop = _loadTile(self, {
+	local keyTop = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		nil,
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd_t_wvert.png",
@@ -385,7 +282,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyTopPressed = _loadTile(self, {
+	local keyTopPressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keybrd_n_button_press.png",
 		nil,
 		imgpath .. "Buttons/keybrd_n_button_press_t.png",
@@ -397,7 +294,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyTopRight = _loadTile(self, {
+	local keyTopRight = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		nil,
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd_t_wvert.png",
@@ -409,7 +306,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyTopRightPressed = _loadTile(self, {
+	local keyTopRightPressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keybrd_n_button_press.png",
 		nil,
 		imgpath .. "Buttons/keybrd_n_button_press_t.png",
@@ -421,7 +318,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyLeft = _loadTile(self, {
+	local keyLeft = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboardLeftEdge.png",
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -433,7 +330,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd_l.png",
 	})
 
-	local keyLeftPressed = _loadTile(self, {
+	local keyLeftPressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keyboard_button_press.png",
 		nil,
 		nil,
@@ -445,7 +342,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Buttons/keyboard_button_press.png",
 	})
 
-	local keyMiddle = _loadTile(self, {
+	local keyMiddle = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		nil,
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -457,7 +354,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyMiddlePressed = _loadTile(self, {
+	local keyMiddlePressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keyboard_button_press.png",
 		nil,
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -469,7 +366,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local sliderButtonPressed = _loadTile(self, {
+	local sliderButtonPressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keyboard_button_press.png",
 		nil,
 		nil,
@@ -481,7 +378,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyRight = _loadTile(self, {
+	local keyRight = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		nil,
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -493,7 +390,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyRightPressed = _loadTile(self, {
+	local keyRightPressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keyboard_button_press.png",
 		nil,
 		nil,
@@ -505,7 +402,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		nil,
 	})
 
-	local keyBottomLeft = _loadTile(self, {
+	local keyBottomLeft = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboardLeftEdge.png",
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -517,7 +414,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd_l.png",
 	})
 
-	local keyBottomLeftPressed = _loadTile(self, {
+	local keyBottomLeftPressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keybrd_s_button_press.png",
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboardLeftEdge.png",
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -529,7 +426,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Buttons/keybrd_sw_button_press_l.png",
 	})
 
-	local keyBottom = _loadTile(self, {
+	local keyBottom = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		nil,
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -541,7 +438,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyBottomPressed = _loadTile(self, {
+	local keyBottomPressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keybrd_s_button_press.png",
 		nil,
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -553,7 +450,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyBottomRight = _loadTile(self, {
+	local keyBottomRight = _loadTile(self.tiles, {
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_bkgrd.png",
 		nil,
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -565,7 +462,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_vert.png",
 	})
 
-	local keyBottomRightPressed = _loadTile(self, {
+	local keyBottomRightPressed = _loadTile(self.tiles, {
 		imgpath .. "Buttons/keybrd_s_button_press.png",
 		nil,
 		imgpath .. "Text_Entry/Keyboard_Touch/keyboard_divider_hort.png",
@@ -578,7 +475,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	local titleBox                =
-		_loadTile(self, {
+		_loadTile(self.tiles, {
 				 imgpath .. "Titlebar/titlebar.png",
 				 nil,
 				 nil,
@@ -591,7 +488,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		})
 
 	local textinputBackground     = 
-		_loadTile(self, {
+		_loadTile(self.tiles, {
 				 imgpath .. "Text_Entry/Keyboard_Touch/titlebar_box.png",
 				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_tl.png",
 				 imgpath .. "Text_Entry/Keyboard_Touch/text_entry_titlebar_box_t.png",
@@ -604,7 +501,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				})
 
 	local pressedTitlebarButtonBox =
-		_loadTile(self, {
+		_loadTile(self.tiles, {
 					imgpath .. "Buttons/button_titlebar_press.png",
 					imgpath .. "Buttons/button_titlebar_tl_press.png",
 					imgpath .. "Buttons/button_titlebar_t_press.png",
@@ -617,7 +514,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				})
 
 	local titlebarButtonBox =
-		_loadTile(self, {
+		_loadTile(self.tiles, {
 					imgpath .. "Buttons/button_titlebar.png",
 					imgpath .. "Buttons/button_titlebar_tl.png",
 					imgpath .. "Buttons/button_titlebar_t.png",
@@ -630,7 +527,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				})
 
 	local popupBox = 
-		_loadTile(self, {
+		_loadTile(self.tiles, {
 				       imgpath .. "Popup_Menu/popup_box.png",
 				       imgpath .. "Popup_Menu/popup_box_tl.png",
 				       imgpath .. "Popup_Menu/popup_box_t.png",
@@ -643,7 +540,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			       })
 
 	local contextMenuBox = 
-		_loadTile(self, {
+		_loadTile(self.tiles, {
 				       imgpath .. "Popup_Menu/cm_popup_box.png",
 				       imgpath .. "Popup_Menu/cm_popup_box_tl.png",
 				       imgpath .. "Popup_Menu/cm_popup_box_t.png",
@@ -658,14 +555,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 
 	local scrollBackground = 
-		_loadVTile(self, {
+		_loadVTile(self.vTiles, {
 					imgpath .. "Scroll_Bar/scrollbar_bkgrd_t.png",
 					imgpath .. "Scroll_Bar/scrollbar_bkgrd.png",
 					imgpath .. "Scroll_Bar/scrollbar_bkgrd_b.png",
 			       })
 
 	local scrollBar = 
-		_loadVTile(self, {
+		_loadVTile(self.vTiles, {
 					imgpath .. "Scroll_Bar/scrollbar_body_t.png",
 					imgpath .. "Scroll_Bar/scrollbar_body.png",
 					imgpath .. "Scroll_Bar/scrollbar_body_b.png",
@@ -673,7 +570,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	local popupBackground = blackBackground
 
-	local textinputCursor = _loadImageTile(self, imgpath .. "Text_Entry/Keyboard_Touch/tch_cursor.png")
+	local textinputCursor = _loadImageTile(imgpath .. "Text_Entry/Keyboard_Touch/tch_cursor.png")
 
 	local THUMB_SIZE = self:param().THUMB_SIZE
 	
@@ -705,14 +602,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	local TITLE_BUTTON_WIDTH = dp(76)
 
 	local smallSpinny = {
-		img = _loadImage(self, "Alerts/wifi_connecting_sm.png"),
+		img = _loadImage(imgpath .. "Alerts/wifi_connecting_sm.png"),
 		frameRate = 8,
 		frameWidth = dp(26),
 		padding = 0,
 		h = WH_FILL,
 	}
 	local largeSpinny = {
-		img = _loadImage(self, "Alerts/wifi_connecting.png"),
+		img = _loadImage(imgpath .. "Alerts/wifi_connecting.png"),
 		position = LAYOUT_CENTER,
 		w = WH_FILL,
 		align = "center",
@@ -728,13 +625,13 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	}
 
 	local playArrow = { 
-		img = _loadImage(self, "Icons/selection_play_3line_on.png"),
+		img = _loadImage(imgpath .. "Icons/selection_play_3line_on.png"),
 	}
 	local addArrow  = { 
-		img = _loadImage(self, "Icons/selection_add_3line_on.png"),
+		img = _loadImage(imgpath .. "Icons/selection_add_3line_on.png"),
 	}
 	local favItem  = { 
-		img = _loadImage(self, "Icons/icon_toolbar_fav.png"),
+		img = _loadImage(imgpath .. "Icons/icon_toolbar_fav.png"),
 	}
 
 
@@ -742,53 +639,53 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 --------- CONSTANTS ---------
 
-	local _progressBackground = _loadImageTile(self, imgpath .. "Alerts/alert_progress_bar_bkgrd.png")
+	local _progressBackground = _loadImageTile(imgpath .. "Alerts/alert_progress_bar_bkgrd.png")
 
-	local _progressBar = _loadHTile(self, {
+	local _progressBar = _loadHTile(self.hTiles, {
 		nil,
 		imgpath .. "Alerts/alert_progress_bar_body.png",
 	})
 
-	local _songProgressBackground = _loadHTile(self, {
+	local _songProgressBackground = _loadHTile(self.hTiles, {
 		imgpath .. "Song_Progress_Bar/SP_Bar_Touch/tch_progressbar_bkgrd_l.png",
 		imgpath .. "Song_Progress_Bar/SP_Bar_Touch/tch_progressbar_bkgrd.png",
 		imgpath .. "Song_Progress_Bar/SP_Bar_Touch/tch_progressbar_bkgrd_r.png",
 	})
 
-	local _songProgressBar = _loadHTile(self, {
+	local _songProgressBar = _loadHTile(self.hTiles, {
 			nil,
 			nil,
 			imgpath .. "Song_Progress_Bar/SP_Bar_Touch/tch_progressbar_slider.png"
 	})
 
-	local _songProgressBarDisabled = _loadHTile(self, {
+	local _songProgressBarDisabled = _loadHTile(self.hTiles, {
 			nil,
 			nil,
 			imgpath .. "Song_Progress_Bar/SP_Bar_Remote/rem_progressbar_slider.png"
 	})
 
-	local _vizProgressBar = _loadHTile(self, {
+	local _vizProgressBar = _loadHTile(self.hTiles, {
 			imgpath .. "UNOFFICIAL/viz_progress_fill_l.png",
 			imgpath .. "UNOFFICIAL/viz_progress_fill.png",
 			imgpath .. "UNOFFICIAL/viz_progress_fill_r.png",
 	})
-	local _vizProgressBarPill = _loadImageTile(self, imgpath .. "UNOFFICIAL/viz_progress_slider.png")
+	local _vizProgressBarPill = _loadImageTile(imgpath .. "UNOFFICIAL/viz_progress_slider.png")
 
-	local _volumeSliderBackground = _loadHTile(self, {
+	local _volumeSliderBackground = _loadHTile(self.hTiles, {
 		imgpath .. "Touch_Toolbar/tch_volumebar_bkgrd_l.png",
 		imgpath .. "Touch_Toolbar/tch_volumebar_bkgrd.png",
 		imgpath .. "Touch_Toolbar/tch_volumebar_bkgrd_r.png",
 	})
 
-	local _volumeSliderBar = _loadHTile(self, {
+	local _volumeSliderBar = _loadHTile(self.hTiles, {
                imgpath .. "UNOFFICIAL/tch_volumebar_fill_l.png",
                imgpath .. "UNOFFICIAL/tch_volumebar_fill.png",
                imgpath .. "UNOFFICIAL/tch_volumebar_fill_r.png",
 	})
 	
-	local _volumeSliderPill = _loadImageTile(self, imgpath .. "Touch_Toolbar/tch_volume_slider.png")
+	local _volumeSliderPill = _loadImageTile(imgpath .. "Touch_Toolbar/tch_volume_slider.png")
 
-	local _popupSliderBar = _loadHTile(self, {
+	local _popupSliderBar = _loadHTile(self.hTiles, {
 		imgpath .. "Touch_Toolbar/tch_volumebar_fill_l.png",
 		imgpath .. "Touch_Toolbar/tch_volumebar_fill.png",
 		imgpath .. "Touch_Toolbar/tch_volumebar_fill_r.png",
@@ -893,7 +790,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		},
 		arrow = {
 	      		align = ITEM_ICON_ALIGN,
-	      		img = _loadImage(self, "Icons/selection_right_5line.png"),
+	      		img = _loadImage(imgpath .. "Icons/selection_right_5line.png"),
 			padding = { 0, 0, 0, 0 },
 		},
 		bgImg = fiveItemBox,
@@ -911,8 +808,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.checkbox.align = 'center'
 	s.checkbox.padding = CHECKBOX_RADIO_PADDING
 	s.checkbox.h = WH_FILL
-        s.checkbox.img_on = _loadImage(self, "Icons/checkbox_on.png")
-        s.checkbox.img_off = _loadImage(self, "Icons/checkbox_off.png")
+        s.checkbox.img_on = _loadImage(imgpath .. "Icons/checkbox_on.png")
+        s.checkbox.img_off = _loadImage(imgpath .. "Icons/checkbox_off.png")
 
 
         -- Radio button
@@ -920,8 +817,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.radio.align = 'center'
 	s.radio.padding = CHECKBOX_RADIO_PADDING
 	s.radio.h = WH_FILL
-        s.radio.img_on = _loadImage(self, "Icons/radiobutton_on.png")
-        s.radio.img_off = _loadImage(self, "Icons/radiobutton_off.png")
+        s.radio.img_on = _loadImage(imgpath .. "Icons/radiobutton_on.png")
+        s.radio.img_off = _loadImage(imgpath .. "Icons/radiobutton_off.png")
 
 	s.item_choice = _uses(s.item, {
 		order  = { 'icon', 'text', 'check' },
@@ -939,7 +836,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		check = {
 			align = ITEM_ICON_ALIGN,
 			padding = CHECK_PADDING,
-			img = _loadImage(self, "Icons/icon_check_5line.png")
+			img = _loadImage(imgpath .. "Icons/icon_check_5line.png")
 	      	}
 	})
 
@@ -1192,25 +1089,25 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.keyboard.spacer_bottomRight = _uses(s.keyboard.key_bottomRight)
 
 	s.keyboard.shiftOff = _uses(s.keyboard.key_left, {
-		img = _loadImage(self, "Icons/icon_shift_off.png"),
+		img = _loadImage(imgpath .. "Icons/icon_shift_off.png"),
 		padding = { dp(1), 0, 0, 0 },
 	})
 	s.keyboard.shiftOn = _uses(s.keyboard.key_left, {
-		img = _loadImage(self, "Icons/icon_shift_on.png"),
+		img = _loadImage(imgpath .. "Icons/icon_shift_on.png"),
 		padding = { dp(1), 0, 0, 0 },
 	})
 
 	s.keyboard.arrow_left_middle = _uses(s.keyboard.key_middle, {
-		img = _loadImage(self, "Icons/icon_arrow_left.png")
+		img = _loadImage(imgpath .. "Icons/icon_arrow_left.png")
 	})
 	s.keyboard.arrow_right_right = _uses(s.keyboard.key_right, {
-		img = _loadImage(self, "Icons/icon_arrow_right.png")
+		img = _loadImage(imgpath .. "Icons/icon_arrow_right.png")
 	})
 	s.keyboard.arrow_left_bottom = _uses(s.keyboard.key_bottom, {
-		img = _loadImage(self, "Icons/icon_arrow_left.png")
+		img = _loadImage(imgpath .. "Icons/icon_arrow_left.png")
 	})
 	s.keyboard.arrow_right_bottom = _uses(s.keyboard.key_bottom, {
-		img = _loadImage(self, "Icons/icon_arrow_right.png")
+		img = _loadImage(imgpath .. "Icons/icon_arrow_right.png")
 	})
 
 
@@ -1235,7 +1132,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
                 icon = _uses(s.keyboard.key_bottomRight, {
 			bgImg = keyBottomRight,
 			hidden = 0,
-                        img = _loadImage(self, "Alerts/wifi_connecting_sm.png"),
+            img = _loadImage(imgpath .. "Alerts/wifi_connecting_sm.png"),
 			frameRate = 8,
 			frameWidth = dp(26),
 			w = WH_FILL, 
@@ -1343,7 +1240,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		w = WH_FILL,
 		h = h - TITLE_HEIGHT,
 		position = LAYOUT_NONE,
-		img = _loadImage(self, "Multi_Character_Entry/tch_multi_char_bkgrd_3c.png"),
+		img = _loadImage(imgpath .. "Multi_Character_Entry/tch_multi_char_bkgrd_3c.png"),
 		x = 0,
 		y = TITLE_HEIGHT,
 	}
@@ -1352,21 +1249,21 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		w = WH_FILL,
 		h = h - TITLE_HEIGHT,
 		position = LAYOUT_NONE,
-		img = _loadImage(self, "Multi_Character_Entry/tch_multi_char_bkgrd_2c.png"),
+		img = _loadImage(imgpath .. "Multi_Character_Entry/tch_multi_char_bkgrd_2c.png"),
 		x = 0,
 		y = TITLE_HEIGHT,
 	}
 
 	s.time_input_menu_box_12h = {
 		position = LAYOUT_NONE,
-		img = _loadImage(self, "Multi_Character_Entry/menu_box_fixed.png"),
+		img = _loadImage(imgpath .. "Multi_Character_Entry/menu_box_fixed.png"),
 		w = dp(370),
 		h = dp(80),
 		x = dp(216),
 		y = dp(228),
 	}
 	s.time_input_menu_box_24h = _uses(s.time_input_menu_box_12h, {
-		-- img = _loadImage(self, "UNOFFICIAL/menu_box_fixed_2c.png"),
+		-- img = _loadImage(imgpath .. self, "UNOFFICIAL/menu_box_fixed_2c.png"),
 		w = dp(242),
 		x = dp(278),
 	
@@ -1643,20 +1540,20 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		menu = {
 			item = _uses(s.item, {
 				icon = {
-					img = _loadImage(self, "IconsResized/icon_loading" .. skinSuffix)
+					img = _loadImage(imgpath .. "IconsResized/icon_loading" .. skinSuffix)
 				},
 			}),
 			selected = {
 				item = _uses(s.selected.item, {
 					icon = {
-						img = _loadImage(self, "IconsResized/icon_loading" .. skinSuffix),
+						img = _loadImage(imgpath .. "IconsResized/icon_loading" .. skinSuffix),
 					},
 				}),
 			},
 			locked = {
 				item = _uses(s.locked.item, {
 					icon = {
-						img = _loadImage(self, "IconsResized/icon_loading" .. skinSuffix),
+						img = _loadImage(imgpath .. "IconsResized/icon_loading" .. skinSuffix),
 					},
 				}),
 			},
@@ -1664,7 +1561,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	s.home_menu.menu.item.icon_no_artwork = {
-		img = _loadImage(self, "IconsResized/icon_loading" .. skinSuffix ),
+		img = _loadImage(imgpath .. "IconsResized/icon_loading" .. skinSuffix ),
 		h   = THUMB_SIZE,
 		padding = MENU_ITEM_ICON_PADDING,
 		align = 'center',
@@ -1710,7 +1607,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		check = {
 			align = ITEM_ICON_ALIGN,
 			padding = CHECK_PADDING,
-			img = _loadImage(self, "Icons/icon_check_5line.png")
+			img = _loadImage(imgpath .. "Icons/icon_check_5line.png")
 		},
 	})
 	s.icon_list.menu.item_play = _uses(s.icon_list.menu.item, { 
@@ -1718,7 +1615,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 	s.icon_list.menu.albumcurrent = _uses(s.icon_list.menu.item_play, {
 		arrow = { 
-			img = _loadImage(self, "Icons/icon_nplay_3line_off.png"),
+			img = _loadImage(imgpath .. "Icons/icon_nplay_3line_off.png"),
 		},
 		text = { padding = 0, },
 		-- Bug 11482c#13, don't know why the bgImg has to be redefined again, but this fixes the issue
@@ -1740,7 +1637,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		}),
                 albumcurrent       = _uses(s.icon_list.menu.albumcurrent, {
 			arrow = { 
-				img = _loadImage(self, "Icons/icon_nplay_3line_sel.png"),
+				img = _loadImage(imgpath .. "Icons/icon_nplay_3line_sel.png"),
 			},
 			bgImg = fiveItemSelectionBox,
 		}),
@@ -1889,7 +1786,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			icon = { 
 				align = 'top-left', 
 				border = { dp(12), dp(12), 0, 0 },
-				img = _loadImage(self, "UNOFFICIAL/menu_album_noartwork_64.png"),
+				img = _loadImage(imgpath .. "UNOFFICIAL/menu_album_noartwork_64.png"),
 				h = WH_FILL,
 				w = dp(64),
 			}
@@ -1973,13 +1870,13 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		img = false,
 	})
 	s.badge_favorite = _uses(s._badge, {
-		img = _loadImage(self, "Icons/icon_badge_fav.png")
+		img = _loadImage(imgpath .. "Icons/icon_badge_fav.png")
 	})
 	s.badge_add = _uses(s._badge, {
-		img = _loadImage(self, "Icons/icon_badge_add.png")
+		img = _loadImage(imgpath .. "Icons/icon_badge_add.png")
 	})
 
-	local CM_MENU_ITEM_COUNT = math.floor(((h - dp(32) - dp(52) - dp(20)) / CM_MENU_HEIGHT))
+	local CM_MENU_ITEM_COUNT = floor(((h - dp(32) - dp(52) - dp(20)) / CM_MENU_HEIGHT))
 
 	s.context_menu = {
 		x = dp(8),
@@ -2371,12 +2268,12 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.button_playlist.padding = { dp(2), 0, 0, dp(2) }
 
 	s.button_volume_min = {
-		img = _loadImage(self, "Icons/icon_toolbar_vol_down.png"),
+		img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_down.png"),
 		border = { dp(5), 0, dp(5), 0 },
 	}
 
 	s.button_volume_max = {
-		img = _loadImage(self, "Icons/icon_toolbar_vol_up.png"),
+		img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_up.png"),
 		border = { dp(5), 0, dp(5), 0 },
 	}
 
@@ -2386,7 +2283,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		h = dp(66),
 		padding = { dp(14), 0, 0, 0 },
 		border = { 0, dp(2), dp(9), dp(5)}, 
-		img = _loadImage(self, "Icons/icon_delete_tch_text_entry.png"),
+		img = _loadImage(imgpath .. "Icons/icon_delete_tch_text_entry.png"),
 		bgImg = deleteKeyBackground,
 	}
 	s.pressed.button_keyboard_back = _uses(s.button_keyboard_back, {
@@ -2402,19 +2299,19 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	}
 
 	s.region_US = _uses(_buttonicon, { 
-		img = _loadImage(self, "IconsResized/icon_region_americas" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_region_americas" .. skinSuffix),
 	})
 	s.region_XX = _uses(_buttonicon, { 
-		img = _loadImage(self, "IconsResized/icon_region_other" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_region_other" .. skinSuffix),
 	})
 	s.icon_help = _uses(_buttonicon, { 
-		img = _loadImage(self, "IconsResized/icon_help" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_help" .. skinSuffix),
 	})
 	s.wlan = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_wireless" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_wireless" .. skinSuffix),
 	})
 	s.wired = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ethernet" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ethernet" .. skinSuffix),
 	})
 
 
@@ -2437,7 +2334,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	-- icon for albums with no artwork
 	s.icon_no_artwork = {
-		img = _loadImage(self, "IconsResized/icon_album_noart" .. skinSuffix ),
+		img = _loadImage(imgpath .. "IconsResized/icon_album_noart" .. skinSuffix ),
 		h   = THUMB_SIZE,
 		padding = MENU_ITEM_ICON_PADDING,
 		align = 'center',
@@ -2446,53 +2343,53 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.icon_no_artwork_playlist = _uses(s.icon_no_artwork)
 
 	s.icon_connecting = _uses(_icon, {
-		img = _loadImage(self, "Alerts/wifi_connecting.png"),
+		img = _loadImage(imgpath .. "Alerts/wifi_connecting.png"),
 		frameRate = 8,
 		frameWidth = dp(120),
                 padding = { 0, dp(90), 0, dp(10) },
 	})
 
 	s.icon_connected = _uses(_icon, {
-		img = _loadImage(self, "Alerts/connecting_success_icon.png"),
+		img = _loadImage(imgpath .. "Alerts/connecting_success_icon.png"),
                 padding = { 0, dp(2), 0, dp(10) },
 	})
 
 	s.icon_photo_loading = _uses(_icon, {
-		img = _loadImage(self, "Icons/image_viewer_loading.png"),
+		img = _loadImage(imgpath .. "Icons/image_viewer_loading.png"),
 	})
 
 	s.icon_software_update = _uses(_icon, {
-		img = _loadImage(self, "IconsResized/icon_firmware_update" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_firmware_update" .. skinSuffix),
 	})
 
 	s.icon_restart = _uses(_icon, {
-		img = _loadImage(self, "IconsResized/icon_restart" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_restart" .. skinSuffix),
 	})
 
 	s.icon_popup_pause = _uses(_popupicon, {
-		img = _loadImage(self, "Icons/icon_popup_box_pause.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_pause.png"),
 	})
 
 	s.icon_popup_play = _uses(_popupicon, {
-		img = _loadImage(self, "Icons/icon_popup_box_play.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_play.png"),
 	})
 
 	s.icon_popup_fwd = _uses(_popupicon, {
-		img = _loadImage(self, "Icons/icon_popup_box_fwd.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_fwd.png"),
 	})
 	s.icon_popup_rew = _uses(_popupicon, {
-		img = _loadImage(self, "Icons/icon_popup_box_rew.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_rew.png"),
 	})
 
 	s.icon_popup_stop = _uses(_popupicon, {
-		img = _loadImage(self, "Icons/icon_popup_box_stop.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_stop.png"),
 	})
 	s.icon_popup_lineIn = _uses(_popupicon, {
-		img = _loadImage(self, "IconsResized/icon_linein_134.png"),
+		img = _loadImage(imgpath .. "IconsResized/icon_linein_134.png"),
 	})
 
 	s.icon_popup_volume = {
-		img = _loadImage(self, "Icons/icon_popup_box_volume_bar.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_volume_bar.png"),
 		w = WH_FILL,
 		h = dp(90),
 		align = 'center',
@@ -2500,67 +2397,67 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	}
 
 	s.icon_popup_mute = _uses(s.icon_popup_volume, {
-		img = _loadImage(self, "Icons/icon_popup_box_volume_mute.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_volume_mute.png"),
 	})
 
 	s.icon_popup_shuffle0 = _uses(_popupicon, {
-                img = _loadImage(self, "Icons/icon_popup_box_shuffle_off.png"),
+                img = _loadImage(imgpath .. "Icons/icon_popup_box_shuffle_off.png"),
         })
 
         s.icon_popup_shuffle1 = _uses(_popupicon, {
-                img = _loadImage(self, "Icons/icon_popup_box_shuffle.png"),
+                img = _loadImage(imgpath .. "Icons/icon_popup_box_shuffle.png"),
         })
 
         s.icon_popup_shuffle2 = _uses(_popupicon, {
-                img = _loadImage(self, "Icons/icon_popup_box_shuffle_album.png"),
+                img = _loadImage(imgpath .. "Icons/icon_popup_box_shuffle_album.png"),
         })
 
 	s.icon_popup_repeat0 = _uses(_popupicon, {
-                img = _loadImage(self, "Icons/icon_popup_box_repeat_off.png"),
+                img = _loadImage(imgpath .. "Icons/icon_popup_box_repeat_off.png"),
         })
 
         s.icon_popup_repeat1 = _uses(_popupicon, {
-                img = _loadImage(self, "Icons/icon_popup_box_repeat_song.png"),
+                img = _loadImage(imgpath .. "Icons/icon_popup_box_repeat_song.png"),
         })
 
         s.icon_popup_repeat2 = _uses(_popupicon, {
-                img = _loadImage(self, "Icons/icon_popup_box_repeat.png"),
+                img = _loadImage(imgpath .. "Icons/icon_popup_box_repeat.png"),
         })
 
 	s.icon_popup_sleep_15 = {
-		img = _loadImage(self, "Icons/icon_popup_box_sleep_15.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_sleep_15.png"),
 		h = WH_FILL,
 		w = WH_FILL,
 		padding = { dp(24), dp(24), 0, 0 },
 	}
 	s.icon_popup_sleep_30 = _uses(s.icon_popup_sleep_15, {
-		img = _loadImage(self, "Icons/icon_popup_box_sleep_30.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_sleep_30.png"),
 	})
 	s.icon_popup_sleep_45 = _uses(s.icon_popup_sleep_15, {
-		img = _loadImage(self, "Icons/icon_popup_box_sleep_45.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_sleep_45.png"),
 	})
 	s.icon_popup_sleep_60 = _uses(s.icon_popup_sleep_15, {
-		img = _loadImage(self, "Icons/icon_popup_box_sleep_60.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_sleep_60.png"),
 	})
 	s.icon_popup_sleep_90 = _uses(s.icon_popup_sleep_15, {
-		img = _loadImage(self, "Icons/icon_popup_box_sleep_90.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_sleep_90.png"),
 	})
 	s.icon_popup_sleep_cancel = _uses(s.icon_popup_sleep_15, {
-		img = _loadImage(self, "Icons/icon_popup_box_sleep_off.png"),
+		img = _loadImage(imgpath .. "Icons/icon_popup_box_sleep_off.png"),
 		padding = { dp(24), dp(34), 0, 0 },
 	})
 
 	s.icon_power = _uses(_icon, {
-		img = _loadImage(self, "IconsResized/icon_restart" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_restart" .. skinSuffix),
 	})
 
 	s.icon_locked = _uses(_icon, {
 -- FIXME no asset for this (needed?)
---		img = _loadImage(self, "Alerts/popup_locked_icon.png"),
+--		img = _loadImage(imgpath .. self, "Alerts/popup_locked_icon.png"),
 	})
 
 	s.icon_alarm = {
-		img = _loadImage(self, "Icons/icon_alarm.png"),
+		img = _loadImage(imgpath .. "Icons/icon_alarm.png"),
 	}
 
         s.icon_art = _uses(_icon, {
@@ -2569,133 +2466,133 @@ function skin(self, s, reload, useDefaultSize, w, h)
         })
 
 	s.player_transporter = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_transporter" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_transporter" .. skinSuffix),
 	})
 	s.player_squeezebox = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_SB1n2" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_SB1n2" .. skinSuffix),
 	})
 	s.player_squeezebox2 = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_SB1n2" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_SB1n2" .. skinSuffix),
 	})
 	s.player_squeezebox3 = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_SB3" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_SB3" .. skinSuffix),
 	})
 	s.player_boom = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_boom" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_boom" .. skinSuffix),
 	})
 	s.player_slimp3 = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_slimp3" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_slimp3" .. skinSuffix),
 	})
 	s.player_softsqueeze = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_softsqueeze" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_softsqueeze" .. skinSuffix),
 	})
 	s.player_controller = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_controller" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_controller" .. skinSuffix),
 	})
 	s.player_receiver = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_receiver" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_receiver" .. skinSuffix),
 	})
 	s.player_squeezeplay = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_squeezeplay" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_squeezeplay" .. skinSuffix),
 	})
 	s.player_http = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_tunein_url" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_tunein_url" .. skinSuffix),
 	})
 	s.player_baby = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_baby" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_baby" .. skinSuffix),
 	})
 	s.player_fab4 = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_fab4" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_fab4" .. skinSuffix),
 	})
 
 	-- misc home menu icons
 	s.hm_appletImageViewer = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_image_viewer" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_image_viewer" .. skinSuffix),
 	})
 	s.hm_eject = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_eject" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_eject" .. skinSuffix),
 	})
 	s.hm_sdcard = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_device_SDcard" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_device_SDcard" .. skinSuffix),
 	})
 	s.hm_usbdrive = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_device_USB" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_device_USB" .. skinSuffix),
 	})
 	s.hm_appletNowPlaying = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_nowplaying" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_nowplaying" .. skinSuffix),
 	})
 	s.hm_settings = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_settings" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_settings" .. skinSuffix),
 	})
 	s.hm_advancedSettings = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_settings_adv" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_adv" .. skinSuffix),
 	})
 	s.hm_settings_pcp = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_settings_pcp" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_pcp" .. skinSuffix),
 	})
 	s.hm_radio = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_tunein" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_tunein" .. skinSuffix),
 	})
 	s.hm_radios = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_tunein" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_tunein" .. skinSuffix),
 	})
 	s.hm_myApps = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_my_apps" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_my_apps" .. skinSuffix),
 	})
 	s.hm_myMusic = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_mymusic" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_mymusic" .. skinSuffix),
 	})
 	s.hm__myMusic = _uses(s.hm_myMusic)
    	s.hm_otherLibrary = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_ml_other_library" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_ml_other_library" .. skinSuffix),
         })
 	s.hm_myMusicSelector = _uses(s.hm_myMusic)
 
 	s.hm_favorites = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_favorites" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_favorites" .. skinSuffix),
 	})
 	s.hm_settingsAlarm = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_alarm" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_alarm" .. skinSuffix),
 	})
 	s.hm_settingsPlayerNameChange = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_settings_name" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_name" .. skinSuffix),
 	})
 	s.hm_settingsBrightness = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_settings_brightness" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_settings_brightness" .. skinSuffix),
 	})
 	s.hm_settingsSync = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_sync" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_sync" .. skinSuffix),
 	})
 	s.hm_selectPlayer = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_choose_player" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_choose_player" .. skinSuffix),
 	})
 	s.hm_quit = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_power_off" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_power_off" .. skinSuffix),
 	})
 	s.hm_playerpower = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_power_off" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_power_off" .. skinSuffix),
 	})
 	s.hm_myMusicArtists = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ml_artist" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_artist" .. skinSuffix),
 	})
 	s.hm_myMusicAlbums = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ml_albums" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_albums" .. skinSuffix),
 	})
 	s.hm_myMusicGenres = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ml_genres" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_genres" .. skinSuffix),
 	})
 	s.hm_myMusicYears = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ml_years" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_years" .. skinSuffix),
 	})
 
 	s.hm_myMusicNewMusic = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ml_new_music" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_new_music" .. skinSuffix),
 	})
 	s.hm_myMusicPlaylists = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ml_playlist" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_playlist" .. skinSuffix),
 	})
 	s.hm_myMusicSearch = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ml_search" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_search" .. skinSuffix),
 	})
 	s.hm_myMusicSearchArtists   = _uses(s.hm_myMusicSearch)
 	s.hm_myMusicSearchAlbums    = _uses(s.hm_myMusicSearch)
@@ -2706,44 +2603,44 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.hm_globalSearch           = _uses(s.hm_myMusicSearch)
 
 	s.hm_myMusicMusicFolder = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ml_folder" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_folder" .. skinSuffix),
 	})
 	s.hm_randomplay = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_ml_random" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_ml_random" .. skinSuffix),
 	})
 	s.hm_skinTest = _uses(_buttonicon, {
-		img = _loadImage(self, "IconsResized/icon_blank" .. skinSuffix),
+		img = _loadImage(imgpath .. "IconsResized/icon_blank" .. skinSuffix),
 	})
 
         s.hm_settingsRepeat = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_settings_repeat" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_settings_repeat" .. skinSuffix),
         })
         s.hm_settingsShuffle = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_settings_shuffle" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_settings_shuffle" .. skinSuffix),
         })
         s.hm_settingsSleep = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_settings_sleep" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_settings_sleep" .. skinSuffix),
         })
         s.hm_settingsScreen = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_settings_screen" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_settings_screen" .. skinSuffix),
         })
         s.hm_appletCustomizeHome = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_settings_home" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_settings_home" .. skinSuffix),
         })
         s.hm_settingsAudio = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_settings_audio" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_settings_audio" .. skinSuffix),
         })
         s.hm_linein = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_linein" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_linein" .. skinSuffix),
         })
 
         -- ??
         s.hm_loading = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_loading" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_loading" .. skinSuffix),
         })
         -- ??
         s.hm_settingsPlugin = _uses(_buttonicon, {
-                img = _loadImage(self, "IconsResized/icon_settings_plugin" .. skinSuffix),
+                img = _loadImage(imgpath .. "IconsResized/icon_settings_plugin" .. skinSuffix),
         })
 
 	-- indicator icons, on right of menus
@@ -2752,19 +2649,19 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	}
 
 	s.wirelessLevel1 = _uses(_indicator, {
-		img = _loadImage(self, "Icons/icon_wireless_1.png")
+		img = _loadImage(imgpath .. "Icons/icon_wireless_1.png")
 	})
 
 	s.wirelessLevel2 = _uses(_indicator, {
-		img = _loadImage(self, "Icons/icon_wireless_2.png")
+		img = _loadImage(imgpath .. "Icons/icon_wireless_2.png")
 	})
 
 	s.wirelessLevel3 = _uses(_indicator, {
-		img = _loadImage(self, "Icons/icon_wireless_3.png")
+		img = _loadImage(imgpath .. "Icons/icon_wireless_3.png")
 	})
 
 	s.wirelessLevel4 = _uses(_indicator, {
-		img = _loadImage(self, "Icons/icon_wireless_4.png")
+		img = _loadImage(imgpath .. "Icons/icon_wireless_4.png")
 	})
 
 
@@ -2931,76 +2828,76 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			div7 = _uses(_transportControlBorder),
 
 			rew   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_rew.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_rew.png"),
 			}),
 			play  = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_play.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_play.png"),
 			}),
 			pause = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_pause.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_pause.png"),
 			}),
 			fwd   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_ffwd.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_ffwd.png"),
 			}),
 			shuffleMode   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_shuffle_off.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_off.png"),
 			}),
 			shuffleOff   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_shuffle_off.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_off.png"),
 			}),
 			shuffleSong  = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_shuffle_on.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_on.png"),
 			}),
 			shuffleAlbum = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_shuffle_album_on.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_album_on.png"),
 			}),
 			repeatMode   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_repeat_off.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_off.png"),
 			}),
 			repeatOff   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_repeat_off.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_off.png"),
 			}),
 			repeatPlaylist = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_repeat_on.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_on.png"),
 			}),
 			repeatSong = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_repeat_song_on.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_song_on.png"),
 			}),
 			volDown   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_vol_down.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_down.png"),
 			}),
 			volUp   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_vol_up.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_up.png"),
 			}),
 			thumbsUp   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_thumbup.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_thumbup.png"),
 			}),
 			thumbsDown   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_thumbdown.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_thumbdown.png"),
 			}),
 			thumbsUpDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_thumbup_dis.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_thumbup_dis.png"),
 			}),
 			thumbsDownDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_thumbdown_dis.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_thumbdown_dis.png"),
 			}),
 			love   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_love_on.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_love_on.png"),
 			}),
 			hate   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_love_off.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_love_off.png"),
 			}),
 			fwdDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_ffwd_dis.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_ffwd_dis.png"),
 			}),
 			rewDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_rew_dis.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_rew_dis.png"),
 			}),
 			shuffleDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_shuffle_dis.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_dis.png"),
 			}),
 			repeatDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(self, "Icons/icon_toolbar_repeat_dis.png"),
+				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_dis.png"),
 			}),
 		},
 	
@@ -3598,7 +3495,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				h = dp(413) - (TITLE_HEIGHT + dp(38) + dp(38)),
 				border = { 0, 0, 0, 0 },
 				padding = { 0, 0, 0, 0 },
-				bgImg = _loadImage(self, "UNOFFICIAL/VUMeter/vu_analog_25seq_w.png"),
+				bgImg = _loadImage(imgpath .. "UNOFFICIAL/VUMeter/vu_analog_25seq_w.png"),
 			}
 		},
 	})
@@ -3624,12 +3521,12 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		down   = _uses(_transportControlButton, {
 			w = dp(56),
 			h = dp(56),
-			img = _loadImage(self, "Icons/icon_toolbar_brightness_down.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_brightness_down.png"),
 		}),
 		up   = _uses(_transportControlButton, {
 			w = dp(56),
 			h = dp(56),
-			img = _loadImage(self, "Icons/icon_toolbar_brightness_up.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_brightness_up.png"),
 		}),
 	}
 	s.brightness_group.pressed = {
@@ -3651,10 +3548,10 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	
 	s.settings_slider_group = _uses(s.brightness_group, {
 		down = {
-			img = _loadImage(self, "Icons/icon_toolbar_minus.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_minus.png"),
 		},
 		up = {
-			img = _loadImage(self, "Icons/icon_toolbar_plus.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_plus.png"),
 		},
 	})
 
@@ -3663,30 +3560,30 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.settings_slider_group.pressed = {
 		down = _uses(s.settings_slider_group.down, { 
 			bgImg = sliderButtonPressed,
-			img = _loadImage(self, "Icons/icon_toolbar_minus_dis.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_minus_dis.png"),
 		}),
 		up = _uses(s.settings_slider_group.up, { 
 			bgImg = sliderButtonPressed,
-			img = _loadImage(self, "Icons/icon_toolbar_plus_dis.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_plus_dis.png"),
 		}),
 	}
 
 	s.settings_volume_group = _uses(s.brightness_group, {
 		down = {
-			img = _loadImage(self, "Icons/icon_toolbar_vol_down.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_down.png"),
 		},
 		up = {
-			img = _loadImage(self, "Icons/icon_toolbar_vol_up.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_up.png"),
 		},
 	})
 	s.settings_volume_group.pressed = {
 		down = _uses(s.settings_volume_group.down, { 
 			bgImg = sliderButtonPressed,
-			img = _loadImage(self, "Icons/icon_toolbar_vol_down_dis.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_down_dis.png"),
 		}),
 		up = _uses(s.settings_volume_group.up, { 
 			bgImg = sliderButtonPressed,
-			img = _loadImage(self, "Icons/icon_toolbar_vol_up_dis.png"),
+			img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_up_dis.png"),
 		}),
 	}
 
@@ -3729,13 +3626,12 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		NP_ARTISTALBUM_FONT_SIZE = NP_ARTISTALBUM_FONT_SIZE,
 		NP_TRACK_FONT_SIZE = NP_TRACK_FONT_SIZE,
 		thisSkin = thisSkin,
-		skinSuffix = skinSuffix,
 		-- functions
 		_uses = _uses,
 		_font = _font,
 		_boldfont = _boldfont,
-		_loadImage = function(img) return _loadImage(self, img) end,
-		_loadImageTile = function(img) return _loadImageTile(self, img) end,
+		_loadImage = function(img) return _loadImage(imgpath .. img) end,
+		_loadImageTile = function(img) return _loadImageTile(img) end,
 	}
 
 	return s

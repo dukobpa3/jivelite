@@ -56,7 +56,7 @@ local FONT_NAME = "FreeSans"
 local BOLD_PREFIX = "Bold"
 
 local function _isJogglerSkin(skinName)
-	if string.match(skinName, 'PiGridSkin') or string.match(skinName, 'JogglerSkin') then
+	if string.match(skinName, 'DpiSkin') or string.match(skinName, 'PiGridSkin') or string.match(skinName, 'JogglerSkin') then
 		return true
 	end
 end

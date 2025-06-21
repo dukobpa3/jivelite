@@ -8,11 +8,10 @@ jive.ui.Dpi
 =cut
 --]]
 
-local tonumber = tonumber
+local tonumber, floor = tonumber, math.floor
 
 local oo = require("loop.base")
 local os = require("os")
-local math = require("math")
 
 module(..., oo.class)
 
@@ -22,11 +21,11 @@ local _fontScale = 1.0
 local _scale = _dpi / _baseDpi
 
 function dp(self, value)
-	return math.floor(value * _scale + 0.5)
+	return floor(value * _scale + 0.5)
 end
 
 function sp(self, value)
-	return math.floor(value * _scale * _fontScale + 0.5)
+	return floor(value * _scale * _fontScale + 0.5)
 end
 
 function setFontScale(self, scale)

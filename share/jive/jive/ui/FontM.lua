@@ -42,7 +42,6 @@ Return the ascend height of the font.
 
 local oo	= require("loop.base")
 local Font = require("jive.ui.Font")
-local Dpi = require("jive.ui.Dpi")
 local log	= require("jive.utils.log").logger("jive.ui")
 
 module(..., oo.class)
@@ -63,11 +62,11 @@ function setupFonts(self, regularFont, boldFont)
 end
 
 function regularFont(self, fontSize)
-	return Font:load(fontpath .. FONT_NAME .. ".ttf", Dpi:sp(fontSize))
+	return Font:load(fontpath .. FONT_NAME .. ".ttf", fontSize)
 end
 
 function boldFont(self, fontSize)
-	return Font:load(fontpath .. BOLD_FONT_NAME .. ".ttf", Dpi:sp(fontSize))
+	return Font:load(fontpath .. BOLD_FONT_NAME .. ".ttf", fontSize)
 end
 --[[
 

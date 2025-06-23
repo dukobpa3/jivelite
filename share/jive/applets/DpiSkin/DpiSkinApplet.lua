@@ -54,7 +54,6 @@ local autotable              = require("jive.utils.autotable")
 local log                    = require("jive.utils.log").logger("applet.DpiSkin")
 local DpiUtils               = require("jive.utils.dpi")
 local SkinUtils              = require("jive.utils.skin")
-local IconUtils              = require("jive.utils.icon")
 
 local EVENT_ACTION           = jive.ui.EVENT_ACTION
 local EVENT_CONSUME          = jive.ui.EVENT_CONSUME
@@ -88,10 +87,13 @@ local _loadImageTile =  SkinUtils.loadImageTile
 local _icon =  SkinUtils.icon
 local _font =  SkinUtils.font
 local _boldfont =  SkinUtils.boldfont
+local _iconFont =  SkinUtils.iconFont
 local _uses =  SkinUtils.uses
 
 local _dp = DpiUtils.dp
 local _sp = DpiUtils.sp
+
+local _icons = SkinUtils.icons
 
 -- Define useful variables for this skin
 local imgpath = "applets/DpiSkin/images/"
@@ -2273,7 +2275,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		attr = {
 			hidden = 0,
 			text = string,
-			font = IconUtils.font(FONT_SIZE_M),
+			font = _iconFont(FONT_SIZE_M),
 		}
 
 		s[name].text = _uses(_button.text, attr)
@@ -2288,7 +2290,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		w = TITLE_BUTTON_WIDTH  - _dp(12),
 	})
 
-	_titleButtonTextIcon("button_back", IconUtils.icons.arrow_back)
+	_titleButtonTextIcon("button_back", _icons.arrow_back)
 	_titleButtonIcon("button_cancel", cancelButton)
 	_titleButtonIcon("button_go_home", homeButton)
 	_titleButtonIcon("button_playlist", playlistButton)

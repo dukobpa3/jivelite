@@ -68,6 +68,11 @@ end
 function boldFont(self, fontSize)
 	return Font:load(fontpath .. BOLD_FONT_NAME .. ".ttf", fontSize)
 end
+
+function iconFont(self, fontSize)
+	return Font:load(fontpath .. "icons/Material_Icons/MaterialIcons-Regular.ttf", fontSize)
+end
+
 --[[
 
 =head1 LICENSE

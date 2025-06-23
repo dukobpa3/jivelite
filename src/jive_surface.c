@@ -635,35 +635,24 @@ void jive_tile_free(JiveTile *tile) {
 }
 
 static __inline__ void blit_area(SDL_Surface *src, SDL_Surface *dst, int dx, int dy, int dw, int dh) {
-	SDL_Rect sr, dr;
-	int x, y, w, h;
-	int tw, th;
+	if (dw <= 0 || dh <= 0) {
+		return;
+	}
 
-	tw = src->w;
-	th = src->h;
-
-	sr.x = 0;
-	sr.y = 0;
-
-	h = dh;
-	y = dy;
-	while (h > 0) {
-		w = dw;
-		x = dx;
-		while (w > 0) {
-			sr.w = w;
-			sr.h = h;
-			dr.x = x;
-			dr.y = y;
-
-			SDL_BlitSurface(src, &sr, dst, &dr);
-
-			x += tw;
-			w -= tw;
+	// if size is the same, just blit
+	if (src->w == dw && src->h == dh) {
+		SDL_Rect s = { 0, 0, (Uint16)dw, (Uint16)dh };
+		SDL_Rect d = { (Sint16)dx, (Sint16)dy, 0, 0 };
+		SDL_BlitSurface(src, &s, dst, &d);
+	}
+	else {
+		// otherwise scale the surface to the new dimensions
+		SDL_Surface *scaled_srf = zoomSurface(src, (double)dw / src->w, (double)dh / src->h, 1);
+		if (scaled_srf) {
+			SDL_Rect d = { (Sint16)dx, (Sint16)dy, 0, 0 };
+			SDL_BlitSurface(scaled_srf, NULL, dst, &d);
+			SDL_FreeSurface(scaled_srf);
 		}
-
-		y += th;
-		h -= th;
 	}
 }
 

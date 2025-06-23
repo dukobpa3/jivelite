@@ -21,142 +21,168 @@ local WH_FILL                = jive.ui.WH_FILL
 
 local M = {}
 
+local function utf8_char(codepoint)
+	if codepoint <= 0x7F then
+		return string.char(codepoint)
+	elseif codepoint <= 0x7FF then
+		return string.char(
+			0xC0 + math.floor(codepoint / 0x40),
+			0x80 + (codepoint % 0x40)
+		)
+	elseif codepoint <= 0xFFFF then
+		return string.char(
+			0xE0 + math.floor(codepoint / 0x1000),
+			0x80 + (math.floor(codepoint / 0x40) % 0x40),
+			0x80 + (codepoint % 0x40)
+		)
+	elseif codepoint <= 0x10FFFF then
+		return string.char(
+			0xF0 + math.floor(codepoint / 0x40000),
+			0x80 + (math.floor(codepoint / 0x1000) % 0x40),
+			0x80 + (math.floor(codepoint / 0x40) % 0x40),
+			0x80 + (codepoint % 0x40)
+		)
+	else
+		error("invalid Unicode codepoint")
+	end
+end
+
 M.icons = {
 	-- Media controls
-	play_arrow = "\u{e037}",
-	pause = "\u{e034}",
-	stop = "\u{e047}",
-	skip_next = "\u{e044}",
-	skip_previous = "\u{e045}",
-	fast_forward = "\u{e01f}",
-	fast_rewind = "\u{e020}",
-	replay = "\u{e042}",
-	shuffle = "\u{e043}",
-	repeat_icon = "\u{e040}",
-	volume_up = "\u{e050}",
-	volume_down = "\u{e04d}",
-	volume_off = "\u{e04f}",
-	volume_mute = "\u{e04e}",
+	play_arrow = utf8_char(0xe037),
+	pause = utf8_char(0xe034),
+	stop = utf8_char(0xe047),
+	skip_next = utf8_char(0xe044),
+	skip_previous = utf8_char(0xe045),
+	fast_forward = utf8_char(0xe01f),
+	fast_rewind = utf8_char(0xe020),
+	replay = utf8_char(0xe042),
+	shuffle = utf8_char(0xe043),
+	repeat_icon = utf8_char(0xe040),
+	volume_up = utf8_char(0xe050),
+	volume_down = utf8_char(0xe04d),
+	volume_off = utf8_char(0xe04f),
+	volume_mute = utf8_char(0xe04e),
 	
 	-- Navigation
-	home = "\u{e88a}",
-	menu = "\u{e5d2}",
-	close = "\u{e5cd}",
-	arrow_back = "\u{e5c4}",
-	arrow_forward = "\u{e5c8}",
-	arrow_upward = "\u{e5c7}",
-	arrow_downward = "\u{e5c5}",
-	expand_more = "\u{e5cf}",
-	expand_less = "\u{e5ce}",
-	chevron_left = "\u{e5cb}",
-	chevron_right = "\u{e5cc}",
+	home = utf8_char(0xe88a),
+	menu = utf8_char(0xe5d2),
+	close = utf8_char(0xe5cd),
+	arrow_back = utf8_char(0xe5c4),
+	arrow_forward = utf8_char(0xe5c8),
+	arrow_upward = utf8_char(0xe5c7),
+	arrow_downward = utf8_char(0xe5c5),
+	expand_more = utf8_char(0xe5cf),
+	expand_less = utf8_char(0xe5ce),
+	chevron_left = utf8_char(0xe5cb),
+	chevron_right = utf8_char(0xe5cc),
 	
 	-- Common actions
-	search = "\u{e8b6}",
-	settings = "\u{e8b8}",
-	account_circle = "\u{e853}",
-	add = "\u{e145}",
-	remove = "\u{e15b}",
-	edit = "\u{e3c9}",
-	delete = "\u{e872}",
-	save = "\u{e161}",
-	cancel = "\u{e5c9}",
-	check = "\u{e5ca}",
-	clear = "\u{e14c}",
+	search = utf8_char(0xe8b6),
+	settings = utf8_char(0xe8b8),
+	account_circle = utf8_char(0xe853),
+	add = utf8_char(0xe145),
+	remove = utf8_char(0xe15b),
+	edit = utf8_char(0xe3c9),
+	delete = utf8_char(0xe872),
+	save = utf8_char(0xe161),
+	cancel = utf8_char(0xe5c9),
+	check = utf8_char(0xe5ca),
+	clear = utf8_char(0xe14c),
 	
 	-- Social
-	favorite = "\u{e87d}",
-	star = "\u{e838}",
-	heart = "\u{e87d}",
-	thumb_up = "\u{e8dc}",
-	thumb_down = "\u{e8db}",
-	like = "\u{e8dc}",
-	dislike = "\u{e8db}",
+	favorite = utf8_char(0xe87d),
+	star = utf8_char(0xe838),
+	heart = utf8_char(0xe87d),
+	thumb_up = utf8_char(0xe8dc),
+	thumb_down = utf8_char(0xe8db),
+	like = utf8_char(0xe8dc),
+	dislike = utf8_char(0xe8db),
 	
 	-- Communication
-	phone = "\u{e0cd}",
-	message = "\u{e0c9}",
-	notifications = "\u{e7f4}",
-	email = "\u{e0e1}",
-	mail = "\u{e0e1}",
-	chat = "\u{e0b7}",
-	call = "\u{e0b0}",
+	phone = utf8_char(0xe0cd),
+	message = utf8_char(0xe0c9),
+	notifications = utf8_char(0xe7f4),
+	email = utf8_char(0xe0e1),
+	mail = utf8_char(0xe0e1),
+	chat = utf8_char(0xe0b7),
+	call = utf8_char(0xe0b0),
 	
 	-- File operations
-	download = "\u{e2c4}",
-	upload = "\u{e2c6}",
-	share = "\u{e80d}",
-	print = "\u{e8ad}",
-	file_download = "\u{e2c4}",
-	file_upload = "\u{e2c6}",
+	download = utf8_char(0xe2c4),
+	upload = utf8_char(0xe2c6),
+	share = utf8_char(0xe80d),
+	print = utf8_char(0xe8ad),
+	file_download = utf8_char(0xe2c4),
+	file_upload = utf8_char(0xe2c6),
 	
 	-- System
-	wifi = "\u{e63e}",
-	bluetooth = "\u{e1a7}",
-	gps_fixed = "\u{e1b3}",
-	location_on = "\u{e55f}",
-	location_off = "\u{e55e}",
-	brightness_high = "\u{e1ac}",
-	brightness_low = "\u{e1ad}",
-	contrast = "\u{e3b1}",
+	wifi = utf8_char(0xe63e),
+	bluetooth = utf8_char(0xe1a7),
+	gps_fixed = utf8_char(0xe1b3),
+	location_on = utf8_char(0xe55f),
+	location_off = utf8_char(0xe55e),
+	brightness_high = utf8_char(0xe1ac),
+	brightness_low = utf8_char(0xe1ad),
+	contrast = utf8_char(0xe3b1),
 	
 	-- Time and date
-	calendar_today = "\u{e935}",
-	schedule = "\u{e8b5}",
-	access_time = "\u{e192}",
-	timer = "\u{e425}",
-	alarm = "\u{e855}",
+	calendar_today = utf8_char(0xe935),
+	schedule = utf8_char(0xe8b5),
+	access_time = utf8_char(0xe192),
+	timer = utf8_char(0xe425),
+	alarm = utf8_char(0xe855),
 	
 	-- Files and media
-	folder = "\u{e2c7}",
-	file = "\u{e24d}",
-	image = "\u{e3f4}",
-	video_library = "\u{e04a}",
-	music_note = "\u{e405}",
-	photo = "\u{e410}",
-	movie = "\u{e02c}",
+	folder = utf8_char(0xe2c7),
+	file = utf8_char(0xe24d),
+	image = utf8_char(0xe3f4),
+	video_library = utf8_char(0xe04a),
+	music_note = utf8_char(0xe405),
+	photo = utf8_char(0xe410),
+	movie = utf8_char(0xe02c),
 	
 	-- UI elements
-	refresh = "\u{e5d5}",
-	more_vert = "\u{e5d4}",
-	more_horiz = "\u{e5d3}",
-	drag_handle = "\u{e25d}",
-	visibility = "\u{e8f4}",
-	visibility_off = "\u{e8f5}",
-	lock = "\u{e897}",
-	lock_open = "\u{e898}",
+	refresh = utf8_char(0xe5d5),
+	more_vert = utf8_char(0xe5d4),
+	more_horiz = utf8_char(0xe5d3),
+	drag_handle = utf8_char(0xe25d),
+	visibility = utf8_char(0xe8f4),
+	visibility_off = utf8_char(0xe8f5),
+	lock = utf8_char(0xe897),
+	lock_open = utf8_char(0xe898),
 	
 	-- Status
-	error = "\u{e000}",
-	warning = "\u{e002}",
-	info = "\u{e88e}",
-	check_circle = "\u{e86c}",
-	cancel_circle = "\u{e14c}",
-	help = "\u{e887}",
+	error = utf8_char(0xe000),
+	warning = utf8_char(0xe002),
+	info = utf8_char(0xe88e),
+	check_circle = utf8_char(0xe86c),
+	cancel_circle = utf8_char(0xe14c),
+	help = utf8_char(0xe887),
 	
 	-- Direction
-	north = "\u{e160}",
-	south = "\u{e15e}",
-	east = "\u{e15d}",
-	west = "\u{e15f}",
+	north = utf8_char(0xe160),
+	south = utf8_char(0xe15e),
+	east = utf8_char(0xe15d),
+	west = utf8_char(0xe15f),
 	
 	-- Other common
-	apps = "\u{e5c3}",
-	dashboard = "\u{e871}",
-	person = "\u{e7fd}",
-	group = "\u{e7ef}",
-	work = "\u{e8f9}",
+	apps = utf8_char(0xe5c3),
+	dashboard = utf8_char(0xe871),
+	person = utf8_char(0xe7fd),
+	group = utf8_char(0xe7ef),
+	work = utf8_char(0xe8f9),
 
-	school = "\u{e80c}",
-	store = "\u{e8d1}",
-	restaurant = "\u{e56c}",
-	hotel = "\u{e53a}",
-	flight = "\u{e539}",
-	car = "\u{e531}",
-	train = "\u{e570}",
-	bus = "\u{e530}",
-	bike = "\u{e52f}",
-	walk = "\u{e536}"
+	school = utf8_char(0xe80c),
+	store = utf8_char(0xe8d1),
+	restaurant = utf8_char(0xe56c),
+	hotel = utf8_char(0xe53a),
+	flight = utf8_char(0xe539),
+	car = utf8_char(0xe531),
+	train = utf8_char(0xe570),
+	bus = utf8_char(0xe530),
+	bike = utf8_char(0xe52f),
+	walk = utf8_char(0xe536)
 }
 
 function M.loadImage(file)

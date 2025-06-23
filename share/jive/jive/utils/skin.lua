@@ -21,6 +21,144 @@ local WH_FILL                = jive.ui.WH_FILL
 
 local M = {}
 
+M.icons = {
+	-- Media controls
+	play_arrow = "\u{e037}",
+	pause = "\u{e034}",
+	stop = "\u{e047}",
+	skip_next = "\u{e044}",
+	skip_previous = "\u{e045}",
+	fast_forward = "\u{e01f}",
+	fast_rewind = "\u{e020}",
+	replay = "\u{e042}",
+	shuffle = "\u{e043}",
+	repeat_icon = "\u{e040}",
+	volume_up = "\u{e050}",
+	volume_down = "\u{e04d}",
+	volume_off = "\u{e04f}",
+	volume_mute = "\u{e04e}",
+	
+	-- Navigation
+	home = "\u{e88a}",
+	menu = "\u{e5d2}",
+	close = "\u{e5cd}",
+	arrow_back = "\u{e5c4}",
+	arrow_forward = "\u{e5c8}",
+	arrow_upward = "\u{e5c7}",
+	arrow_downward = "\u{e5c5}",
+	expand_more = "\u{e5cf}",
+	expand_less = "\u{e5ce}",
+	chevron_left = "\u{e5cb}",
+	chevron_right = "\u{e5cc}",
+	
+	-- Common actions
+	search = "\u{e8b6}",
+	settings = "\u{e8b8}",
+	account_circle = "\u{e853}",
+	add = "\u{e145}",
+	remove = "\u{e15b}",
+	edit = "\u{e3c9}",
+	delete = "\u{e872}",
+	save = "\u{e161}",
+	cancel = "\u{e5c9}",
+	check = "\u{e5ca}",
+	clear = "\u{e14c}",
+	
+	-- Social
+	favorite = "\u{e87d}",
+	star = "\u{e838}",
+	heart = "\u{e87d}",
+	thumb_up = "\u{e8dc}",
+	thumb_down = "\u{e8db}",
+	like = "\u{e8dc}",
+	dislike = "\u{e8db}",
+	
+	-- Communication
+	phone = "\u{e0cd}",
+	message = "\u{e0c9}",
+	notifications = "\u{e7f4}",
+	email = "\u{e0e1}",
+	mail = "\u{e0e1}",
+	chat = "\u{e0b7}",
+	call = "\u{e0b0}",
+	
+	-- File operations
+	download = "\u{e2c4}",
+	upload = "\u{e2c6}",
+	share = "\u{e80d}",
+	print = "\u{e8ad}",
+	file_download = "\u{e2c4}",
+	file_upload = "\u{e2c6}",
+	
+	-- System
+	wifi = "\u{e63e}",
+	bluetooth = "\u{e1a7}",
+	gps_fixed = "\u{e1b3}",
+	location_on = "\u{e55f}",
+	location_off = "\u{e55e}",
+	brightness_high = "\u{e1ac}",
+	brightness_low = "\u{e1ad}",
+	contrast = "\u{e3b1}",
+	
+	-- Time and date
+	calendar_today = "\u{e935}",
+	schedule = "\u{e8b5}",
+	access_time = "\u{e192}",
+	timer = "\u{e425}",
+	alarm = "\u{e855}",
+	
+	-- Files and media
+	folder = "\u{e2c7}",
+	file = "\u{e24d}",
+	image = "\u{e3f4}",
+	video_library = "\u{e04a}",
+	music_note = "\u{e405}",
+	photo = "\u{e410}",
+	movie = "\u{e02c}",
+	
+	-- UI elements
+	refresh = "\u{e5d5}",
+	more_vert = "\u{e5d4}",
+	more_horiz = "\u{e5d3}",
+	drag_handle = "\u{e25d}",
+	visibility = "\u{e8f4}",
+	visibility_off = "\u{e8f5}",
+	lock = "\u{e897}",
+	lock_open = "\u{e898}",
+	
+	-- Status
+	error = "\u{e000}",
+	warning = "\u{e002}",
+	info = "\u{e88e}",
+	check_circle = "\u{e86c}",
+	cancel_circle = "\u{e14c}",
+	help = "\u{e887}",
+	
+	-- Direction
+	north = "\u{e160}",
+	south = "\u{e15e}",
+	east = "\u{e15d}",
+	west = "\u{e15f}",
+	
+	-- Other common
+	apps = "\u{e5c3}",
+	dashboard = "\u{e871}",
+	person = "\u{e7fd}",
+	group = "\u{e7ef}",
+	work = "\u{e8f9}",
+
+	school = "\u{e80c}",
+	store = "\u{e8d1}",
+	restaurant = "\u{e56c}",
+	hotel = "\u{e53a}",
+	flight = "\u{e539}",
+	car = "\u{e531}",
+	train = "\u{e570}",
+	bus = "\u{e530}",
+	bike = "\u{e52f}",
+	walk = "\u{e536}"
+}
+
 function M.loadImage(file)
 	return Surface:loadImage(file)
 end
@@ -111,6 +249,10 @@ end
 -- define a local function that makes it easier to set bold fonts
 function M.boldfont(fontSize)
 	return FontM:boldFont(fontSize)
+end
+
+function M.iconFont(fontSize)
+	return FontM:iconFont(fontSize)
 end
 
 -- defines a new style that inherrits from an existing style

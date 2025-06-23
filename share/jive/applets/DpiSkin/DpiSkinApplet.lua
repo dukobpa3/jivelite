@@ -54,6 +54,7 @@ local autotable              = require("jive.utils.autotable")
 local log                    = require("jive.utils.log").logger("applet.DpiSkin")
 local DpiUtils               = require("jive.utils.dpi")
 local SkinUtils              = require("jive.utils.skin")
+local IconUtils              = require("jive.utils.icon")
 
 local EVENT_ACTION           = jive.ui.EVENT_ACTION
 local EVENT_CONSUME          = jive.ui.EVENT_CONSUME
@@ -2264,6 +2265,22 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		s.pressed[name].w = _dp(65)
 	end
 
+	-- text button factory
+	local _titleButtonTextIcon = function(name, string)
+		s[name] = _uses(_button)
+		s.pressed[name] = _uses(_pressed_button)
+
+		attr = {
+			hidden = 0,
+			text = string,
+			font = IconUtils.font(FONT_SIZE_M),
+		}
+
+		s[name].text = _uses(_button.text, attr)
+		s[name].w = _dp(65)
+		s.pressed[name].text = _uses(_pressed_button.text, attr)
+		s.pressed[name].w = _dp(65)
+	end
 
 	-- invisible button
 	s.button_none = _uses(_button, {
@@ -2271,7 +2288,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		w = TITLE_BUTTON_WIDTH  - _dp(12),
 	})
 
-	_titleButtonIcon("button_back", backButton)
+	_titleButtonTextIcon("button_back", IconUtils.icons.arrow_back)
 	_titleButtonIcon("button_cancel", cancelButton)
 	_titleButtonIcon("button_go_home", homeButton)
 	_titleButtonIcon("button_playlist", playlistButton)

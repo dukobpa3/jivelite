@@ -70,7 +70,7 @@ function boldFont(self, fontSize)
 end
 
 function iconFont(self, fontSize)
-	return Font:load(fontpath .. "icons/Material_Icons/MaterialIcons-Regular.ttf", fontSize)
+	return Font:load("icons/Material_Icons/MaterialIcons-Regular.ttf", fontSize)
 end
 
 --[[

@@ -49,6 +49,8 @@ end
 
 M.icons = {
 	-- Media controls
+	audiotrack = utf8_char(0xe048),
+	queue_music = utf8_char(0xe03c),
 	play_arrow = utf8_char(0xe037),
 	pause = utf8_char(0xe034),
 	stop = utf8_char(0xe047),
@@ -65,6 +67,7 @@ M.icons = {
 	volume_mute = utf8_char(0xe04e),
 	
 	-- Navigation
+	power_settings_new = utf8_char(0xe8ac),
 	home = utf8_char(0xe88a),
 	menu = utf8_char(0xe5d2),
 	close = utf8_char(0xe5cd),

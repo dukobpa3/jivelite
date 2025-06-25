@@ -49,8 +49,9 @@ end
 
 M.icons = {
 	-- Media controls
-	audiotrack = utf8_char(0xe048),
-	queue_music = utf8_char(0xe03c),
+	audiotrack = utf8_char(0xe3a1),
+	music_video = utf8_char(0xe063),
+	queue_music = utf8_char(0xe03d),
 	play_arrow = utf8_char(0xe037),
 	pause = utf8_char(0xe034),
 	stop = utf8_char(0xe047),
@@ -60,7 +61,11 @@ M.icons = {
 	fast_rewind = utf8_char(0xe020),
 	replay = utf8_char(0xe042),
 	shuffle = utf8_char(0xe043),
+	shuffle_on = utf8_char(0xe9e1),
+	sort = utf8_char(0xe164),
 	repeat_icon = utf8_char(0xe040),
+	repeat_on = utf8_char(0xe9d6),
+	repeat_one = utf8_char(0xe041),
 	volume_up = utf8_char(0xe050),
 	volume_down = utf8_char(0xe04d),
 	volume_off = utf8_char(0xe04f),
@@ -92,11 +97,12 @@ M.icons = {
 	cancel = utf8_char(0xe5c9),
 	check = utf8_char(0xe5ca),
 	clear = utf8_char(0xe14c),
+	done = utf8_char(0xe876),
 	
 	-- Social
-	favorite = utf8_char(0xe87d),
 	star = utf8_char(0xe838),
 	heart = utf8_char(0xe87d),
+	heart_broken = utf8_char(0xeac2),
 	thumb_up = utf8_char(0xe8dc),
 	thumb_down = utf8_char(0xe8db),
 	like = utf8_char(0xe8dc),
@@ -514,9 +520,21 @@ function M.boldfont(fontSize)
 	return FontM:boldFont(fontSize)
 end
 
+-- define a local function that makes it easier to set fonts
+function M.fontDefault(fontSize)
+	return FontM:regularFontDefault(fontSize)
+end
+
+-- define a local function that makes it easier to set bold fonts
+function M.boldfontDefault(fontSize)
+	return FontM:boldFontDefault(fontSize)
+end
+
 function M.iconFont(fontSize)
 	return FontM:iconFont(fontSize)
 end
+
+
 
 -- defines a new style that inherrits from an existing style
 function M.uses(parent, value)

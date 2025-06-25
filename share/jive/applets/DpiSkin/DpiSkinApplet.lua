@@ -52,8 +52,8 @@ local debug                  = require("jive.utils.debug")
 local autotable              = require("jive.utils.autotable")
 
 local log                    = require("jive.utils.log").logger("applet.DpiSkin")
-local DpiUtils               = require("jive.utils.dpi")
-local SkinUtils              = require("jive.utils.skin")
+local DpiUtils               = require("jive.skin.dpi")
+local SkinUtils              = require("jive.skin.skin")
 
 local EVENT_ACTION           = jive.ui.EVENT_ACTION
 local EVENT_CONSUME          = jive.ui.EVENT_CONSUME
@@ -2232,7 +2232,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 
 	-- icon button factory
-	local _titleButtonIcon = function(name, icon, attr)
+	local _titleButtonIcon = function(s, name, icon)
 		s[name] = _uses(_button)
 		s[name].layer = LAYER_TITLE
 
@@ -2251,7 +2251,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	end
 
 	-- text button factory
-	local _titleButtonText = function(name, string)
+	local _titleButtonText = function(s, name, string)
 		s[name] = _uses(_button)
 		s.pressed[name] = _uses(_pressed_button)
 
@@ -2267,14 +2267,14 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	end
 
 	-- text button factory
-	local _titleButtonTextIcon = function(name, string)
+	local _titleButtonTextIcon = function(s, name, string)
 		s[name] = _uses(_button)
 		s.pressed[name] = _uses(_pressed_button)
 
 		attr = {
 			hidden = 0,
 			text = string,
-			font = _iconFont(FONT_SIZE_M),
+			font = _iconFont(FONT_SIZE_S),
 		}
 
 		s[name].text = _uses(_button.text, attr)
@@ -2289,18 +2289,18 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		w = TITLE_BUTTON_WIDTH  - _dp(12),
 	})
 
-	_titleButtonTextIcon("button_back", _icons.arrow_back)
-	_titleButtonTextIcon("button_cancel", _icons.cancel)
-	_titleButtonTextIcon("button_go_home", _icons.home)
-	_titleButtonTextIcon("button_playlist", _icons.queue_music)
-	_titleButtonTextIcon("button_more", _icons.more_vert)
-	_titleButtonTextIcon("button_go_playlist", _icons.queue_music)
-	_titleButtonTextIcon("button_go_now_playing", _icons.audiotrack)
-	_titleButtonTextIcon("button_power", _icons.power_settings_new)
-	_titleButtonTextIcon("button_nothing", nil)
-	_titleButtonTextIcon("button_help", _icons.help)
-	_titleButtonText("button_more_help", self:string("MORE_HELP"))
-	_titleButtonText("button_finish_operation", self:string("ENTER"))
+	_titleButtonTextIcon(s, "button_back", _icons.arrow_back)
+	_titleButtonTextIcon(s, "button_cancel", _icons.close)
+	_titleButtonTextIcon(s, "button_go_home", _icons.home)
+	_titleButtonTextIcon(s, "button_playlist", _icons.queue_music)
+	_titleButtonTextIcon(s, "button_more", _icons.more_vert)
+	_titleButtonTextIcon(s, "button_go_playlist", _icons.queue_music)
+	_titleButtonTextIcon(s, "button_go_now_playing", _icons.audiotrack)
+	_titleButtonTextIcon(s, "button_power", _icons.power_settings_new)
+	_titleButtonTextIcon(s, "button_nothing", nil)
+	_titleButtonTextIcon(s, "button_help", _icons.help)
+	_titleButtonText(s, "button_more_help", self:string("MORE_HELP"))
+	_titleButtonTextIcon(s, "button_finish_operation", _icons.done)
 
 	s.button_back.padding     = { GAP_2, 0, 0, GAP_2 }
 	s.button_playlist.padding = { GAP_2, 0, 0, GAP_2 }
@@ -2722,19 +2722,88 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	local controlWidth = _dp(76)
 	local volumeBarWidth = _dp(240) -- screenWidth - (transport controls + volume controls + dividers + border around volume bar)
 	local buttonPadding = 0
+	local iconsColor = { 0xdc,0xdc, 0xdc }
+	local iconsColorActive = { 0x00,0xff,0xff }
+
 
 	local _transportControlButton = {
 		w = controlWidth,
 		h = controlHeight,
 		align = 'center',
 		padding = buttonPadding,
+		icon = {
+			w = WH_FILL,
+			h = WH_FILL,
+			hidden = 1,
+			align = 'center',
+			img = false,
+		},
+		text = {
+			w = WH_FILL,
+			h = WH_FILL,
+			hidden = 1,
+			border = 0,
+			padding = 0,
+			align = 'center',
+			font = _font(FONT_SIZE_XS),
+			fg = iconsColor,
+		},
 	}
 
 	local _transportControlBorder = _uses(_transportControlButton, {
 		w = _dp(2),
 		padding = 0,
-		img = touchToolbarKeyDivider,		
+		icon = {
+			hidden = 0,
+			img = touchToolbarKeyDivider,
+		},
 	})
+
+	local _disabledColor = function(base)
+		local scale = 0.6
+		return {
+			math.floor(base[1] * scale),
+			math.floor(base[2] * scale),
+			math.floor(base[3] * scale),
+		}
+	end
+
+	local _pbButtonIcon = function(iconPath)
+		local icon = _loadImage(imgpath .. iconPath)
+
+		local o = _uses(_transportControlButton)
+
+		o.icon = _uses(_transportControlButton.icon, {
+			hidden = 0,
+			img = icon,
+			layer = LAYER_TITLE,
+		})
+		return o
+	end
+
+	-- text button factory
+	local PB_BT_OFF = "off"
+	local PB_BT_ON = "on"
+	local PB_BT_DIS = "disabled"
+	local colors = {
+		off = iconsColor,
+		on = iconsColorActive,
+		disabled = _disabledColor(iconsColor),
+	}
+	local _pbButtonText = function(string, state)
+		local state = state or PB_BT_OFF
+
+		local o = _uses(_transportControlButton)
+
+		o.text = _uses(_transportControlButton.text, {
+			hidden = 0,
+			text = string,
+			font = _iconFont(FONT_SIZE_S),
+			fg = colors[state],
+		})
+		return o
+	end
+
 
 	s.toolbar_spacer = _uses(_transportControlButton, {
 		w = WH_FILL,
@@ -2862,78 +2931,63 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			div6 = _uses(_transportControlBorder),
 			div7 = _uses(_transportControlBorder),
 
-			rew   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_rew.png"),
-			}),
-			play  = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_play.png"),
-			}),
-			pause = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_pause.png"),
-			}),
-			fwd   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_ffwd.png"),
-			}),
-			shuffleMode   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_off.png"),
-			}),
-			shuffleOff   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_off.png"),
-			}),
-			shuffleSong  = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_on.png"),
-			}),
-			shuffleAlbum = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_album_on.png"),
-			}),
-			repeatMode   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_off.png"),
-			}),
-			repeatOff   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_off.png"),
-			}),
-			repeatPlaylist = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_on.png"),
-			}),
-			repeatSong = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_song_on.png"),
-			}),
-			volDown   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_down.png"),
-			}),
-			volUp   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_vol_up.png"),
-			}),
-			thumbsUp   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_thumbup.png"),
-			}),
-			thumbsDown   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_thumbdown.png"),
-			}),
-			thumbsUpDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_thumbup_dis.png"),
-			}),
-			thumbsDownDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_thumbdown_dis.png"),
-			}),
-			love   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_love_on.png"),
-			}),
-			hate   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_love_off.png"),
-			}),
-			fwdDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_ffwd_dis.png"),
-			}),
-			rewDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_rew_dis.png"),
-			}),
-			shuffleDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_shuffle_dis.png"),
-			}),
-			repeatDisabled   = _uses(_transportControlButton, {
-				img = _loadImage(imgpath .. "Icons/icon_toolbar_repeat_dis.png"),
-			}),
+			-- Generic Buttons
+			-- rew					= _pbButtonIcon("Icons/icon_toolbar_rew.png"),
+			rew					= _pbButtonText(_icons.fast_rewind),
+			-- rewDisabled			= _pbButtonIcon("Icons/icon_toolbar_rew_dis.png"),
+			rewDisabled			= _pbButtonText(_icons.fast_rewind, PB_BT_DIS),
+			-- play					= _pbButtonIcon("Icons/icon_toolbar_play.png"),
+			play				= _pbButtonText(_icons.play_arrow),
+			-- pause				= _pbButtonIcon("Icons/icon_toolbar_pause.png"),
+			pause				= _pbButtonText(_icons.pause),
+			-- fwd					= _pbButtonIcon("Icons/icon_toolbar_ffwd.png"),
+			fwd					= _pbButtonText(_icons.fast_forward),
+			-- fwdDisabled			= _pbButtonIcon("Icons/icon_toolbar_ffwd_dis.png"),
+			fwdDisabled			= _pbButtonText(_icons.fast_forward, PB_BT_DIS),
+
+			-- Shuffle Buttons
+			-- shuffleMode 			= _pbButtonIcon("Icons/icon_toolbar_shuffle_off.png"),
+			shuffleMode 		= _pbButtonText(_icons.shuffle),
+			-- shuffleOff			= _pbButtonIcon("Icons/icon_toolbar_shuffle_off.png"),
+			shuffleOff			= _pbButtonText(_icons.shuffle),
+			-- shuffleSong			= _pbButtonIcon("Icons/icon_toolbar_shuffle_on.png"),
+			shuffleSong			= _pbButtonText(_icons.shuffle, PB_BT_ON),
+			-- shuffleAlbum			= _pbButtonIcon("Icons/icon_toolbar_shuffle_album_on.png"),
+			shuffleAlbum		= _pbButtonText(_icons.shuffle_on, PB_BT_ON),
+			-- shuffleDisabled		= _pbButtonIcon("Icons/icon_toolbar_shuffle_dis.png"),
+			shuffleDisabled		= _pbButtonText(_icons.shuffle, PB_BT_DIS),
+
+			-- Repeat Buttons
+			-- repeatMode			= _pbButtonIcon("Icons/icon_toolbar_repeat_off.png"),
+			repeatMode			= _pbButtonText(_icons.repeat_icon),
+			-- repeatOff			= _pbButtonIcon("Icons/icon_toolbar_repeat_off.png"),
+			repeatOff			= _pbButtonText(_icons.repeat_icon),
+			-- repeatPlaylist		= _pbButtonIcon("Icons/icon_toolbar_repeat_on.png"),
+			repeatPlaylist		= _pbButtonText(_icons.repeat_icon, PB_BT_ON),
+			-- repeatSong			= _pbButtonIcon("Icons/icon_toolbar_repeat_song_on.png"),
+			repeatSong			= _pbButtonText(_icons.repeat_one, PB_BT_ON),
+			-- repeatDisabled		= _pbButtonIcon("Icons/icon_toolbar_repeat_dis.png"),
+			repeatDisabled		= _pbButtonText(_icons.repeat_icon, PB_BT_DIS),
+
+			-- Volume Buttons
+			-- volDown				= _pbButtonIcon("Icons/icon_toolbar_vol_down.png"),
+			volDown				= _pbButtonText(_icons.volume_down),
+			-- volUp				= _pbButtonIcon("Icons/icon_toolbar_vol_up.png"),
+			volUp				= _pbButtonText(_icons.volume_up),
+
+			-- Social Buttons
+			-- thumbsUp				= _pbButtonIcon("Icons/icon_toolbar_thumbup.png"),
+			thumbsUp			= _pbButtonText(_icons.thumb_up),
+			-- thumbsUpDisabled		= _pbButtonIcon("Icons/icon_toolbar_thumbup_dis.png"),
+			thumbsUpDisabled	= _pbButtonText(_icons.thumbs_up, PB_BT_DIS),
+			-- thumbsDown			= _pbButtonIcon("Icons/icon_toolbar_thumbdown.png"),
+			thumbsDown			= _pbButtonText(_icons.thumb_down),
+			-- thumbsDownDisabled	= _pbButtonIcon("Icons/icon_toolbar_thumbdown_dis.png"),
+			thumbsDownDisabled	= _pbButtonText(_icons.thumbs_down, PB_BT_DIS),
+			-- love					= _pbButtonIcon("Icons/icon_toolbar_love_on.png"),
+			love				= _pbButtonText(_icons.heart),
+			-- hate					= _pbButtonIcon("Icons/icon_toolbar_love_off.png"),
+			hate				= _pbButtonText(_icons.heart_broken),
 		},
 	
 		-- Progress bar
@@ -2979,7 +3033,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = w - _tracklayout.x - 2*_dp(80) - _dp(25),
 				h = _dp(50),
 				padding = { 0, 0, 0, 0 },
-			        position = LAYOUT_SOUTH,
+			    position = LAYOUT_SOUTH,
 				horizontal = 1,
 				bgImg = _songProgressBackground,
 				img = _songProgressBar,
@@ -3137,10 +3191,10 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		npprogress = {
 			x = npX,
 			elapsed = {
-				w = 60,
+				w = _dp(60),
 			},
 			remain = {
-				w = 60,
+				w = _dp(60),
 			},
 			npprogressB = {
 				w = w - npX - 2*_dp(60) - _dp(15),
@@ -3466,7 +3520,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		npvisu = { 
 			hidden = 0,
 			position = LAYOUT_NONE,
-			x = 0,
+			x = (w - _dp(800))/2,
 			y = 2 * TITLE_HEIGHT + _dp(4),
 			w = _dp(800),
 			h = _dp(446) - (2 * TITLE_HEIGHT + _dp(4) + _dp(45)),

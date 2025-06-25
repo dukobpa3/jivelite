@@ -23,7 +23,7 @@ local Surface          = require("jive.ui.Surface")
 local Tile             = require("jive.ui.Tile")
 local Window           = require("jive.ui.Window")
 local SnapshotWindow   = require("jive.ui.SnapshotWindow")
-local SkinUtils        = require("jive.utils.skin")
+local SkinUtils        = require("jive.skin.skin")
 
 local Player           = require("jive.slim.Player")
                        
@@ -99,8 +99,8 @@ local _loadHTile =  SkinUtils.loadHTile
 local _loadVTile =  SkinUtils.loadVTile
 local _loadImageTile =  SkinUtils.loadImageTile
 local _icon =  SkinUtils.icon
-local _font =  SkinUtils.font
-local _boldfont =  SkinUtils.boldfont
+local _font =  SkinUtils.fontDefault
+local _boldfont =  SkinUtils.boldfontDefault
 local _uses =  SkinUtils.uses
 
 function displayName(self)
@@ -2335,7 +2335,7 @@ function Digital:getDigitalClockSkin(skinName)
         local screen_width, screen_height = Framework:getScreenSize()
         local scale = screen_height / 480
         local scale_x = screen_width / 800
-        local digitWidth = 160 * scale
+        local digitWidth =120 * scale
 
         local jogglerSkinXOffset = 20
         local jogglerSkinYOffset = 104

@@ -47,6 +47,9 @@ local log	= require("jive.utils.log").logger("jive.ui")
 module(..., oo.class)
 
 local fontpath = "fonts/"
+local FONT_NAME_DEFAULT = "FreeSans"
+local BOLD_FONT_NAME_DEFAULT = "FreeSansBold"
+
 local FONT_NAME = "FreeSans"
 local BOLD_FONT_NAME = "FreeSansBold"
 
@@ -67,6 +70,14 @@ end
 
 function boldFont(self, fontSize)
 	return Font:load(fontpath .. BOLD_FONT_NAME .. ".ttf", fontSize)
+end
+
+function regularFontDefault(self, fontSize)
+	return Font:load(fontpath .. FONT_NAME_DEFAULT .. ".ttf", fontSize)
+end
+
+function boldFontDefault(self, fontSize)
+	return Font:load(fontpath .. BOLD_FONT_NAME_DEFAULT .. ".ttf", fontSize)
 end
 
 function iconFont(self, fontSize)

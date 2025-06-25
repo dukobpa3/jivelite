@@ -1,7 +1,7 @@
 --[[
 =head1 NAME
 
-jive.utils.dpi
+jive.skin.dpi
 
 =head1 DESCRIPTION
 

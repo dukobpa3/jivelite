@@ -1,0 +1,27 @@
+#
+# The two letter codes are defined by ISO 639-1
+# http://en.wikipedia.org/wiki/List_of_ISO_639_codes
+
+SETUP_GRID_VIEW
+	EN	Setup Grid View
+
+GRID_VIEW_ALBUMS
+	EN	Albums
+
+GRID_VIEW_ARTISTS
+	EN	Artists
+
+GRID_VIEW_PLAYLISTS
+	EN	Playlists
+
+GRID_VIEW_GENRES
+	EN	Genres
+
+GRID_VIEW_YEARS
+	EN	Years
+
+GRID_VIEW_NEW_MUSIC
+	EN	New Music
+
+GRID_VIEW_SEARCH
+	EN	Search Results

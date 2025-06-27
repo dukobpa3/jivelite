@@ -21,18 +21,17 @@ local oo            = require("loop.simple")
 local AppletMeta    = require("jive.AppletMeta")
 local FontM         = require("jive.ui.FontM")
 
-local jiveMain      = jiveMain
-local jnt           = jnt
+local JiveMain      = jiveMain
 
 module(...)
 oo.class(_M, AppletMeta)
 
-function jiveVersion(meta)
+function jiveVersion(self)
 	return 1, 1
 end
 
 
-function defaultSettings(meta)
+function defaultSettings(self)
 	return {
 		regular = "FreeSans",
 		bold = "FreeSansBold",
@@ -41,16 +40,15 @@ function defaultSettings(meta)
 end
 
 
-function registerApplet(meta)
-	jiveMain:addItem(meta:menuItem('appletSelectFonts', 'screenSettings', 'SELECT_FONTS', function(applet, ...) applet:selectFontsEntryPoint(...) end))
-	meta:registerService("selectFontStartup")
+function registerApplet(self)
+	self:registerService("getFontsSettings")
 
-	jnt:subscribe(meta)
+	JiveMain:addItem(self:menuItem('appletSetupFonts', 'screenSettings', 'SETUP_FONTS', function(applet, ...) applet:settingsShow(...) end))
 end
 
 
-function configureApplet(meta)
-	local settings = meta:getSettings()
+function configureApplet(self)
+	local settings = self:getSettings()
 	FontM:setupFonts(settings['regular'], settings['bold'])
 end
 

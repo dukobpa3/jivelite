@@ -3139,9 +3139,9 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			i = i + 1
 			
 			-- We can't comfortably accomodate more than five items
-			if (w <= 800 and i > 5) or (i > 2 and v == 'volSlider') then
+			if (w <= _dp(800) and i > 5) or (i > 2 and v == 'volSlider') then
 				smallTbButtons = true
-				if w <= 800 then break end
+				if w <= _dp(800) then break end
 			end
 			
 			table.insert(buttonOrder, 'div' .. tostring(i))

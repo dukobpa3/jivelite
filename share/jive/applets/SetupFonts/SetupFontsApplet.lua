@@ -68,18 +68,8 @@ local fontsdb = {
     },
 }
 
-function selectFontsEntryPoint(self, menuItem)
-	return selectFonts(self, menuItem.text)
-end
-
-
-function selectFontStartup(self, setupNext)
-	return selectFonts(self, self:string("SELECT_FONTS"))
-end
-
-
-function selectFonts(self, title)
-	local window = Window("text_list", title, 'settingstitle')
+function settingsShow(self, menuItem)
+	local window = Window("text_list", menuItem.text, 'settingstitle')
 	local menu = SimpleMenu("menu")
 	menu:setComparator(menu.itemComparatorAlpha)
 
@@ -117,14 +107,15 @@ function selectFonts(self, title)
 			if self.changed then
 				self:storeSettings()
 			end
-			if setupNext then
-				setupNext()
-			end
 		end
 	)
 
 	self:tieAndShowWindow(window)
 	return window
+end
+
+function getFontsSettings(self)
+	return self:getSettings()
 end
 
 --[[

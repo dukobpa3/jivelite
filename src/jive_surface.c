@@ -691,42 +691,58 @@ static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, U
 		return;
 	}
 
-	/* Extract edge dimensions from corners */
-	int left_width = 0, right_width = 0, top_height = 0, bottom_height = 0;
-	if (srf[1]) { left_width = tile->w[0]; top_height = tile->h[0]; }
-	if (srf[3]) { right_width = tile->w[1]; if (!top_height) top_height = tile->h[0]; }
-	if (srf[5]) { if (!right_width) right_width = tile->w[1]; bottom_height = tile->h[1]; }
-	if (srf[7]) { if (!left_width) left_width = tile->w[0]; if (!bottom_height) bottom_height = tile->h[1]; }
+	int th = 0, bh = 0, lw = 0, rw = 0;
 
-	/* Calculate center coordinates */
-	int center_x = dx + left_width;
-	int center_y = dy + top_height;
-	int center_w = dw - left_width - right_width;
-	int center_h = dh - top_height - bottom_height;
+	// Кути задають обмеження
+	if (srf[1]) { th = tile->h[0]; lw = tile->w[0]; } // top-left
+	if (srf[3]) { th = th ? th : tile->h[0]; rw = tile->w[1]; } // top-right
+	if (srf[5]) { bh = tile->h[1]; rw = rw ? rw : tile->w[1]; } // bottom-right
+	if (srf[7]) { bh = bh ? bh : tile->h[1]; lw = lw ? lw : tile->w[0]; } // bottom-left
 
-	/* Determine tile type and render */
-	bool has_corners = (srf[1] || srf[3] || srf[5] || srf[7]);
-	
+	int cx = dx + lw;
+	int cy = dy + th;
+	int cw = dw - lw - rw;
+	int ch = dh - th - bh;
+
+	bool has_corners = srf[1] || srf[3] || srf[5] || srf[7];
+	bool h3 = srf[2], h7 = srf[6], v9 = srf[8], v5 = srf[4];
+
 	if (!has_corners) {
-		/* Slice3: scale edges proportionally, center fills remaining space */
-		if (srf[1]) blit_area(srf[1], dst_srf, dx, dy, left_width, dh);
-		if (srf[3]) blit_area(srf[3], dst_srf, dx + dw - right_width, dy, right_width, dh);
-		if (srf[2]) blit_area(srf[2], dst_srf, center_x, dy, center_w, dh);
-	} else {
-		/* Slice9: corners define edge dimensions, edges stretch in one direction */
-		if (srf[1]) blit_area(srf[1], dst_srf, dx, dy, left_width, top_height);
-		if (srf[3]) blit_area(srf[3], dst_srf, dx + dw - right_width, dy, right_width, top_height);
-		if (srf[5]) blit_area(srf[5], dst_srf, dx + dw - right_width, dy + dh - bottom_height, right_width, bottom_height);
-		if (srf[7]) blit_area(srf[7], dst_srf, dx, dy + dh - bottom_height, left_width, bottom_height);
-		
-		if (srf[2]) blit_area(srf[2], dst_srf, center_x, dy, center_w, top_height);
-		if (srf[4]) blit_area(srf[4], dst_srf, dx + dw - right_width, center_y, right_width, center_h);
-		if (srf[6]) blit_area(srf[6], dst_srf, center_x, dy + dh - bottom_height, center_w, bottom_height);
-		if (srf[8]) blit_area(srf[8], dst_srf, dx, center_y, left_width, center_h);
-		
-		if (srf[0]) blit_area(srf[0], dst_srf, center_x, center_y, center_w, center_h);
+		// slice3
+		if (h3 && h7 && !v9 && !v5) {
+			int h_top = tile->h[0];
+			int h_bot = tile->h[1];
+			blit_area(srf[2], dst_srf, dx, dy, dw, h_top);
+			blit_area(srf[0], dst_srf, dx, dy + h_top, dw, dh - h_top - h_bot);
+			blit_area(srf[6], dst_srf, dx, dy + dh - h_bot, dw, h_bot);
+			return;
+		} else if (v9 && v5 && !h3 && !h7) {
+			int w_left = tile->w[0];
+			int w_right = tile->w[1];
+			blit_area(srf[8], dst_srf, dx, dy, w_left, dh);
+			blit_area(srf[0], dst_srf, dx + w_left, dy, dw - w_left - w_right, dh);
+			blit_area(srf[4], dst_srf, dx + dw - w_right, dy, w_right, dh);
+			return;
+		} else {
+			// Only center
+			blit_area(srf[0], dst_srf, dx, dy, dw, dh);
+			return;
+		}
 	}
+
+	// slice9
+	if (srf[1]) blit_area(srf[1], dst_srf, dx, dy, lw, th); // top-left
+	if (srf[3]) blit_area(srf[3], dst_srf, dx + dw - rw, dy, rw, th); // top-right
+	if (srf[5]) blit_area(srf[5], dst_srf, dx + dw - rw, dy + dh - bh, rw, bh); // bottom-right
+	if (srf[7]) blit_area(srf[7], dst_srf, dx, dy + dh - bh, lw, bh); // bottom-left
+
+	if (srf[2]) blit_area(srf[2], dst_srf, cx, dy, cw, th); // top
+	if (srf[4]) blit_area(srf[4], dst_srf, dx + dw - rw, cy, rw, ch); // right
+	if (srf[6]) blit_area(srf[6], dst_srf, cx, dy + dh - bh, cw, bh); // bottom
+	if (srf[8]) blit_area(srf[8], dst_srf, dx, cy, lw, ch); // left
+	if (srf[0]) blit_area(srf[0], dst_srf, cx, cy, cw, ch); // center
 }
+
 
 
 void jive_tile_blit(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, Uint16 dw, Uint16 dh) {

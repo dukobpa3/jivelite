@@ -665,7 +665,6 @@ void jive_surface_get_tile_blit(JiveSurface *srf, SDL_Surface **sdl, Sint16 *x, 
 
 
 static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, Uint16 dw, Uint16 dh) {
-	int ox=0, oy=0, ow=0, oh=0;
 	Sint16 dst_offset_x, dst_offset_y;
 	SDL_Surface *dst_srf;
 	SDL_Surface *srf[9];
@@ -676,12 +675,10 @@ static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, U
 	}
 
 	jive_surface_get_tile_blit(dst, &dst_srf, &dst_offset_x, &dst_offset_y);
-
 	dx += dst_offset_x;
 	dy += dst_offset_y;
 
 	if (tile->sdl) {
-		/* simple, data-loaded image */
 		blit_area(tile->sdl, dst_srf, dx, dy, dw, dh);
 		return;
 	}
@@ -690,66 +687,44 @@ static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, U
 	_init_tile_sizes(tile);
 
 	if ((tile->flags & TILE_FLAG_IMAGE) && srf[0]) {
-		/* dynamically-loaded image */
 		blit_area(srf[0], dst_srf, dx, dy, dw, dh);
 		return;
 	}
 
-	/* top left */
-	if (srf[1]) {
-		ox = MIN(tile->w[0], dw);
-		oy = MIN(tile->h[0], dh);
-		blit_area(srf[1], dst_srf, dx, dy, ox, oy);
-	}
+	/* Extract edge dimensions from corners */
+	int left_width = 0, right_width = 0, top_height = 0, bottom_height = 0;
+	if (srf[1]) { left_width = tile->w[0]; top_height = tile->h[0]; }
+	if (srf[3]) { right_width = tile->w[1]; if (!top_height) top_height = tile->h[0]; }
+	if (srf[5]) { if (!right_width) right_width = tile->w[1]; bottom_height = tile->h[1]; }
+	if (srf[7]) { if (!left_width) left_width = tile->w[0]; if (!bottom_height) bottom_height = tile->h[1]; }
 
-	/* top right */
-	if (srf[3]) {
-		ow = MIN(tile->w[1], dw);
-		oy = MIN(tile->h[0], dh);
-		blit_area(srf[3], dst_srf, dx + dw - ow, dy, ow, oy);
-	}
+	/* Calculate center coordinates */
+	int center_x = dx + left_width;
+	int center_y = dy + top_height;
+	int center_w = dw - left_width - right_width;
+	int center_h = dh - top_height - bottom_height;
 
-	/* bottom right */
-	if (srf[5]) {
-		ow = MIN(tile->w[1], dw);
-		oh = MIN(tile->h[1], dh);
-		blit_area(srf[5], dst_srf, dx + dw - ow, dy + dh - oh, ow, oh);
-	}
-
-	/* bottom left */
-	if (srf[7]) {
-		ox = MIN(tile->w[0], dw);
-		oh = MIN(tile->h[1], dh);
-		blit_area(srf[7], dst_srf, dx, dy + dh - oh, ox, oh);
-	}
-
-	/* top */
-	if (srf[2]) {
-		oy = MIN(tile->h[0], dh);
-		blit_area(srf[2], dst_srf, dx + ox, dy, dw - ox - ow, oy);
-	}
-
-	/* right */
-	if (srf[4]) {
-		ow = MIN(tile->w[1], dw);
-		blit_area(srf[4], dst_srf, dx + dw - ow, dy + oy, ow, dh - oy - oh);
-	}
-
-	/* bottom */
-	if (srf[6]) {
-		oh = MIN(tile->h[1], dh);
-		blit_area(srf[6], dst_srf, dx + ox, dy + dh - oh, dw - ox - ow, oh);
-	}
-
-	/* left */
-	if (srf[8]) {
-		ox = MIN(tile->w[0], dw);
-		blit_area(srf[8], dst_srf, dx, dy + oy, ox, dh - oy - oh);
-	}
-
-	/* center */
-	if (srf[0]) {
-		blit_area(srf[0], dst_srf, dx + ox, dy + oy, dw - ox - ow, dh - oy - oh);
+	/* Determine tile type and render */
+	bool has_corners = (srf[1] || srf[3] || srf[5] || srf[7]);
+	
+	if (!has_corners) {
+		/* Slice3: scale edges proportionally, center fills remaining space */
+		if (srf[1]) blit_area(srf[1], dst_srf, dx, dy, left_width, dh);
+		if (srf[3]) blit_area(srf[3], dst_srf, dx + dw - right_width, dy, right_width, dh);
+		if (srf[2]) blit_area(srf[2], dst_srf, center_x, dy, center_w, dh);
+	} else {
+		/* Slice9: corners define edge dimensions, edges stretch in one direction */
+		if (srf[1]) blit_area(srf[1], dst_srf, dx, dy, left_width, top_height);
+		if (srf[3]) blit_area(srf[3], dst_srf, dx + dw - right_width, dy, right_width, top_height);
+		if (srf[5]) blit_area(srf[5], dst_srf, dx + dw - right_width, dy + dh - bottom_height, right_width, bottom_height);
+		if (srf[7]) blit_area(srf[7], dst_srf, dx, dy + dh - bottom_height, left_width, bottom_height);
+		
+		if (srf[2]) blit_area(srf[2], dst_srf, center_x, dy, center_w, top_height);
+		if (srf[4]) blit_area(srf[4], dst_srf, dx + dw - right_width, center_y, right_width, center_h);
+		if (srf[6]) blit_area(srf[6], dst_srf, center_x, dy + dh - bottom_height, center_w, bottom_height);
+		if (srf[8]) blit_area(srf[8], dst_srf, dx, center_y, left_width, center_h);
+		
+		if (srf[0]) blit_area(srf[0], dst_srf, center_x, center_y, center_w, center_h);
 	}
 }
 

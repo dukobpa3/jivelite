@@ -796,6 +796,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	s.item = {
+		h = FIVE_ITEM_HEIGHT,
 		order = { "icon", "text", "arrow" },
 		padding = { GAP_12, 0, GAP_8, 0 },
 		text = {
@@ -892,59 +893,57 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		order = { 'icon', 'text', 'check' },
 	})
 
-	s.selected = {
-		item               = _uses(s.item, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_play           = _uses(s.item_play, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_add            = _uses(s.item_add, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_checked        = _uses(s.item_checked, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_no_arrow        = _uses(s.item_no_arrow, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_checked_no_arrow = _uses(s.item_checked_no_arrow, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_choice         = _uses(s.item_choice, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_info         = _uses(s.item_info, {
-			bgImg = fiveItemSelectionBox
-		}),
-	}
+	s.selected = {}
+	s.selected.item = _uses(s.item, {
+		bgImg = fiveItemSelectionBox,
+	})
+	s.selected.item_play = _uses(s.item_play, {
+		bgImg = fiveItemSelectionBox,
+	})
+	s.selected.item_add = _uses(s.item_add, {
+		bgImg = fiveItemSelectionBox,
+	})
+	s.selected.item_checked = _uses(s.item_checked, {
+		bgImg = fiveItemSelectionBox,
+	})
+	s.selected.item_no_arrow = _uses(s.item_no_arrow, {
+		bgImg = fiveItemSelectionBox,
+	})
+	s.selected.item_checked_no_arrow = _uses(s.item_checked_no_arrow, {
+		bgImg = fiveItemSelectionBox,
+	})
+	s.selected.item_choice = _uses(s.item_choice, {
+		bgImg = fiveItemSelectionBox,
+	})
+	s.selected.item_info = _uses(s.item_info, {
+		bgImg = fiveItemSelectionBox,
+	})
 
-	s.pressed = {
-		item = _uses(s.item, {
-			bgImg = fiveItemPressedBox,
-		}),
-		item_checked = _uses(s.item_checked, {
-			bgImg = fiveItemPressedBox,
-		}),
-		item_play = _uses(s.item_play, {
-			bgImg = fiveItemPressedBox,
-		}),
-		item_add = _uses(s.item_add, {
-			bgImg = fiveItemPressedBox,
-		}),
-		item_no_arrow = _uses(s.item_no_arrow, {
-			bgImg = fiveItemPressedBox,
-		}),
-		item_checked_no_arrow = _uses(s.item_checked_no_arrow, {
-			bgImg = fiveItemPressedBox,
-		}),
-		item_choice = _uses(s.item_choice, {
-			bgImg = fiveItemPressedBox,
-		}),
-		item_info         = _uses(s.item_info, {
-			bgImg = fiveItemPressedBox,
-		}),
-	}
+	s.pressed = {}
+	s.pressed.item = _uses(s.item, {
+		bgImg = fiveItemPressedBox,
+	})
+	s.pressed.item_checked = _uses(s.item_checked, {
+		bgImg = fiveItemPressedBox,
+	})
+	s.pressed.item_play = _uses(s.item_play, {
+		bgImg = fiveItemPressedBox,
+	})
+	s.pressed.item_add = _uses(s.item_add, {
+		bgImg = fiveItemPressedBox,
+	})
+	s.pressed.item_no_arrow = _uses(s.item_no_arrow, {
+		bgImg = fiveItemPressedBox,
+	})
+	s.pressed.item_checked_no_arrow = _uses(s.item_checked_no_arrow, {
+		bgImg = fiveItemPressedBox,
+	})
+	s.pressed.item_choice = _uses(s.item_choice, {
+		bgImg = fiveItemPressedBox,
+	})
+	s.pressed.item_info = _uses(s.item_info, {
+		bgImg = fiveItemPressedBox,
+	})
 
 	s.locked = {
 		item = _uses(s.pressed.item, {
@@ -1451,6 +1450,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.multiline_text_list.menu = _uses(s.menu, {
 		itemHeight = THREE_ITEM_HEIGHT,
 		item = {
+			h = THREE_ITEM_HEIGHT,
 			padding = { GAP_10, GAP_8, 0, GAP_8 },
 			bgImg = false,
 			icon = {
@@ -1460,19 +1460,20 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	})
 
 	s.multiline_text_list.menu.item_no_arrow = _uses(s.multiline_text_list.menu.item)
-
 	s.multiline_text_list.menu.selected = {}
 	s.multiline_text_list.menu.selected.item = _uses(s.multiline_text_list.menu.item, {
 		bgImg = threeItemSelectionBox,
+		h = THREE_ITEM_HEIGHT,
 	})
 	s.multiline_text_list.menu.selected.item_no_arrow = _uses(s.multiline_text_list.menu.selected.item)
 
 	s.multiline_text_list.menu.pressed = {}
 	s.multiline_text_list.menu.pressed.item = _uses(s.multiline_text_list.menu.item, {
 		bgImg = threeItemPressedBox,
+		h = THREE_ITEM_HEIGHT,
 	})
 	s.multiline_text_list.menu.pressed.item_no_arrow = _uses(s.multiline_text_list.menu.pressed.item)
- 
+
 	-- popup "spinny" window
 	s.waiting_popup = _uses(s.popup, {
 		text = {
@@ -1595,6 +1596,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.icon_list = _uses(s.window, {
 		menu = {
 			item = {
+				h = FIVE_ITEM_HEIGHT,
 				order = { "icon", "text", "arrow" },
 				padding = { GAP_12, 0, 0, 0 },
 				text = {
@@ -1653,55 +1655,55 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		order = { 'icon', 'text', 'check' },
 	})
 
-	s.icon_list.menu.selected = {
-		item = _uses(s.icon_list.menu.item, {
-			bgImg = fiveItemSelectionBox
-		}),
-		albumcurrent = _uses(s.icon_list.menu.albumcurrent, {
-			arrow = { 
-				img = _loadImage(imgpath .. "Icons/icon_nplay_3line_sel.png"),
-			},
-			bgImg = fiveItemSelectionBox,
-		}),
-		item_checked = _uses(s.icon_list.menu.item_checked, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_play = _uses(s.icon_list.menu.item_play, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_add = _uses(s.icon_list.menu.item_add, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_no_arrow = _uses(s.icon_list.menu.item_no_arrow, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_checked_no_arrow = _uses(s.icon_list.menu.item_checked_no_arrow, {
-			bgImg = fiveItemSelectionBox
-		}),
-	}
-	s.icon_list.menu.pressed = {
-		item = _uses(s.icon_list.menu.item, { 
-			bgImg = fiveItemPressedBox 
-		}),
-		albumcurrent = _uses(s.icon_list.menu.albumcurrent, {
-			bgImg = fiveItemSelectionBox
-		}),
-		item_checked = _uses(s.icon_list.menu.item_checked, { 
-			bgImg = fiveItemPressedBox 
-		}),
-		item_play = _uses(s.icon_list.menu.item_play, { 
-			bgImg = fiveItemPressedBox 
-		}),
-		item_add = _uses(s.icon_list.menu.item_add, { 
-			bgImg = fiveItemPressedBox 
-		}),
-		item_no_arrow = _uses(s.icon_list.menu.item_no_arrow, { 
-			bgImg = fiveItemPressedBox 
-		}),
-		item_checked_no_arrow = _uses(s.icon_list.menu.item_checked_no_arrow, { 
-			bgImg = fiveItemPressedBox 
-		}),
-	}
+	s.icon_list.menu.selected = {}
+	s.icon_list.menu.selected.item = _uses(s.icon_list.menu.item, {
+		bgImg = fiveItemSelectionBox
+	})
+	s.icon_list.menu.selected.albumcurrent = _uses(s.icon_list.menu.albumcurrent, {
+		arrow = {
+			img = _loadImage(imgpath .. "Icons/icon_nplay_3line_sel.png"),
+		},
+		bgImg = fiveItemSelectionBox,
+	})
+	s.icon_list.menu.selected.item_checked = _uses(s.icon_list.menu.item_checked, {
+		bgImg = fiveItemSelectionBox
+	})
+	s.icon_list.menu.selected.item_play = _uses(s.icon_list.menu.item_play, {
+		bgImg = fiveItemSelectionBox
+	})
+	s.icon_list.menu.selected.item_add = _uses(s.icon_list.menu.item_add, {
+		bgImg = fiveItemSelectionBox
+	})
+	s.icon_list.menu.selected.item_no_arrow = _uses(s.icon_list.menu.item_no_arrow, {
+		bgImg = fiveItemSelectionBox
+	})
+	s.icon_list.menu.selected.item_checked_no_arrow = _uses(s.icon_list.menu.item_checked_no_arrow, {
+		bgImg = fiveItemSelectionBox
+	})
+
+	s.icon_list.menu.pressed = {}
+	s.icon_list.menu.pressed.item = _uses(s.icon_list.menu.item, {
+		bgImg = fiveItemPressedBox
+	})
+	s.icon_list.menu.pressed.albumcurrent = _uses(s.icon_list.menu.albumcurrent, {
+		bgImg = fiveItemSelectionBox
+	})
+	s.icon_list.menu.pressed.item_checked = _uses(s.icon_list.menu.item_checked, {
+		bgImg = fiveItemPressedBox
+	})
+	s.icon_list.menu.pressed.item_play = _uses(s.icon_list.menu.item_play, {
+		bgImg = fiveItemPressedBox
+	})
+	s.icon_list.menu.pressed.item_add = _uses(s.icon_list.menu.item_add, {
+		bgImg = fiveItemPressedBox
+	})
+	s.icon_list.menu.pressed.item_no_arrow = _uses(s.icon_list.menu.item_no_arrow, {
+		bgImg = fiveItemPressedBox
+	})
+	s.icon_list.menu.pressed.item_checked_no_arrow = _uses(s.icon_list.menu.item_checked_no_arrow, {
+		bgImg = fiveItemPressedBox
+	})
+
 	s.icon_list.menu.locked = {
 		item = _uses(s.icon_list.menu.pressed.item, {
 			arrow = smallSpinny
@@ -1984,6 +1986,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			},
 			selected = {
 				item = {
+					h = CM_MENU_HEIGHT,
 					order = { "text", "arrow" },
 					bgImg = fiveItemSelectionBox,
 					padding = { GAP_12, 0, GAP_12, 0 },
@@ -2128,6 +2131,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			},
 			selected = {
 				item = {
+					h = CM_MENU_HEIGHT,
 					bgImg = fiveItemSelectionBox,
 					order = { "text", "arrow" },
 					text = {

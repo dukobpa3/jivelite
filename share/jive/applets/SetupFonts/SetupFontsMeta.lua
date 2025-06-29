@@ -50,6 +50,7 @@ end
 function configureApplet(self)
 	local settings = self:getSettings()
 	FontM:setupFonts(settings['regular'], settings['bold'])
+	JiveMain:reloadSkin()
 end
 
 

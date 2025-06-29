@@ -693,7 +693,7 @@ static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, U
 
 	int th = 0, bh = 0, lw = 0, rw = 0;
 
-	// Кути задають обмеження
+	// Corners sets borders
 	if (srf[1]) { th = tile->h[0]; lw = tile->w[0]; } // top-left
 	if (srf[3]) { th = th ? th : tile->h[0]; rw = tile->w[1]; } // top-right
 	if (srf[5]) { bh = tile->h[1]; rw = rw ? rw : tile->w[1]; } // bottom-right

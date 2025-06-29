@@ -709,22 +709,23 @@ static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, U
 
 	if (!has_corners) {
 		// slice3
-		if (h3 && h7 && !v9 && !v5) {
+		if ((h3 || h7) && !v9 && !v5) {
 			int h_top = tile->h[0];
 			int h_bot = tile->h[1];
-			blit_area(srf[2], dst_srf, dx, dy, dw, h_top);
-			blit_area(srf[0], dst_srf, dx, dy + h_top, dw, dh - h_top - h_bot);
-			blit_area(srf[6], dst_srf, dx, dy + dh - h_bot, dw, h_bot);
+			if (srf[2]) blit_area(srf[2], dst_srf, dx, dy, dw, h_top);
+			if (srf[0]) blit_area(srf[0], dst_srf, dx, dy + h_top, dw, dh - h_top - h_bot);
+			if (srf[6]) blit_area(srf[6], dst_srf, dx, dy + dh - h_bot, dw, h_bot);
 			return;
-		} else if (v9 && v5 && !h3 && !h7) {
+		} else if ((v9 || v5) && !h3 && !h7) {
 			int w_left = tile->w[0];
 			int w_right = tile->w[1];
-			blit_area(srf[8], dst_srf, dx, dy, w_left, dh);
-			blit_area(srf[0], dst_srf, dx + w_left, dy, dw - w_left - w_right, dh);
-			blit_area(srf[4], dst_srf, dx + dw - w_right, dy, w_right, dh);
+			if (srf[8]) blit_area(srf[8], dst_srf, dx, dy, w_left, dh);
+			if (srf[0]) blit_area(srf[0], dst_srf, dx + w_left, dy, dw - w_left - w_right, dh);
+			if (srf[4]) blit_area(srf[4], dst_srf, dx + dw - w_right, dy, w_right, dh);
 			return;
 		} else {
 			// Only center
+			// todo: not sure if need to check to nil here
 			blit_area(srf[0], dst_srf, dx, dy, dw, dh);
 			return;
 		}

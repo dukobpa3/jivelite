@@ -537,9 +537,9 @@ JiveTile *jive_tile_load_vtiles(char *path[3]) {
 	char *path2[9];
 
 	memset(path2, 0, sizeof(path2));
-	path2[1] = path[0];
-	path2[8] = path[1];
-	path2[7] = path[2];
+	path2[2] = path[0];
+	path2[0] = path[1];
+	path2[6] = path[2];
 
 	return jive_tile_load_tiles(path2);
 }
@@ -549,9 +549,9 @@ JiveTile *jive_tile_load_htiles(char *path[3]) {
 	char *path2[9];
 
 	memset(path2, 0, sizeof(path2));
-	path2[1] = path[0];
-	path2[2] = path[1];
-	path2[3] = path[2];
+	path2[8] = path[0];
+	path2[0] = path[1];
+	path2[4] = path[2];
 
 	return jive_tile_load_tiles(path2);
 }

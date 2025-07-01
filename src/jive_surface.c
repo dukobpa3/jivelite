@@ -358,27 +358,43 @@ static void _init_tile_sizes(JiveTile *tile) {
 	/* top */
 	if (tile->image[2]) {
 		tile->h[0] = MAX(_get_image_h(&images[tile->image[2]]), tile->h[0]);
+		if (!tile->w[0]) { // for slice3v
+			tile->w[0] = _get_image_w(&images[tile->image[2]]);
+		}
 	}
 
 	/* right */
 	if (tile->image[4]) {
 		tile->w[1] = MAX(_get_image_w(&images[tile->image[4]]), tile->w[1]);
+		if (!tile->h[0]) { // for slice3h
+			tile->h[0] = _get_image_h(&images[tile->image[4]]);
+		}
 	}
 
 	/* bottom */
 	if (tile->image[6]) {
 		tile->h[1] = MAX(_get_image_h(&images[tile->image[6]]), tile->h[1]);
+		if (!tile->w[0]) { // for slice3v
+			tile->w[0] = _get_image_w(&images[tile->image[6]]);
+		}
 	}
 
 	/* left */
 	if (tile->image[8]) {
 		tile->w[0] = MAX(_get_image_w(&images[tile->image[8]]), tile->w[0]);
+		if (!tile->h[0]) { // for slice3h
+			tile->h[0] = _get_image_h(&images[tile->image[8]]);
+		}
 	}
 
-	/* special for single images */
-	if (tile->image[0] && !tile->image[1] && !tile->w[0]) {
-		tile->w[0] = _get_image_w(&images[tile->image[0]]);
-		tile->h[0] = _get_image_h(&images[tile->image[0]]);
+	/* center */
+	if (tile->image[0]) {
+		if (!tile->w[0]) {
+			tile->w[0] = _get_image_w(&images[tile->image[0]]);
+		}
+		if (!tile->h[0]) {
+			tile->h[0] = _get_image_h(&images[tile->image[0]]);
+		}
 	}
 
 	tile->flags |= TILE_FLAG_INIT;
@@ -694,10 +710,22 @@ static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, U
 	int th = 0, bh = 0, lw = 0, rw = 0;
 
 	// Corners sets borders
-	if (srf[1]) { th = tile->h[0]; lw = tile->w[0]; } // top-left
-	if (srf[3]) { th = th ? th : tile->h[0]; rw = tile->w[1]; } // top-right
-	if (srf[5]) { bh = tile->h[1]; rw = rw ? rw : tile->w[1]; } // bottom-right
-	if (srf[7]) { bh = bh ? bh : tile->h[1]; lw = lw ? lw : tile->w[0]; } // bottom-left
+	if (srf[1]) {  // top-left
+		th = tile->h[0];
+		lw = tile->w[0]; 
+	}
+	if (srf[3]) { 
+		th = th ? th : tile->h[0]; 
+		rw = tile->w[1]; 
+	}
+	if (srf[5]) {  // bottom-right
+		bh = tile->h[1];
+		rw = rw ? rw : tile->w[1];
+	}
+	if (srf[7]) {  // bottom-left
+		bh = bh ? bh : tile->h[1];
+		lw = lw ? lw : tile->w[0];
+	}
 
 	int cx = dx + lw;
 	int cy = dy + th;
@@ -707,26 +735,51 @@ static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, U
 	bool has_corners = srf[1] || srf[3] || srf[5] || srf[7];
 	bool h3 = srf[2], h7 = srf[6], v9 = srf[8], v5 = srf[4];
 
-	if (!has_corners) {
-		// slice3
-		if ((h3 || h7) && !v9 && !v5) {
-			int h_top = tile->h[0];
-			int h_bot = tile->h[1];
-			if (srf[2]) blit_area(srf[2], dst_srf, dx, dy, dw, h_top);
-			if (srf[0]) blit_area(srf[0], dst_srf, dx, dy + h_top, dw, dh - h_top - h_bot);
-			if (srf[6]) blit_area(srf[6], dst_srf, dx, dy + dh - h_bot, dw, h_bot);
+	if (!has_corners) { // slice3
+		if ((h3 || h7) && !v9 && !v5) { // vertical
+			th = tile->h[0];
+			bh = tile->h[1];
+			if (srf[2]) {
+				int tw = tile->image[2] ? _get_image_w(&images[tile->image[2]]) : 0;
+				if(tw && tw != dw) {
+					th *= (float)dw / tw;
+				}
+			}
+			if (srf[6]) {
+				int bw = tile->image[6] ? _get_image_w(&images[tile->image[6]]) : 0;
+				if(bw && bw != dw) {
+					bh *= (float)dw / bw;
+				}
+			}
+			if (srf[2]) blit_area(srf[2], dst_srf, dx, dy, dw, th);
+			if (srf[0]) blit_area(srf[0], dst_srf, dx, dy + th, dw, dh - th - bh);
+			if (srf[6]) blit_area(srf[6], dst_srf, dx, dy + dh - bh, dw, bh);
 			return;
-		} else if ((v9 || v5) && !h3 && !h7) {
-			int w_left = tile->w[0];
-			int w_right = tile->w[1];
-			if (srf[8]) blit_area(srf[8], dst_srf, dx, dy, w_left, dh);
-			if (srf[0]) blit_area(srf[0], dst_srf, dx + w_left, dy, dw - w_left - w_right, dh);
-			if (srf[4]) blit_area(srf[4], dst_srf, dx + dw - w_right, dy, w_right, dh);
+		} else if ((v9 || v5) && !h3 && !h7) { // horizontal
+			lw = tile->w[0];
+			rw = tile->w[1];
+			if (srf[8]) {
+				int lh = tile->image[8] ? _get_image_h(&images[tile->image[8]]) : 0;
+				if(lh && lh != dh) {
+					lw *= (float)dh / lh;
+				}
+			}
+			if (srf[4]) {
+				int rh = tile->image[4] ? _get_image_h(&images[tile->image[4]]) : 0;
+				if(rh && rh != dh) {
+					rw *= (float)dh / rh;
+				}
+			}
+			if (srf[8]) blit_area(srf[8], dst_srf, dx, dy, lw, dh);
+			if (srf[0]) blit_area(srf[0], dst_srf, dx + lw, dy, dw - lw - rw, dh);
+			if (srf[4]) blit_area(srf[4], dst_srf, dx + dw - rw, dy, rw, dh);
 			return;
-		} else {
-			// Only center
-			// todo: not sure if need to check to nil here
-			blit_area(srf[0], dst_srf, dx, dy, dw, dh);
+		} else { // Only center
+			if (srf[0]) blit_area(srf[0], dst_srf, dx, dy, dw, dh);
+			else {
+				// Should be at least one tile
+				LOG_ERROR(log_ui_draw, "_blit_tile: srf[0] is nil");
+			}
 			return;
 		}
 	}

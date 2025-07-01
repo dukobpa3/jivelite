@@ -2196,7 +2196,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.volume_slider = {
 		w = WH_FILL,
-		border = { 0, 0, 0, GAP_10 },
+		border = { 0, 0, 0, 0 },
 		bgImg = _volumeSliderBackground,
 		img = _popupSliderBar,
 	}
@@ -2229,6 +2229,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			align = 'center',
 			font = _font(FONT_SIZE_XS),
 			fg = { 0xdc,0xdc, 0xdc },
+			sh = TEXT_SH_COLOR,
 		},
 	}
 	local _pressed_button = _uses(_button, {
@@ -3036,9 +3037,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 			},
 			npprogressB = {
 				w = w - _tracklayout.x - 2*_dp(80) - _dp(25),
-				h = _dp(50),
 				padding = { 0, 0, 0, 0 },
-			    position = LAYOUT_SOUTH,
+			    position = LAYOUT_CENTER,
 				horizontal = 1,
 				bgImg = _songProgressBackground,
 				img = _songProgressBar,
@@ -3070,9 +3070,9 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.npvolumeB = {
 		w = volumeBarWidth,
-		border = { GAP_5, GAP_20, GAP_5, 0 },
-		padding = { GAP_6, 0, GAP_6, 0 },
-		position = LAYOUT_SOUTH,
+		border = { 0, GAP_20, 0, GAP_20 },
+		padding = { 0, 0, 0, 0 },
+		position = LAYOUT_CENTER,
 		horizontal = 1,
 		bgImg = _volumeSliderBackground,
 		img = _volumeSliderBar,
@@ -3315,7 +3315,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 	s.nowplaying_large_art.npprogress.npprogressB_disabled = _uses(s.nowplaying_large_art.npprogress.npprogressB, {
 		img = _songProgressBarDisabled,
 	})
-	
+
 	s.nowplaying_art_only = _uses(s.nowplaying, {
 		bgImg            = blackBackground,
 		title            = { hidden = 1 },
@@ -3370,7 +3370,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 		npartwork = { hidden = 1 },
 
 		npvisu = { hidden = 1 },
-		
+
 		npprogress = {
 			position = LAYOUT_NONE,
 			x = _dp(50),
@@ -3412,7 +3412,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = w - 2*_dp(50) - 2*_dp(80),
 				h = _dp(50),
 				padding = { 0, 0, 0, 0 },
-		        position = LAYOUT_SOUTH,
+		        position = LAYOUT_CENTER,
 				horizontal = 1,
 				bgImg = _songProgressBackground,
 				img = _songProgressBar,
@@ -3483,7 +3483,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 		npprogress = {
 			zOrder = 3,
-				position = LAYOUT_NONE,
+			position = LAYOUT_NONE,
 			x = _dp(10),
 			y = TITLE_HEIGHT + _dp(20),
 			h = _dp(60),
@@ -3504,7 +3504,8 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				h = _dp(29),
 				w = WH_FILL,
 				zOrder = 10,
-				padding = { 0, GAP_20, 0, GAP_15 },
+				position = LAYOUT_CENTER,
+				padding = { 0, 0, 0, 0 },
 				horizontal = 1,
 				bgImg = false,
 				img = _vizProgressBar,
@@ -3629,9 +3630,9 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.brightness_slider = {
 		w = WH_FILL,
-		border = { GAP_5, GAP_12, GAP_5, 0 },
+		border = { GAP_5, 0, GAP_5, 0 },
 		padding = { GAP_6, 0, GAP_6, 0 },
-		position = LAYOUT_SOUTH,
+		position = LAYOUT_CENTER,
 		horizontal = 1,
 		bgImg = _volumeSliderBackground,
 		img = _volumeSliderBar,

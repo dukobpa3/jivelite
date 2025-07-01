@@ -166,29 +166,48 @@ int jiveL_slider_draw(lua_State *L) {
 
 		jive_tile_get_min_size(peer->tile, &tw, &th);
 
+		double tile_scale = 1;
+
 		if (peer->horizontal) {
-			width -= tw;
-			x = (width / (float)(range - 1)) * (value - 1);
-			w = (width / (float)(range - 1)) * (size - 1) + tw;
 			y = 0;
 			h = height;
-			peer->pill_x = peer->w.bounds.x + peer->slider_x + peer->w.padding.left + (w - tw);
+			if(h != th)
+			{
+				tile_scale = (double)h/th;
+			}
+			width -= tw * tile_scale;
+			x = (width / (float)(range - 1)) * (value - 1);
+			w = (width / (float)(range - 1)) * (size - 1) + tw * tile_scale;
+			peer->pill_x = peer->w.bounds.x + peer->slider_x + peer->w.padding.left + (w - tw * tile_scale);
 			peer->pill_y = peer->w.bounds.y + peer->slider_y + peer->w.padding.top + y;
+			
 		}
 		else {
-			height -= th;
 			x = 0;
 			w = width;
+			if(w != tw)
+			{
+				tile_scale = (double)w/tw;
+			}
+			height -= th * tile_scale;
 			y = (height / (float)(range - 1)) * (value - 1);
-			h = (height / (float)(range - 1)) * (size - 1) + th;
+			h = (height / (float)(range - 1)) * (size - 1) + th * tile_scale;
 			peer->pill_x = peer->w.bounds.x + peer->slider_x + peer->w.padding.left + x;
-			peer->pill_y = peer->w.bounds.y + peer->slider_y + peer->w.padding.top + (h - th);
+			peer->pill_y = peer->w.bounds.y + peer->slider_y + peer->w.padding.top + (h - th * tile_scale);
 		}
 
 		jive_tile_blit(peer->tile, srf, peer->w.bounds.x + peer->slider_x + peer->w.padding.left + x, peer->w.bounds.y + peer->slider_y + peer->w.padding.top + y, w, h);
 
 		if (peer->pill_img) {
-			jive_surface_blit(peer->pill_img, srf, peer->pill_x, peer->pill_y);
+			if (fabs(tile_scale - 1.0) > 0.001) {
+				JiveSurface *scaled_srf = jive_surface_zoomSurface(peer->pill_img, tile_scale, tile_scale, 1);
+				if (scaled_srf) {
+					jive_surface_blit(scaled_srf, srf, peer->pill_x, peer->pill_y);
+					jive_surface_free(scaled_srf);
+				}
+			} else {
+				jive_surface_blit(peer->pill_img, srf, peer->pill_x, peer->pill_y);
+			}
 		}
 	}
 

@@ -3483,11 +3483,11 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 		npprogress = {
 			zOrder = 3,
-			position = LAYOUT_NONE,
-			x = _dp(10),
-			y = TITLE_HEIGHT + _dp(20),
+			position = LAYOUT_NORTH,
+			x = GAP_10,
+			y = TITLE_HEIGHT + GAP_20,
 			h = _dp(60),
-			w = w - _dp(30),
+			w = w - GAP_10 * 2,
 			elapsed = {
 				w = _dp(60),
 			},
@@ -3501,11 +3501,12 @@ function skin(self, s, reload, useDefaultSize, w, h)
 				w = _dp(60),
 			},
 			npprogressB = {
-				h = _dp(29),
+				h = WH_FILL,
 				w = WH_FILL,
 				zOrder = 10,
 				position = LAYOUT_CENTER,
-				padding = { 0, 0, 0, 0 },
+				border = { 0, 0, 0, 0 },
+				padding = { 0, GAP_10, 0, GAP_10 },
 				horizontal = 1,
 				bgImg = false,
 				img = _vizProgressBar,
@@ -3523,22 +3524,22 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	-- Visualizer: Spectrum Visualizer
 	s.nowplaying_spectrum_text = _uses(s.nowplaying_visualizer_common, {
-		npvisu = { 
+		npvisu = {
 			hidden = 0,
-			position = LAYOUT_NONE,
-			x = (w - _dp(800))/2,
+			position = LAYOUT_NORTH,
+			x = GAP_20,
 			y = 2 * TITLE_HEIGHT + _dp(4),
-			w = _dp(800),
-			h = _dp(446) - (2 * TITLE_HEIGHT + _dp(4) + _dp(45)),
+			w = w - GAP_20 * 2,
+			h = h * 0.5,
 			border = { 0, 0, 0, 0 },
 			padding = { 0, 0, 0, 0 },
 
 			spectrum = {
-				position = LAYOUT_NONE,
+				position = LAYOUT_CENTER,
 				x = 0,
-				y = 2 * TITLE_HEIGHT + _dp(4),
-				w = _dp(800),
-				h = _dp(446) - (2 * TITLE_HEIGHT + _dp(4) + _dp(45)),
+				y = 0,
+				w = WH_FILL,
+				h = WH_FILL,
 				border = { 0, 0, 0, 0 },
 				padding = { 0, 0, 0, 0 },
 

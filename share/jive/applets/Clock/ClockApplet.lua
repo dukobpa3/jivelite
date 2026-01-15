@@ -23,6 +23,7 @@ local Surface          = require("jive.ui.Surface")
 local Tile             = require("jive.ui.Tile")
 local Window           = require("jive.ui.Window")
 local SnapshotWindow   = require("jive.ui.SnapshotWindow")
+local SkinUtils        = require("jive.skin.skin")
 
 local Player           = require("jive.slim.Player")
                        
@@ -56,7 +57,7 @@ local FONT_NAME = "FreeSans"
 local BOLD_PREFIX = "Bold"
 
 local function _isJogglerSkin(skinName)
-	if string.match(skinName, 'PiGridSkin') or string.match(skinName, 'JogglerSkin') then
+	if string.match(skinName, 'DpiSkin') or string.match(skinName, 'PiGridSkin') or string.match(skinName, 'JogglerSkin') then
 		return true
 	end
 end
@@ -91,38 +92,16 @@ local function _imgpath(self)
     return "applets/" .. skinName .. "/images/"
 end
 
-function _loadImage(self, file)
-    return Surface:loadImage(self.imgpath .. file)
-end
-
--- define a local function that makes it easier to set fonts
-local function _font(fontSize)
-    return Font:load(fontpath .. FONT_NAME .. ".ttf", fontSize)
-end
-
--- define a local function that makes it easier to set bold fonts
-local function _boldfont(fontSize)
-    return Font:load(fontpath .. FONT_NAME .. BOLD_PREFIX .. ".ttf", fontSize)
-end
-
--- defines a new style that inherrits from an existing style
-local function _uses(parent, value)
-    if parent == nil then
-        log:warn("nil parent in _uses at:\n", debug.traceback())
-    end
-    local style = {}
-    setmetatable(style, { __index = parent })
-    for k,v in pairs(value or {}) do
-        if type(v) == "table" and type(parent[k]) == "table" then
-            -- recursively inherrit from parent style
-            style[k] = _uses(parent[k], v)
-        else
-            style[k] = v
-        end
-    end
-
-    return style
-end
+-- skin functions
+local _loadImage =  SkinUtils.loadImage
+local _loadTile =  SkinUtils.loadTile
+local _loadHTile =  SkinUtils.loadHTile
+local _loadVTile =  SkinUtils.loadVTile
+local _loadImageTile =  SkinUtils.loadImageTile
+local _icon =  SkinUtils.icon
+local _font =  SkinUtils.fontDefault
+local _boldfont =  SkinUtils.boldfontDefault
+local _uses =  SkinUtils.uses
 
 function displayName(self)
     return "Clock (NEW)"
@@ -997,7 +976,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
             return {
                 w = 61,
                 h = 134,
-                img = _loadImage(self, fileName),
+                img = _loadImage(self.imgpath .. fileName),
                 border = { 6, 0, 6, 0 },
                 align = 'bottom',
             }
@@ -1008,7 +987,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
             return {
                 w = 27,
                 h = 43,
-                img = _loadImage(self, fileName),
+                img = _loadImage(self.imgpath .. fileName),
                 align = 'bottom',
                 border = { 1, 0, 1, 0 },
             }
@@ -1041,18 +1020,18 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
     
         s.icon_dotMatrixDateDot = {
             align = 'bottom',
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_dot_sm.png")
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_dot_sm.png")
         }
     
         s.icon_dotMatrixDots = {
             align = 'center',
             border = { 4, 0, 3, 0 },
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_clock_dots.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_clock_dots.png"),
         }
     
         s.icon_alarm_on = {
             align = 'bottom',
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
             w   = 36,
             border = { 0, 0, 13, 0 },
         }
@@ -1164,7 +1143,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
             return {
                 w = 61,
                 h = 134,
-                img = _loadImage(self, fileName),
+                img = _loadImage(self.imgpath .. fileName),
                 border = { 6, 0, 6, 0 },
                 align = 'bottom',
             }
@@ -1175,7 +1154,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
             return {
                 w = 27,
                 h = 43,
-                img = _loadImage(self, fileName),
+                img = _loadImage(self.imgpath .. fileName),
                 align = 'bottom',
                 border = { 1, 0, 1, 0 },
             }
@@ -1208,18 +1187,18 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
     
         s.icon_dotMatrixDateDot = {
             align = 'bottom',
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_dot_sm.png")
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_dot_sm.png")
         }
     
         s.icon_dotMatrixDots = {
             align = 'center',
             border = { 4, 0, 3, 0 },
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_clock_dots.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_clock_dots.png"),
         }
     
         s.icon_alarm_on = {
             align = 'bottom',
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
             w   = 36,
             border = { 0, 0, 13, 0 },
         }
@@ -1340,7 +1319,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
             return {
                 w = 61,
                 h = 134,
-                img = _loadImage(self, fileName),
+                img = _loadImage(self.imgpath .. fileName),
                 align = 'bottom',
             }
         end
@@ -1350,7 +1329,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
             return {
                 w = 27,
                 h = 43,
-                img = _loadImage(self, fileName),
+                img = _loadImage(self.imgpath .. fileName),
                 align = 'bottom',
             }
         end
@@ -1382,18 +1361,18 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
     
         s.icon_dotMatrixDateDot = {
             align = 'bottom',
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_dot_sm.png")
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_dot_sm.png")
         }
     
         s.icon_dotMatrixDots = {
             align = 'center',
             border = { 4, 0, 3, 0 },
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_clock_dots.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_clock_dots.png"),
         }
     
         s.icon_alarm_on = {
             align = 'bottom',
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
             w   = 36,
         }
     
@@ -1503,7 +1482,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
             return {
                 w = 61,
                 h = 134,
-                img = _loadImage(self, fileName),
+                img = _loadImage(self.imgpath .. fileName),
                 align = 'bottom',
             }
         end
@@ -1542,7 +1521,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
         }
     
         s.icon_alarm_on = {
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
         }
         s.icon_alarm_off = _uses(s.icon_alarm_on, {
             img = false,
@@ -1609,7 +1588,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
             return {
                 w = 61,
                 h = 100,
-                img = _loadImage(self, fileName),
+                img = _loadImage(self.imgpath .. fileName),
                 align = 'bottom',
             }
         end
@@ -1648,7 +1627,7 @@ function DotMatrix:getDotMatrixClockSkin(skinName)
         }
     
         s.icon_alarm_on = {
-            img = _loadImage(self, "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Dot_Matrix/dotmatrix_alarm_on.png"),
         }
         s.icon_alarm_off = _uses(s.icon_alarm_on, {
             img = false,
@@ -1886,7 +1865,7 @@ function WordClock:getSkinParams(skinName)
             alarmY     = jogglerSkinAlarmY,
         }
         
-        if _isWQVGASkin(skinname) then
+        if _isWQVGASkin(skinName) then
             params.alarmX = 445
             params.alarmY = 2
         end
@@ -2175,7 +2154,7 @@ function Digital:getDigitalClockSkin(skinName)
         })
     
         s.icon_digitalClockDropShadow = {
-            img = _loadImage(self, "Clocks/Digital/drop_shadow_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/drop_shadow_digital.png"),
             align = 'center',
             padding = { 4, 0, 0, 0 },
             w = 76,
@@ -2186,7 +2165,7 @@ function Digital:getDigitalClockSkin(skinName)
         })
 
         s.icon_alarm_on = {
-            img = _loadImage(self, "Clocks/Digital/icon_alarm_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/icon_alarm_digital.png"),
         }
         s.icon_alarm_off = {
             img = false
@@ -2194,17 +2173,17 @@ function Digital:getDigitalClockSkin(skinName)
 
         s.icon_digitalClockHDivider = {
             w = WH_FILL,
-            img = _loadImage(self, "Clocks/Digital/divider_hort_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/divider_hort_digital.png"),
         }
 
         s.icon_digitalClockVDivider = {
             w = 3,
-            img = _loadImage(self, "Clocks/Digital/divider_vert_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/divider_vert_digital.png"),
             align = 'center',
         }
 
         s.icon_digitalDots = {
-            img = _loadImage(self, "Clocks/Digital/clock_dots_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/clock_dots_digital.png"),
             align = 'center',
             w = 40,
             border = { 14, 0, 12, 0 },
@@ -2356,12 +2335,12 @@ function Digital:getDigitalClockSkin(skinName)
         local screen_width, screen_height = Framework:getScreenSize()
         local scale = screen_height / 480
         local scale_x = screen_width / 800
-        local digitWidth = 120 * scale
+        local digitWidth =120 * scale
 
         local jogglerSkinXOffset = 20
         local jogglerSkinYOffset = 104
 
-        local digitalClockBackground = _loadImage(self, "Clocks/Digital/wallpaper_clock_digital.png")
+        local digitalClockBackground = _loadImage(self.imgpath .. "Clocks/Digital/wallpaper_clock_digital.png")
         digitalClockBackground = digitalClockBackground:zoom(scale_x, scale, 1)
 
         local x = {}
@@ -2373,7 +2352,7 @@ function Digital:getDigitalClockSkin(skinName)
         x.ampm = x.m2 + digitWidth
         x.alarm = jogglerSkinAlarmX
         
-        local digitalDots = _loadImage(self, "Clocks/Digital/clock_dots_digital.png")
+        local digitalDots = _loadImage(self.imgpath .. "Clocks/Digital/clock_dots_digital.png")
         if scale ~= 1 then
 	        digitalDots = digitalDots:zoom(scale, scale, 1)
 	    end
@@ -2409,13 +2388,13 @@ function Digital:getDigitalClockSkin(skinName)
         })
 
         s.icon_alarm_on = {
-            img = _loadImage(self, "Clocks/Digital/icon_alarm_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/icon_alarm_digital.png"),
         }
         s.icon_alarm_off = {
             img = false
         }
 
-		local digitalClockHDivider = _loadImage(self, "Clocks/Digital/divider_hort_digital.png")
+		local digitalClockHDivider = _loadImage(self.imgpath .. "Clocks/Digital/divider_hort_digital.png")
 		digitalClockHDivider = digitalClockHDivider:zoom(scale_x, 1, 1)
 		
         s.icon_digitalClockHDivider = {
@@ -2425,7 +2404,7 @@ function Digital:getDigitalClockSkin(skinName)
 
         s.icon_digitalClockVDivider = {
             w = 3,
-            img = _loadImage(self, "Clocks/Digital/divider_vert_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/divider_vert_digital.png"),
             align = 'center',
         }
 
@@ -2578,14 +2557,14 @@ function Digital:getDigitalClockSkin(skinName)
         x.ampm = x.alarm
 
         s.icon_digitalClockDropShadow = {
-            img = _loadImage(self, "Clocks/Digital/drop_shadow_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/drop_shadow_digital.png"),
             align = 'center',
             padding = { 4, 0, 0, 0 },
             w = 62,
         }
 
         s.icon_alarm_on = {
-            img = _loadImage(self, "Clocks/Digital/icon_alarm_digital.png")
+            img = _loadImage(self.imgpath .. "Clocks/Digital/icon_alarm_digital.png")
         }
         s.icon_alarm_off = _uses(s.icon_alarm_on, {
             img = false
@@ -2596,18 +2575,18 @@ function Digital:getDigitalClockSkin(skinName)
 
         s.icon_digitalClockHDivider = {
             w = WH_FILL,
-            img = _loadImage(self, "Clocks/Digital/divider_hort_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/divider_hort_digital.png"),
         }
 
         s.icon_digitalClockVDivider = {
             w = 3,
-            img = _loadImage(self, "Clocks/Digital/divider_vert_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/divider_vert_digital.png"),
             padding = { 0, 0, 0, 8 },
             align = 'center',
         }
 
         s.icon_digitalDots = {
-            img = _loadImage(self, 'Clocks/Digital/clock_dots_digital.png'),
+            img = _loadImage(self.imgpath .. 'Clocks/Digital/clock_dots_digital.png'),
             align = 'center',
             w = 16,
             padding = { 0, 26, 0, 0 },
@@ -2771,13 +2750,13 @@ function Digital:getDigitalClockSkin(skinName)
                 x.alarm = x.h1
 
         s.icon_digitalClockDropShadow = {
-            img = _loadImage(self, "Clocks/Digital/drop_shadow_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/drop_shadow_digital.png"),
             align = 'center',
             padding = { 4, 0, 0, 0 },
         }
 
         s.icon_alarm_on = {
-            img = _loadImage(self, "Clocks/Digital/icon_alarm_digital.png")
+            img = _loadImage(self.imgpath .. "Clocks/Digital/icon_alarm_digital.png")
         }
         s.icon_alarm_off = _uses(s.icon_alarm_on, {
             img = false
@@ -2788,17 +2767,17 @@ function Digital:getDigitalClockSkin(skinName)
 
         s.icon_digitalClockHDivider = {
             w = WH_FILL,
-            img = _loadImage(self, "Clocks/Digital/divider_hort_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/divider_hort_digital.png"),
         }
 
         s.icon_digitalClockVDivider = {
             w = 3,
-            img = _loadImage(self, "Clocks/Digital/divider_vert_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/divider_vert_digital.png"),
             align = 'center',
         }
 
         s.icon_digitalDots = {
-            img = _loadImage(self, 'Clocks/Digital/clock_dots_digital.png'),
+            img = _loadImage(self.imgpath .. 'Clocks/Digital/clock_dots_digital.png'),
             align = 'center',
             w = 18,
             padding = { 0, 0, 0, 0 },
@@ -2963,13 +2942,13 @@ function Digital:getDigitalClockSkin(skinName)
                 x.alarm = x.h1
 
         s.icon_digitalClockDropShadow = {
-            img = _loadImage(self, "Clocks/Digital/drop_shadow_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/drop_shadow_digital.png"),
             align = 'center',
             padding = { 4, 0, 0, 0 },
         }
 
         s.icon_alarm_on = {
-            img = _loadImage(self, "Clocks/Digital/icon_alarm_digital.png")
+            img = _loadImage(self.imgpath .. "Clocks/Digital/icon_alarm_digital.png")
         }
         s.icon_alarm_off = _uses(s.icon_alarm_on, {
             img = false
@@ -2980,17 +2959,17 @@ function Digital:getDigitalClockSkin(skinName)
 
         s.icon_digitalClockHDivider = {
             w = WH_FILL,
-            img = _loadImage(self, "Clocks/Digital/divider_hort_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/divider_hort_digital.png"),
         }
 
         s.icon_digitalClockVDivider = {
             w = 3,
-            img = _loadImage(self, "Clocks/Digital/divider_vert_digital.png"),
+            img = _loadImage(self.imgpath .. "Clocks/Digital/divider_vert_digital.png"),
             align = 'center',
         }
 
         s.icon_digitalDots = {
-            img = _loadImage(self, 'Clocks/Digital/clock_dots_digital.png'),
+            img = _loadImage(self.imgpath .. 'Clocks/Digital/clock_dots_digital.png'),
             align = 'center',
             w = 18,
             padding = { 0, 0, 0, 0 },

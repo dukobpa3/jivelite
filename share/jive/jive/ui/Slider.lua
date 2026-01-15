@@ -94,8 +94,8 @@ function __init(self, style, min, max, value, closure, dragDoneClosure)
 	obj.closure = closure
 	obj.dragDoneClosure = dragDoneClosure
 	obj.sliderEnabled = true
-        obj.irAccel = IRMenuAccel("arrow_up", "arrow_down")
-	
+    obj.irAccel = IRMenuAccel("arrow_up", "arrow_down")
+
 --	obj.dragThreshold = 25
 	obj.dragThreshold = 12 -- todo: test this lower value on fab4 to see if sloppy taps still work as page up/down
 
@@ -275,11 +275,12 @@ function _eventHandler(self, event)
 
 		local x,y,w,h = self:mouseBounds(event)
 		if w > h then
+			-- horizontal
 			if self.pillDragOnly then
 				local xPill,yPill,wPill,hPill = self:getPillBounds(true)
 				local xMouse, yMouse = event:getMouse()
 				if not self.pillOffset then
-					if xMouse >= xPill and xMouse <= xPill + wPill then			                        
+					if xMouse >= xPill and xMouse <= xPill + wPill then
 						--adjust so movement is reference to the pill location, not the pointer location
 						self.pillOffset = xMouse - xPill
 						--no need to move initially, since stuck on pill
@@ -294,14 +295,13 @@ function _eventHandler(self, event)
 			else
 				self:_setSlider(x / w)
 			end
-			-- horizontal
 		else
 			-- vertical
 			if self.pillDragOnly then
 				local xPill,yPill,wPill,hPill = self:getPillBounds(false)
 				local xMouse, yMouse = event:getMouse()
 				if not self.pillOffset then
-					if yMouse >= (yPill) and yMouse <= (yPill + hPill) then			                        
+					if yMouse >= (yPill) and yMouse <= (yPill + hPill) then
 						--adjust so movement is reference to the pill location, not the pointer location
 						self.pillOffset = yMouse - yPill
 						--no need to move initially, since stuck on pill
@@ -334,9 +334,9 @@ function _eventHandler(self, event)
 		end
 
 		if not self.jumpOnDown then
-			--perform pageup/pagedown (some of this is actually scrollbar specific.. Currently regular scrollbars
-			 -- are self.jumpOnDown true by default, so this code won't be hit, but todo: refactor this so that scrollbar code isn't
-			 -- inside the slider class.
+			-- perform pageup/pagedown (some of this is actually scrollbar specific.. Currently regular scrollbars
+			-- are self.jumpOnDown true by default, so this code won't be hit, but todo: refactor this so that scrollbar code isn't
+			-- inside the slider class.
 			local x,y,w,h = self:mouseBounds(event)
 			local sliderFraction
 			if w > h then
@@ -415,8 +415,7 @@ function updateMouseOriginOffset(self, event)
 		self.mouseDownY = y
 	else
 		--2nd or later point gathered
-
-	        local distanceFromOrigin = math.sqrt(
+		local distanceFromOrigin = math.sqrt(
 					math.pow(x - self.mouseDownX, 2)
 					+ math.pow(y - self.mouseDownY, 2) )
 

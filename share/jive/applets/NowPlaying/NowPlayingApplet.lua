@@ -36,6 +36,8 @@ local SpectrumMeter    = require("jive.vis.SpectrumMeter")
 local debug            = require("jive.utils.debug")
 local datetime         = require("jive.utils.datetime")
 
+local buttons = require("jive.skin.buttons")
+
 local appletManager    = appletManager
 
 local jiveMain               = jiveMain
@@ -70,22 +72,7 @@ local SCROLL_TIMEOUT = 750
 -- Helper Functions
 --
 
--- defines a new style that inherits from an existing style
-local function _uses(parent, value)
-        local style = {}
-        setmetatable(style, { __index = parent })
-
-        for k,v in pairs(value or {}) do
-                if type(v) == "table" and type(parent[k]) == "table" then
-                        -- recursively inherit from parent style
-                        style[k] = _uses(parent[k], v)
-                else
-                        style[k] = v
-                end
-        end
-
-        return style
-end
+local _button = buttons.GetButton
 
 local function _secondsToString(seconds)
 	local hrs = math.floor(seconds / 3600)
@@ -1321,20 +1308,19 @@ function _createTitleGroup(self, window, buttonStyle)
 		),
 
 		rbutton = Button(
-				Group(buttonStyle, { Icon("icon") }), 
-				function() 
-					Framework:pushAction("go") -- go action must work (as ir right and controller go must work also) 
-					return EVENT_CONSUME 
-				end,
-				function()
-					Framework:pushAction("title_right_hold")
-					return EVENT_CONSUME
-				end,
-				function()
-					Framework:pushAction("soft_reset")
-					return EVENT_CONSUME
-				end
-
+			_button(buttonStyle),
+			function()
+				Framework:pushAction("go") -- go action must work (as ir right and controller go must work also) 
+				return EVENT_CONSUME 
+			end,
+			function()
+				Framework:pushAction("title_right_hold")
+				return EVENT_CONSUME
+			end,
+			function()
+				Framework:pushAction("soft_reset")
+				return EVENT_CONSUME
+			end
 		),
 	   })
 	return titleGroup
@@ -1582,32 +1568,32 @@ function _createUI(self)
 		)
 	end
 
-	local playIcon = Button(Icon('play'),
-				function() 
-					Framework:pushAction("pause")
-					return EVENT_CONSUME
-				end,
-				function()
-					Framework:pushAction("stop")
-					return EVENT_CONSUME
-				end
-			)
+	local playIcon = Button(_button('play'),
+		function() 
+			Framework:pushAction("pause")
+			return EVENT_CONSUME
+		end,
+		function()
+			Framework:pushAction("stop")
+			return EVENT_CONSUME
+		end
+	)
 	if playerStatus and playerStatus.mode == 'play' then
 		playIcon:setStyle('pause')
 	end
 
-	self.repeatButton = Button(Icon('repeatMode'),
-				function() 
-					Framework:pushAction("repeat_toggle")
-				return EVENT_CONSUME 
-			end
-			)
-	self.shuffleButton = Button(Icon('shuffleMode'),
-				function() 
-					Framework:pushAction("shuffle_toggle")
-				return EVENT_CONSUME 
-			end
-			)
+	self.repeatButton = Button(_button('repeatMode'),
+		function() 
+			Framework:pushAction("repeat_toggle")
+			return EVENT_CONSUME 
+		end
+	)
+	self.shuffleButton = Button(_button('shuffleMode'),
+		function() 
+			Framework:pushAction("shuffle_toggle")
+			return EVENT_CONSUME 
+		end
+	)
 
 	self.volSlider = Slider('npvolumeB', 0, 100, 0,
 			function(slider, value, done)
@@ -1664,15 +1650,13 @@ function _createUI(self)
 					end
 				end)
 
-	self.rewButton = Button(
-			Icon('rew'),
+	self.rewButton = Button(_button('rew'),
 			function()
 				Framework:pushAction("jump_rew")
 				return EVENT_CONSUME 
 			end
 	)
-	self.fwdButton = Button(
-			Icon('fwd'),
+	self.fwdButton = Button(_button('fwd'),
 			function() 
 				Framework:pushAction("jump_fwd")
 				return EVENT_CONSUME
@@ -1696,7 +1680,7 @@ function _createUI(self)
 			shuffleMode = self.shuffleButton,
 
 		  	volDown  = Button(
-				Icon('volDown'),
+				_button('volDown'),
 				function()
 					-- Bug 15826: Allow volume events to be sent even if volume is fixed
 					--  at 100% to allow IR Blaster (a server side extra) to work properly.
@@ -1712,7 +1696,7 @@ function _createUI(self)
 				end
 			),
  		  	volUp  = Button(
-				Icon('volUp'),
+				_button('volUp'),
 				function() 
 					-- Bug 15826: Allow volume events to be sent even if volume is fixed
 					--  at 100% to allow IR Blaster (a server side extra) to work properly.

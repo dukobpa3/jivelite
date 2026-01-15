@@ -358,27 +358,43 @@ static void _init_tile_sizes(JiveTile *tile) {
 	/* top */
 	if (tile->image[2]) {
 		tile->h[0] = MAX(_get_image_h(&images[tile->image[2]]), tile->h[0]);
+		if (!tile->w[0]) { // for slice3v
+			tile->w[0] = _get_image_w(&images[tile->image[2]]);
+		}
 	}
 
 	/* right */
 	if (tile->image[4]) {
 		tile->w[1] = MAX(_get_image_w(&images[tile->image[4]]), tile->w[1]);
+		if (!tile->h[0]) { // for slice3h
+			tile->h[0] = _get_image_h(&images[tile->image[4]]);
+		}
 	}
 
 	/* bottom */
 	if (tile->image[6]) {
 		tile->h[1] = MAX(_get_image_h(&images[tile->image[6]]), tile->h[1]);
+		if (!tile->w[0]) { // for slice3v
+			tile->w[0] = _get_image_w(&images[tile->image[6]]);
+		}
 	}
 
 	/* left */
 	if (tile->image[8]) {
 		tile->w[0] = MAX(_get_image_w(&images[tile->image[8]]), tile->w[0]);
+		if (!tile->h[0]) { // for slice3h
+			tile->h[0] = _get_image_h(&images[tile->image[8]]);
+		}
 	}
 
-	/* special for single images */
-	if (tile->image[0] && !tile->image[1] && !tile->w[0]) {
-		tile->w[0] = _get_image_w(&images[tile->image[0]]);
-		tile->h[0] = _get_image_h(&images[tile->image[0]]);
+	/* center */
+	if (tile->image[0]) {
+		if (!tile->w[0]) {
+			tile->w[0] = _get_image_w(&images[tile->image[0]]);
+		}
+		if (!tile->h[0]) {
+			tile->h[0] = _get_image_h(&images[tile->image[0]]);
+		}
 	}
 
 	tile->flags |= TILE_FLAG_INIT;
@@ -537,9 +553,9 @@ JiveTile *jive_tile_load_vtiles(char *path[3]) {
 	char *path2[9];
 
 	memset(path2, 0, sizeof(path2));
-	path2[1] = path[0];
-	path2[8] = path[1];
-	path2[7] = path[2];
+	path2[2] = path[0];
+	path2[0] = path[1];
+	path2[6] = path[2];
 
 	return jive_tile_load_tiles(path2);
 }
@@ -549,9 +565,9 @@ JiveTile *jive_tile_load_htiles(char *path[3]) {
 	char *path2[9];
 
 	memset(path2, 0, sizeof(path2));
-	path2[1] = path[0];
-	path2[2] = path[1];
-	path2[3] = path[2];
+	path2[8] = path[0];
+	path2[0] = path[1];
+	path2[4] = path[2];
 
 	return jive_tile_load_tiles(path2);
 }
@@ -635,35 +651,24 @@ void jive_tile_free(JiveTile *tile) {
 }
 
 static __inline__ void blit_area(SDL_Surface *src, SDL_Surface *dst, int dx, int dy, int dw, int dh) {
-	SDL_Rect sr, dr;
-	int x, y, w, h;
-	int tw, th;
+	if (dw <= 0 || dh <= 0) {
+		return;
+	}
 
-	tw = src->w;
-	th = src->h;
-
-	sr.x = 0;
-	sr.y = 0;
-
-	h = dh;
-	y = dy;
-	while (h > 0) {
-		w = dw;
-		x = dx;
-		while (w > 0) {
-			sr.w = w;
-			sr.h = h;
-			dr.x = x;
-			dr.y = y;
-
-			SDL_BlitSurface(src, &sr, dst, &dr);
-
-			x += tw;
-			w -= tw;
+	// if size is the same, just blit
+	if (src->w == dw && src->h == dh) {
+		SDL_Rect s = { 0, 0, (Uint16)dw, (Uint16)dh };
+		SDL_Rect d = { (Sint16)dx, (Sint16)dy, 0, 0 };
+		SDL_BlitSurface(src, &s, dst, &d);
+	}
+	else {
+		// otherwise scale the surface to the new dimensions
+		SDL_Surface *scaled_srf = zoomSurface(src, (double)dw / src->w, (double)dh / src->h, 1);
+		if (scaled_srf) {
+			SDL_Rect d = { (Sint16)dx, (Sint16)dy, 0, 0 };
+			SDL_BlitSurface(scaled_srf, NULL, dst, &d);
+			SDL_FreeSurface(scaled_srf);
 		}
-
-		y += th;
-		h -= th;
 	}
 }
 
@@ -676,7 +681,6 @@ void jive_surface_get_tile_blit(JiveSurface *srf, SDL_Surface **sdl, Sint16 *x, 
 
 
 static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, Uint16 dw, Uint16 dh) {
-	int ox=0, oy=0, ow=0, oh=0;
 	Sint16 dst_offset_x, dst_offset_y;
 	SDL_Surface *dst_srf;
 	SDL_Surface *srf[9];
@@ -687,12 +691,10 @@ static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, U
 	}
 
 	jive_surface_get_tile_blit(dst, &dst_srf, &dst_offset_x, &dst_offset_y);
-
 	dx += dst_offset_x;
 	dy += dst_offset_y;
 
 	if (tile->sdl) {
-		/* simple, data-loaded image */
 		blit_area(tile->sdl, dst_srf, dx, dy, dw, dh);
 		return;
 	}
@@ -701,68 +703,100 @@ static void _blit_tile(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, U
 	_init_tile_sizes(tile);
 
 	if ((tile->flags & TILE_FLAG_IMAGE) && srf[0]) {
-		/* dynamically-loaded image */
 		blit_area(srf[0], dst_srf, dx, dy, dw, dh);
 		return;
 	}
 
-	/* top left */
-	if (srf[1]) {
-		ox = MIN(tile->w[0], dw);
-		oy = MIN(tile->h[0], dh);
-		blit_area(srf[1], dst_srf, dx, dy, ox, oy);
+	int th = 0, bh = 0, lw = 0, rw = 0;
+
+	// Corners sets borders
+	if (srf[1]) {  // top-left
+		th = tile->h[0];
+		lw = tile->w[0]; 
+	}
+	if (srf[3]) { 
+		th = th ? th : tile->h[0]; 
+		rw = tile->w[1]; 
+	}
+	if (srf[5]) {  // bottom-right
+		bh = tile->h[1];
+		rw = rw ? rw : tile->w[1];
+	}
+	if (srf[7]) {  // bottom-left
+		bh = bh ? bh : tile->h[1];
+		lw = lw ? lw : tile->w[0];
 	}
 
-	/* top right */
-	if (srf[3]) {
-		ow = MIN(tile->w[1], dw);
-		oy = MIN(tile->h[0], dh);
-		blit_area(srf[3], dst_srf, dx + dw - ow, dy, ow, oy);
+	int cx = dx + lw;
+	int cy = dy + th;
+	int cw = dw - lw - rw;
+	int ch = dh - th - bh;
+
+	bool has_corners = srf[1] || srf[3] || srf[5] || srf[7];
+	bool h3 = srf[2], h7 = srf[6], v9 = srf[8], v5 = srf[4];
+
+	if (!has_corners) { // slice3
+		if ((h3 || h7) && !v9 && !v5) { // vertical
+			th = tile->h[0];
+			bh = tile->h[1];
+			if (srf[2]) {
+				int tw = tile->image[2] ? _get_image_w(&images[tile->image[2]]) : 0;
+				if(tw && tw != dw) {
+					th *= (float)dw / tw;
+				}
+			}
+			if (srf[6]) {
+				int bw = tile->image[6] ? _get_image_w(&images[tile->image[6]]) : 0;
+				if(bw && bw != dw) {
+					bh *= (float)dw / bw;
+				}
+			}
+			if (srf[2]) blit_area(srf[2], dst_srf, dx, dy, dw, th);
+			if (srf[0]) blit_area(srf[0], dst_srf, dx, dy + th, dw, dh - th - bh);
+			if (srf[6]) blit_area(srf[6], dst_srf, dx, dy + dh - bh, dw, bh);
+			return;
+		} else if ((v9 || v5) && !h3 && !h7) { // horizontal
+			lw = tile->w[0];
+			rw = tile->w[1];
+			if (srf[8]) {
+				int lh = tile->image[8] ? _get_image_h(&images[tile->image[8]]) : 0;
+				if(lh && lh != dh) {
+					lw *= (float)dh / lh;
+				}
+			}
+			if (srf[4]) {
+				int rh = tile->image[4] ? _get_image_h(&images[tile->image[4]]) : 0;
+				if(rh && rh != dh) {
+					rw *= (float)dh / rh;
+				}
+			}
+			if (srf[8]) blit_area(srf[8], dst_srf, dx, dy, lw, dh);
+			if (srf[0]) blit_area(srf[0], dst_srf, dx + lw, dy, dw - lw - rw, dh);
+			if (srf[4]) blit_area(srf[4], dst_srf, dx + dw - rw, dy, rw, dh);
+			return;
+		} else { // Only center
+			if (srf[0]) blit_area(srf[0], dst_srf, dx, dy, dw, dh);
+			else {
+				// Should be at least one tile
+				LOG_ERROR(log_ui_draw, "_blit_tile: srf[0] is nil");
+			}
+			return;
+		}
 	}
 
-	/* bottom right */
-	if (srf[5]) {
-		ow = MIN(tile->w[1], dw);
-		oh = MIN(tile->h[1], dh);
-		blit_area(srf[5], dst_srf, dx + dw - ow, dy + dh - oh, ow, oh);
-	}
+	// slice9
+	if (srf[1]) blit_area(srf[1], dst_srf, dx, dy, lw, th); // top-left
+	if (srf[3]) blit_area(srf[3], dst_srf, dx + dw - rw, dy, rw, th); // top-right
+	if (srf[5]) blit_area(srf[5], dst_srf, dx + dw - rw, dy + dh - bh, rw, bh); // bottom-right
+	if (srf[7]) blit_area(srf[7], dst_srf, dx, dy + dh - bh, lw, bh); // bottom-left
 
-	/* bottom left */
-	if (srf[7]) {
-		ox = MIN(tile->w[0], dw);
-		oh = MIN(tile->h[1], dh);
-		blit_area(srf[7], dst_srf, dx, dy + dh - oh, ox, oh);
-	}
-
-	/* top */
-	if (srf[2]) {
-		oy = MIN(tile->h[0], dh);
-		blit_area(srf[2], dst_srf, dx + ox, dy, dw - ox - ow, oy);
-	}
-
-	/* right */
-	if (srf[4]) {
-		ow = MIN(tile->w[1], dw);
-		blit_area(srf[4], dst_srf, dx + dw - ow, dy + oy, ow, dh - oy - oh);
-	}
-
-	/* bottom */
-	if (srf[6]) {
-		oh = MIN(tile->h[1], dh);
-		blit_area(srf[6], dst_srf, dx + ox, dy + dh - oh, dw - ox - ow, oh);
-	}
-
-	/* left */
-	if (srf[8]) {
-		ox = MIN(tile->w[0], dw);
-		blit_area(srf[8], dst_srf, dx, dy + oy, ox, dh - oy - oh);
-	}
-
-	/* center */
-	if (srf[0]) {
-		blit_area(srf[0], dst_srf, dx + ox, dy + oy, dw - ox - ow, dh - oy - oh);
-	}
+	if (srf[2]) blit_area(srf[2], dst_srf, cx, dy, cw, th); // top
+	if (srf[4]) blit_area(srf[4], dst_srf, dx + dw - rw, cy, rw, ch); // right
+	if (srf[6]) blit_area(srf[6], dst_srf, cx, dy + dh - bh, cw, bh); // bottom
+	if (srf[8]) blit_area(srf[8], dst_srf, dx, cy, lw, ch); // left
+	if (srf[0]) blit_area(srf[0], dst_srf, cx, cy, cw, ch); // center
 }
+
 
 
 void jive_tile_blit(JiveTile *tile, JiveSurface *dst, Uint16 dx, Uint16 dy, Uint16 dw, Uint16 dh) {

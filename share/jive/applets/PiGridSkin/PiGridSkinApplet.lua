@@ -282,7 +282,7 @@ function skin(self, s, reload, useDefaultSize, w, h)
 
 	s.home_menu.menu.item.icon_no_artwork = {
 		img = _loadImage(self, "IconsResized/icon_loading" .. skinSuffix ),
-		h   = THUMB_SIZE,
+		h   = THUMB_SIZE_G,
 		padding = c.MENU_ITEM_ICON_PADDING,
 		align = 'center',
 	}
